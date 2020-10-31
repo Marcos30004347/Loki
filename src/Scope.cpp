@@ -11,6 +11,8 @@ Scope* initScope() {
     s->variables_def = nullptr;
     s->variables_def_count = 0;
 
+    s->parent_scope = nullptr;
+
     return s;
 }
 

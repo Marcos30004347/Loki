@@ -9,19 +9,20 @@ enum Type {
     INT,
 };
 
-enum ExpOperation {
+enum BinaryOperation {
     BINARY_NONE,
     ADDITION,
     SUBTRACTION,
     DIVISION,
     MULTIPLICATION,
     DIFFERENT,
-    EQUALS,
+    EQUALS_EQUALS,
     GREATER,
     LESS,
     GREATER_OR_EQUAL,
     LESS_OR_EQUAL,
 };
+
 
 
 enum UExOperation {
@@ -30,6 +31,10 @@ enum UExOperation {
     MINUS,
 };
 
+enum BuildInType {
+    TYPE_VOID = 0,
+    TYPE_INT,
+};
 
 struct AST {
     enum ASTType {
@@ -37,7 +42,10 @@ struct AST {
         INTEGER,
         BINARY_EXPRESSION,
         UNARY_EXPRESSION,
+        IDENTIFIER,
+        VARIABLES_DECLARATIONS,
         COMPOUND,
+        ASSIGNMENT,
     };
 
     //AST data:
@@ -49,12 +57,25 @@ struct AST {
 
     // BINARY EXPRESSION
     AST* binary_exp_left_operand;
-    ExpOperation binary_exp_operation;
+    BinaryOperation binary_exp_operation;
     AST* binary_exp_right_operand;
 
     // UNARY EXPRESSION
     UExOperation unary_binary_exp_operation;
     AST* unary_binary_exp_right_operand;
+
+    // IDENTIFIER
+    char* identifier;
+
+    // VARIABLES_DECLARATIONS
+    char** vars_def_name;
+    BuildInType vars_def_type;
+    AST** vars_def_value;
+    unsigned int vars_def_count;
+
+    // ASSIGNMENT
+    AST* assignment_right;
+    AST* assignment_left;
 
     //COMPOUND
     AST** compound_list;
@@ -62,5 +83,5 @@ struct AST {
 };
 
 AST* initAST(AST::ASTType type);
-void printAST(AST* root);
+void printAST(AST* root, int tabs = 0);
 #endif

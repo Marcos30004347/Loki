@@ -9,6 +9,8 @@ struct Scope {
 
     AST** variables_def;
     unsigned int variables_def_count;
+
+    Scope* parent_scope;
 };
 
 Scope* initScope();

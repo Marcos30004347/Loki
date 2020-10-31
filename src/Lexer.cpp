@@ -108,13 +108,19 @@ Token* lexerGetNextToken(Lexer* lex) {
 
         switch (lex->c) {
             case '=':
-                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  
-                return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EQUALS_EQUALS, lexerGetCurrentCharAsString(lex)));
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EQUALS_EQUALS, (char*)"=="));
+                }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EQUALS, lexerGetCurrentCharAsString(lex)));
             case '(': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_PARENTESIS, lexerGetCurrentCharAsString(lex)));
             case '!':
-                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  
-                return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIFFERENT, lexerGetCurrentCharAsString(lex)));
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIFFERENT, (char*)"!="));
+                }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EXCLAMATION, lexerGetCurrentCharAsString(lex)));
             case ')': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_PARENTESIS, lexerGetCurrentCharAsString(lex)));
             case ';': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SEMICOLON, lexerGetCurrentCharAsString(lex)));
@@ -127,12 +133,18 @@ Token* lexerGetNextToken(Lexer* lex) {
             case '-': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SUBTRACION, lexerGetCurrentCharAsString(lex)));
             case '+': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::ADDITION, lexerGetCurrentCharAsString(lex)));
             case '>':
-                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') 
-                return lexerAdvanceWithToken(lex, initToken(Token::TokenType::GREATER_OR_EQUALS, lexerGetCurrentCharAsString(lex)));
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::GREATER_OR_EQUALS, (char*)">="));
+                }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::GREATER, lexerGetCurrentCharAsString(lex)));
             case '<':
-                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') 
-                return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS_OR_EQUALS, lexerGetCurrentCharAsString(lex)));
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS_OR_EQUALS, (char*)"<="));
+                }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS, lexerGetCurrentCharAsString(lex)));
 
             default: printf("Unknow token!\n") ;exit(-1);
