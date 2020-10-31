@@ -21,8 +21,17 @@ AST* parseStart(Parser* parser);
 // DECLARATION → VAR_DECL | STATEMENT;
 AST* parseDeclaration(Parser* parser);
 
-// STATEMENT → EXPRESSION_STATEMENT | BLOCK
+// STATEMENT → EXPRESSION_STATEMENT | IF | BLOCK
 AST* parseStatement(Parser* parser);
+
+// IF → 'if' '(' EXPRESSION ')' STATEMENT (else STATEMENT)? 
+AST* parseIf(Parser* parser);
+
+// WHILE  → 'while' '(' EXPRESSION ')' STATEMENT; 
+AST* parseWhile(Parser* parser);
+
+// DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
+AST* parseDoWhile(Parser* parser);
 
 // BLOCK → '{' DECLARATION '}'
 AST* parseBlock(Parser* parser);

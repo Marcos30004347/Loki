@@ -26,11 +26,20 @@ int main() {
     const char* src11 = "int teste = 4 + 5;"
                         "3 = 4;"
                         "teste = 4;";
+
     const char* src12 = "{"
-                        "int teste = 4;"
+                        "   int teste = 4;"
                         "}";
 
-    Lexer* lexer = initLexer((char*)src12);
+    const char* src13 = "if(3 == 3){"
+                        "   int teste = 4;"
+                        "} else if(4 == 4){"
+                        "   teste = 1 + 1;"
+                        "} else {"
+                        "   teste = teste2 == 1;"
+                        "}";
+
+    Lexer* lexer = initLexer((char*)src13);
     Parser* parser = initParser(lexer);
     AST* root = parseStart(parser);
 

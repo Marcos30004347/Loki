@@ -75,6 +75,11 @@ Token* lexerCollectId(Lexer* lex) {
         lexerAdvance(lex);
     }
 
+    if(strcmp(value, "if") == 0) return initToken(Token::TokenType::IF, value);
+    if(strcmp(value, "else") == 0) return initToken(Token::TokenType::ELSE, value);
+    if(strcmp(value, "do") == 0) return initToken(Token::TokenType::DO, value);
+    if(strcmp(value, "while") == 0) return initToken(Token::TokenType::WHILE, value);
+    if(strcmp(value, "return") == 0) return initToken(Token::TokenType::RETURN, value);
 
     return initToken(Token::TokenType::IDENTIFIER, value);
 }

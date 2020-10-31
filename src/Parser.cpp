@@ -138,7 +138,6 @@ AST* parseStart(Parser* parser) {
 AST* parseDeclaration(Parser* parser) {
     printf("Parsing Declaration...\n");
 
-    printf("ASDASDASDA\n");
     if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && !isIdentifier(parser->current_token)) {
         AST* var_decl = parseVariableDeclaration(parser);
         printf("Parsed Statement!\n");
@@ -151,20 +150,114 @@ AST* parseDeclaration(Parser* parser) {
     return statement;
 }
 
-// STATEMENT → EXPRESSION_STATEMENT | BLOCK
+// STATEMENT → EXPRESSION_STATEMENT | IF | BLOCK
 AST* parseStatement(Parser* parser) {
     printf("Parsing Statement...\n");
 
     if(parser->current_token->token_type == Token::TokenType::OPEN_BRACKET) {
         AST* block = parseBlock(parser);
-        printf("Parsed Statement!\n");
+        printf("Parsed Statement as Block!\n");
         return block;
+    }
+    if(parser->current_token->token_type == Token::TokenType::IF) {
+        AST* ifsttmnt = parseIf(parser);
+        printf("Parsed Statement as If Statement!\n");
+        return ifsttmnt;
+    }
+
+    if(parser->current_token->token_type == Token::TokenType::DO) {
+        AST* ifsttmnt = parseDoWhile(parser);
+        printf("Parsed Statement as do While Statement!\n");
+        return ifsttmnt;
+    }
+
+    if(parser->current_token->token_type == Token::TokenType::WHILE) {
+        AST* ifsttmnt = parseWhile(parser);
+        printf("Parsed Statement as While Statement!\n");
+        return ifsttmnt;
     }
 
     AST* exp_sttmnt = parseExpressionStatement(parser);
-    printf("Parsed Statement!\n");
+    printf("Parsed Statement as Expression!\n");
     return exp_sttmnt;
 }
+
+// IF → 'if' '(' EXPRESSION ')' STATEMENT (else STATEMENT)? 
+AST* parseIf(Parser* parser) {
+    printf("Parsing If Statement...\n");
+    AST* if_sttnt = initAST(AST::ASTType::IF);
+
+    parserReadToken(parser, Token::TokenType::IF); // if keyword
+    parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+    
+    AST* condition = parseExpression(parser);
+    if_sttnt->if_condition = condition; 
+    
+    parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+    
+    AST* statements = parseStatement(parser);
+    if_sttnt->if_statements = statements;
+
+    if(parser->current_token->token_type == Token::TokenType::ELSE) {
+        parserReadToken(parser, Token::TokenType::ELSE);
+        AST* else_statements = parseStatement(parser);
+        if_sttnt->if_else_ast = else_statements; 
+    } else {
+        AST* else_statements = initAST(AST::ASTType::NO_OP);
+        if_sttnt->if_else_ast = else_statements; 
+    }
+    
+    printf("Parsed If Statement!\n");
+
+    return if_sttnt;
+}
+
+
+// WHILE  → 'while' '(' EXPRESSION ')' STATEMENT; 
+AST* parseWhile(Parser* parser) {
+    printf("Parsing While Statement...\n");
+    AST* while_sttnt = initAST(AST::ASTType::WHILE);
+
+    parserReadToken(parser, Token::TokenType::WHILE); // while keyword
+    parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+    
+    AST* condition = parseExpression(parser);
+    while_sttnt->while_condition = condition; 
+    
+    parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+    
+    AST* statements = parseStatement(parser);
+
+    while_sttnt->while_statements = statements;
+    
+    printf("Parsed While Statement!\n");
+
+    return while_sttnt;
+}
+
+// DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
+AST* parseDoWhile(Parser* parser) {
+    printf("Parsing While Statement...\n");
+    AST* do_while_sttmnt = initAST(AST::ASTType::DO_WHILE);
+
+    parserReadToken(parser, Token::TokenType::DO); // while keyword
+    AST* statements = parseStatement(parser);
+    do_while_sttmnt->do_while_statements = statements;
+    
+    parserReadToken(parser, Token::TokenType::WHILE);
+    parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+    
+    AST* condition = parseExpression(parser);
+    do_while_sttmnt->do_while_condition = condition; 
+    
+    parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+
+    printf("Parsed While Statement!\n");
+
+    return do_while_sttmnt;
+}
+
 
 // BLOCK → '{' DECLARATION '}'
 AST* parseBlock(Parser* parser) {

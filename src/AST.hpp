@@ -47,6 +47,9 @@ struct AST {
         STATEMETNS,
         BLOCK,
         ASSIGNMENT,
+        IF,
+        WHILE,
+        DO_WHILE,
     };
 
     //AST data:
@@ -84,6 +87,19 @@ struct AST {
     //STATEMETNS
     AST** statements_list;
     unsigned int statements_list_count;
+
+    // IF
+    AST* if_condition;
+    AST* if_statements;
+    AST* if_else_ast;
+
+    // WHILE
+    AST* while_condition;
+    AST* while_statements;
+
+    // DO_WHILE
+    AST* do_while_statements;
+    AST* do_while_condition;
 };
 
 AST* initAST(AST::ASTType type);

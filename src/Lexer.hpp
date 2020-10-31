@@ -37,6 +37,11 @@ struct Token {
         EXCLAMATION,
         MINUS,
         TOKEN_EOF,
+        IF,
+        WHILE,
+        DO,
+        ELSE,
+        RETURN,
     };
 
     TokenType token_type;

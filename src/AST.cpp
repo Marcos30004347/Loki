@@ -62,9 +62,53 @@ AST* initAST(AST::ASTType type) {
     // ASSIGNMENT
     ast->assignment_right = nullptr;
     ast->assignment_left = nullptr;
+
+    // IF
+    ast->if_condition = nullptr;
+    ast->if_statements = nullptr;
+    ast->if_else_ast = nullptr;
+
+    // WHILE
+    ast->while_condition = nullptr;
+    ast->while_statements = nullptr;
+
+    // DO_WHILE
+    ast->do_while_statements = nullptr;
+    ast->do_while_condition = nullptr;
 }
 
 void printAST(AST* root, int tabs) {
+
+    if(root->type == AST::ASTType::IF) {
+        printf("%*cIF:\n", tabs, ' ');
+        printf("%*cCONDITION:\n", tabs, ' ');
+        printAST(root->if_condition, tabs + 3);
+        printf("%*cSTATEMENTS:\n", tabs, ' ');
+        printAST(root->if_statements, tabs + 3);
+        printf("%*cELSE:\n", tabs, ' ');
+        printAST(root->if_else_ast, tabs + 3);
+    }
+
+    if(root->type == AST::ASTType::WHILE) {
+        printf("%*cWHILE:\n", tabs, ' ');
+        printf("%*cCONDITION:\n", tabs, ' ');
+        printAST(root->while_condition, tabs + 3);
+        printf("%*cSTATEMENTS:\n", tabs, ' ');
+        printAST(root->while_statements, tabs + 3);
+    }
+
+    if(root->type == AST::ASTType::DO_WHILE) {
+        printf("%*cDO WHILE:\n", tabs, ' ');
+        printf("%*cSTATEMENTS:\n", tabs, ' ');
+        printAST(root->do_while_statements, tabs + 3);
+        printf("%*cCONDITION:\n", tabs, ' ');
+        printAST(root->do_while_condition, tabs + 3);
+    }
+
+    if(root->type == AST::ASTType::NO_OP) {
+        printf("%*cNO_OP:\n", tabs, ' ');
+    }
+
     if(root->type == AST::ASTType::BLOCK) {
         printf("%*cBLOCK:\n", tabs, ' ');
         printAST(root->block_statements, tabs + 3);
