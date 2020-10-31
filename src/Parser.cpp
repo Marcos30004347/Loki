@@ -2,13 +2,9 @@
 
 #include "Parser.hpp"
 
-#include <malloc.h>
 #include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <vector>
 #include <stdlib.h>
-#include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
+#include <malloc.h>
 
 void addToCompound(AST* compound, AST* item) {
     compound->compound_list_count += 1;
