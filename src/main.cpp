@@ -22,15 +22,16 @@ int main() {
     const char* src7 = "12 <= (3 * 4) + 5;";
     const char* src8 = "12 <= 4 - (3 + (4 + 3)) + 5;";
     const char* src9 = "3 == 3 == 3 != 4;";
-
     const char* src10 = "int teste = 4, teste2, teste3 = 6;";
-    
-    const char* src11 = "int teste = 4;"
+    const char* src11 = "int teste = 4 + 5;"
                         "3 = 4;"
                         "teste = 4;";
-    
-    Lexer* lexer = initLexer((char*)src11);
-    Parser* parser = initParser(lexer, initScope());
+    const char* src12 = "{"
+                        "int teste = 4;"
+                        "}";
+
+    Lexer* lexer = initLexer((char*)src12);
+    Parser* parser = initParser(lexer);
     AST* root = parseStart(parser);
 
     printAST(root);

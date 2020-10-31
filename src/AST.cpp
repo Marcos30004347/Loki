@@ -33,9 +33,9 @@ AST* initAST(AST::ASTType type) {
     //INTEGER
     ast->integer_value = 0;
 
-    // COMPOUND
-    ast->compound_list = nullptr;
-    ast->compound_list_count = 0;
+    // STATEMENTS
+    ast->statements_list = nullptr;
+    ast->statements_list_count = 0;
 
     // BINARY EXPRESSION
     ast->binary_exp_left_operand = nullptr;
@@ -56,6 +56,8 @@ AST* initAST(AST::ASTType type) {
     ast->vars_def_value = nullptr;
     ast->vars_def_count = 0;
 
+    //BLOCK
+    ast->block_statements = nullptr;
 
     // ASSIGNMENT
     ast->assignment_right = nullptr;
@@ -63,12 +65,16 @@ AST* initAST(AST::ASTType type) {
 }
 
 void printAST(AST* root, int tabs) {
-    if(root->type == AST::ASTType::COMPOUND) {
-        printf("%*cCOMPOUND:\n", tabs, ' ');
+    if(root->type == AST::ASTType::BLOCK) {
+        printf("%*cBLOCK:\n", tabs, ' ');
+        printAST(root->block_statements, tabs + 3);
+    }
 
-        for(int i=0; i<root->compound_list_count; i++) {
-            printf("%*cITEM %i:\n", tabs, ' ', i);
-            printAST(root->compound_list[i], tabs + 3);
+    if(root->type == AST::ASTType::STATEMETNS) {
+        printf("%*cSTATEMENTS:\n", tabs, ' ');
+        for(int i=0; i<root->statements_list_count; i++) {
+            printf("%*cSTATEMENT %i:\n", tabs, ' ', i);
+            printAST(root->statements_list[i], tabs + 3);
         }
     }
     

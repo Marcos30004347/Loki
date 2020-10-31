@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-void addToCompound(AST* compound, AST* item) {
-    compound->compound_list_count += 1;
+void addStatement(AST* statements, AST* item) {
+    statements->statements_list_count += 1;
     
-    compound->compound_list = (AST**)realloc(
-        compound->compound_list,
-        compound->compound_list_count * sizeof(AST*)
+    statements->statements_list = (AST**)realloc(
+        statements->statements_list,
+        statements->statements_list_count * sizeof(AST*)
     );
     
-    compound->compound_list[ compound->compound_list_count - 1] = item;
+    statements->statements_list[ statements->statements_list_count - 1] = item;
 }
 
 bool isIdentifier(Token* tok) {
@@ -81,11 +81,10 @@ char* copyString(const char* str) {
     return copy;
 }
 
-Parser* initParser(Lexer* lexer, Scope* scope) {
+Parser* initParser(Lexer* lexer) {
     Parser* parser = (Parser*)malloc(sizeof(Parser));
 
     parser->lexer = lexer;
-    parser->scope = scope;
     parser->previous_token = nullptr;
     parser->current_token = lexerGetNextToken(lexer);
     return parser;
@@ -125,32 +124,60 @@ void parserReadToken(Parser* parser, Token::TokenType type) {
 
 // PROGRAM → STATEMENT* EOF
 AST* parseStart(Parser* parser) {
-    AST* root = initAST(AST::ASTType::COMPOUND);
+    AST* root = initAST(AST::ASTType::STATEMETNS);
 
     while(parser->current_token->token_type != Token::TokenType::TOKEN_EOF) {
-        AST* statement = parseStatement(parser, parser->scope);
-        addToCompound(root, statement);
+        AST* statement = parseDeclaration(parser);
+        addStatement(root, statement);
     }
 
     return root;
 }
 
-// STATEMENT → VAR_DECL | EXPRESSION_STATEMENT
-AST* parseStatement(Parser* parser, Scope* scope) {
-    printf("Parsing Statement...\n");
+// DECLARATION → VAR_DECL | STATEMENT;
+AST* parseDeclaration(Parser* parser) {
+    printf("Parsing Declaration...\n");
+
+    printf("ASDASDASDA\n");
     if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && !isIdentifier(parser->current_token)) {
-        AST* var_decl = parseVariableDeclaration(parser, scope);
+        AST* var_decl = parseVariableDeclaration(parser);
         printf("Parsed Statement!\n");
         return var_decl;
     }
 
-    AST* exp_sttmnt = parseExpressionStatement(parser, scope);
+    AST* statement = parseStatement(parser);
+
+    printf("Parsed Declaration!\n");
+    return statement;
+}
+
+// STATEMENT → EXPRESSION_STATEMENT | BLOCK
+AST* parseStatement(Parser* parser) {
+    printf("Parsing Statement...\n");
+
+    if(parser->current_token->token_type == Token::TokenType::OPEN_BRACKET) {
+        AST* block = parseBlock(parser);
+        printf("Parsed Statement!\n");
+        return block;
+    }
+
+    AST* exp_sttmnt = parseExpressionStatement(parser);
     printf("Parsed Statement!\n");
     return exp_sttmnt;
 }
 
+// BLOCK → '{' DECLARATION '}'
+AST* parseBlock(Parser* parser) {
+    AST* block = initAST(AST::ASTType::BLOCK);
+
+    parserReadToken(parser, Token::TokenType::OPEN_BRACKET);
+    block->block_statements = parseDeclaration(parser);
+    parserReadToken(parser, Token::TokenType::CLOSE_BRACKET);
+    return block;
+}
+
 // VAR_DECL → TYPE (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'
-AST* parseVariableDeclaration(Parser* parser, Scope* scope) {
+AST* parseVariableDeclaration(Parser* parser) {
     printf("Parsing Variable Definition...\n");
 
     AST* variables_definitions = initAST(AST::ASTType::VARIABLES_DECLARATIONS);
@@ -168,7 +195,7 @@ AST* parseVariableDeclaration(Parser* parser, Scope* scope) {
 
     if(parser->current_token->token_type == Token::TokenType::EQUALS) {
         parserReadToken(parser, Token::TokenType::EQUALS);
-        addVariableDefinitionValue(variables_definitions, parseExpression(parser, scope));
+        addVariableDefinitionValue(variables_definitions, parseExpression(parser));
     } else {
         addVariableDefinitionValue(variables_definitions, getTypeDefaultValue(variables_definitions->vars_def_type));
     }
@@ -187,7 +214,7 @@ AST* parseVariableDeclaration(Parser* parser, Scope* scope) {
 
         if(parser->current_token->token_type == Token::TokenType::EQUALS) {
             parserReadToken(parser, Token::TokenType::EQUALS);
-            addVariableDefinitionValue(variables_definitions, parseExpression(parser, scope));
+            addVariableDefinitionValue(variables_definitions, parseExpression(parser));
         } else {
             addVariableDefinitionValue(variables_definitions, getTypeDefaultValue(variables_definitions->vars_def_type));
         }
@@ -200,25 +227,25 @@ AST* parseVariableDeclaration(Parser* parser, Scope* scope) {
 }
 
 // EXPRESSION_STATEMENT → EXPRESSION';'
-AST* parseExpressionStatement(Parser* parser, Scope* scope) {
-    AST* expression = parseExpression(parser, scope);
+AST* parseExpressionStatement(Parser* parser) {
+    AST* expression = parseExpression(parser);
     parserReadToken(parser, Token::TokenType::SEMICOLON);
     return expression;
 }
 
 // EXPRESSION → ASSIGNMENT;
-AST* parseExpression(Parser* parser, Scope* scope) {
+AST* parseExpression(Parser* parser) {
     printf("Parsing Expression...\n");
-    AST* assignment = parseAssignment(parser, scope);
+    AST* assignment = parseAssignment(parser);
     printf("Parsed Expression!\n");
     return assignment;
 }
 
 // ASSIGNMENT → IDENTIFIER '=' ASSIGNMENT | EQUALITY
-AST* parseAssignment(Parser* parser, Scope* scope) {
+AST* parseAssignment(Parser* parser) {
     printf("Parsing Assignment...\n");
     
-    AST* root = parseEquality(parser, scope);
+    AST* root = parseEquality(parser);
 
     while(parser->current_token->token_type == Token::TokenType::EQUALS) {
         parserReadToken(parser, Token::TokenType::EQUALS);
@@ -228,7 +255,7 @@ AST* parseAssignment(Parser* parser, Scope* scope) {
             printf("\033[33mWARNING: First operand of assignment isn't a identifier!\033[0m\n");
         }
 
-        AST* right = parseAssignment(parser, scope);
+        AST* right = parseAssignment(parser);
        
         root = initAST(AST::ASTType::ASSIGNMENT);
        
@@ -241,9 +268,9 @@ AST* parseAssignment(Parser* parser, Scope* scope) {
 }
 
 // EQUALITY → COMPARISON (('!=' | '==') COMPARISON)*;      ex: 1 == 1 != 3 == 3;
-AST* parseEquality(Parser* parser, Scope* scope) {
+AST* parseEquality(Parser* parser) {
     printf("Parsing Equality\n");
-    AST* root = parseComparison(parser, scope);
+    AST* root = parseComparison(parser);
 
     while(tokenMatchesTypes(parser, 2, Token::TokenType::DIFFERENT, Token::TokenType::EQUALS_EQUALS)) {
         Token* operation = parser->previous_token;
@@ -256,7 +283,7 @@ AST* parseEquality(Parser* parser, Scope* scope) {
             default: printf("\033[1mERROR: Unknow equality operator '%s'!\033[0m\n", operation->value); exit(-1);
         }
     
-        AST* right = parseComparison(parser, scope);
+        AST* right = parseComparison(parser);
 
         AST* left = root;
     
@@ -272,9 +299,9 @@ AST* parseEquality(Parser* parser, Scope* scope) {
 }
 
 // COMPARISON → TERM (('>' | '>=' | '<' | '<=') TERM)* ;
-AST* parseComparison(Parser* parser, Scope* scope) {
+AST* parseComparison(Parser* parser) {
     printf("Parsing Comparison\n");
-    AST* root = parseTerm(parser, scope);
+    AST* root = parseTerm(parser);
 
     while(tokenMatchesTypes(
         parser,
@@ -293,7 +320,7 @@ AST* parseComparison(Parser* parser, Scope* scope) {
             default: printf("\033[1mERROR: Unknow comparison operator '%s'!\033[0m\n", operation->value); exit(-1);
         }
 
-        AST* right = parseTerm(parser, scope);
+        AST* right = parseTerm(parser);
 
         AST* left = root;
     
@@ -309,10 +336,10 @@ AST* parseComparison(Parser* parser, Scope* scope) {
 }
 
 // TERM → FACTOR (('+' | '-') FACTOR)*;
-AST* parseTerm(Parser* parser, Scope* scope) {
+AST* parseTerm(Parser* parser) {
     printf("Parsing Term\n");
 
-    AST* root = parseFactor(parser, scope);
+    AST* root = parseFactor(parser);
 
     while(tokenMatchesTypes(
         parser,
@@ -330,7 +357,7 @@ AST* parseTerm(Parser* parser, Scope* scope) {
         }
 
 
-        AST* right = parseFactor(parser, scope);
+        AST* right = parseFactor(parser);
         AST* left = root;
 
         root = initAST(AST::ASTType::BINARY_EXPRESSION);
@@ -345,10 +372,10 @@ AST* parseTerm(Parser* parser, Scope* scope) {
 }
 
 // FACTOR → UNARY (('/' | '*') UNARY)*;
-AST* parseFactor(Parser* parser, Scope* scope) {
+AST* parseFactor(Parser* parser) {
     printf("Parsing Factor...\n");
 
-    AST* root = parseUnary(parser, scope);
+    AST* root = parseUnary(parser);
 
     while(tokenMatchesTypes(
         parser,
@@ -364,7 +391,7 @@ AST* parseFactor(Parser* parser, Scope* scope) {
             default: printf("\033[1mERROR: Unknow factor operator '%s'!\033[0m\n", operation->value); exit(-1);
         }
 
-        AST* right = parseUnary(parser, scope);
+        AST* right = parseUnary(parser);
 
         AST* left = root;
 
@@ -381,7 +408,7 @@ AST* parseFactor(Parser* parser, Scope* scope) {
 }
 
 // UNARY → ('!' | '-')UNARY | PRIMARY
-AST* parseUnary(Parser* parser, Scope* scope) {
+AST* parseUnary(Parser* parser) {
     printf("Parsing Unary...\n");
 
     while(tokenMatchesTypes(
@@ -405,19 +432,19 @@ AST* parseUnary(Parser* parser, Scope* scope) {
                 exit(-1);
                 break;
         }
-        AST* right_operand = parseUnary(parser, scope);
+        AST* right_operand = parseUnary(parser);
         AST* root = initAST(AST::ASTType::UNARY_EXPRESSION);
         root->unary_binary_exp_operation = op;
         root->unary_binary_exp_right_operand = right_operand;
         return root;
     }
-    AST* tmp = parsePrimary(parser, scope);
+    AST* tmp = parsePrimary(parser);
     printf("Parsed Unary!\n");
     return tmp;
 }
 
 // PRIMARY → NUMBER | STRING | 'true' | 'false' | 'nil | IDENTIFIER | '('EXPRESSION')';
-AST* parsePrimary(Parser* parser, Scope* scope) {
+AST* parsePrimary(Parser* parser) {
     printf("Parsing Primary\n");
 
     if(parser->current_token->token_type == Token::TokenType::IDENTIFIER) {
@@ -455,7 +482,7 @@ AST* parsePrimary(Parser* parser, Scope* scope) {
 
     if(parser->current_token->token_type == Token::TokenType::OPEN_PARENTESIS) {
         parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
-        AST* exp = parseExpression(parser, scope);
+        AST* exp = parseExpression(parser);
         parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
         printf("Parsed Primary as Group!\n");
 

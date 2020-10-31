@@ -44,7 +44,8 @@ struct AST {
         UNARY_EXPRESSION,
         IDENTIFIER,
         VARIABLES_DECLARATIONS,
-        COMPOUND,
+        STATEMETNS,
+        BLOCK,
         ASSIGNMENT,
     };
 
@@ -77,9 +78,12 @@ struct AST {
     AST* assignment_right;
     AST* assignment_left;
 
-    //COMPOUND
-    AST** compound_list;
-    unsigned int compound_list_count;
+    // BLOCK
+    AST* block_statements;
+
+    //STATEMETNS
+    AST** statements_list;
+    unsigned int statements_list_count;
 };
 
 AST* initAST(AST::ASTType type);
