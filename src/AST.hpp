@@ -51,6 +51,9 @@ struct AST {
         WHILE,
         DO_WHILE,
         FOR,
+        FUNCTION_CALL,
+        FUNCTION_DECLARATION,
+        FUNCTION_ARGUMENT,
     };
 
     //AST data:
@@ -73,9 +76,9 @@ struct AST {
     char* identifier;
 
     // VARIABLES_DECLARATIONS
-    char** vars_def_name;
-    BuildInType vars_def_type;
+    AST** vars_def_name;
     AST** vars_def_value;
+    BuildInType vars_def_type;
     unsigned int vars_def_count;
 
     // ASSIGNMENT
@@ -107,6 +110,22 @@ struct AST {
     AST* for_statement2;
     AST* for_statement3;
     AST* for_body;
+
+    //FUNCTION CALL
+    AST* func_call_identifier;
+    AST** func_call_arguments;
+    unsigned int func_call_arguments_count;
+    
+    //FUNCTION DEFINITION
+    BuildInType func_dec_return_type;
+    AST* func_dec_identifier;
+    AST* func_dec_body;
+    AST** func_dec_arguments;
+    unsigned int func_dec_arguments_count;
+
+    //FUNCTION_ARGUMENT
+    BuildInType func_argument_type;
+    AST* func_argument_id;
 };
 
 AST* initAST(AST::ASTType type);

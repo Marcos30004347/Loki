@@ -1,0 +1,30 @@
+struct vertex {
+    vector3 position: VERTEX_POSITION;
+};
+
+struct pixel {
+    float4 color: PIXEL_COLOR;
+};
+
+
+void vertex(vector3 position : CHANNEL0, vector3 normals) {
+    float4 color = (0.1, 0.1, 0.1, 0.1);
+    float2 uv = (0.1, 0.1);
+
+
+    vertex.position = position;
+
+    color -> CHANEL2;
+    uv -> CHANEL3;
+}
+
+
+pixel fragment(float4 color, vector2 uv) {
+    pixel.texture = texture2D(texture, uv);
+    pixel.color = color; 
+}
+
+
+void compute() {
+
+}

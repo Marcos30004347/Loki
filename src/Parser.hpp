@@ -15,11 +15,17 @@ Parser* initParser(Lexer* lexer);
 
 void parserReadToken(Parser* parser, Token::TokenType type);
 
-// PROGRAM → DECLARATION* EOF
+// START → PROGRAM* EOF
 AST* parseStart(Parser* parser);
 
-// DECLARATION → VAR_DECL | STATEMENT;
+// PROGRAM → FUNC_DECL | VAR_DECL 
+AST* parseProgram(Parser* parser);
+
+// SCOPE_DECLARATION →  VAR_DECL | STATEMENT
 AST* parseDeclaration(Parser* parser);
+
+// FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER ( "," IDENTIFIER IDENTIFIER )*')' BLOCK
+AST* parseFunctionDeclaration(Parser* parser);
 
 // STATEMENT → EXPRESSION';' | IF | FOR | BLOCK
 AST* parseStatement(Parser* parser);
@@ -60,10 +66,16 @@ AST* parseTerm(Parser* parser);
 // FACTOR → UNARY (('/' | '*') UNARY)*
 AST* parseFactor(Parser* parser);
 
-// UNARY → ('!' | '-')UNARY | PRIMARY
+// UNARY → ('!' | '-')UNARY | CALL
 AST* parseUnary(Parser* parser);
 
-// PRIMARY → NUMBER | STRING | 'true' | 'false' | 'nil | '('EXPRESSION')'
+// CALL → PRIMARY('('ARGUMENTS?')')?
+AST* parseCall(Parser* parser);
+
+// ARGUMENTS → EXPRESSION (','EXPRESSION)*
+AST* parseArguments(Parser* parser);
+
+// PRIMARY → NUMBER | IDENTIFIER | STRING | 'true' | 'false' | 'nil | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser);
 
 

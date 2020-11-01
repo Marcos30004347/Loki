@@ -17,6 +17,29 @@ void addStatement(AST* statements, AST* item) {
     statements->statements_list[ statements->statements_list_count - 1] = item;
 }
 
+void addFuncCallArgument(AST* func_call, AST* argument) {
+    func_call->func_call_arguments_count += 1;
+    
+    func_call->func_call_arguments = (AST**)realloc(
+        func_call->func_call_arguments,
+        func_call->func_call_arguments_count * sizeof(AST*)
+    );
+    
+    func_call->func_call_arguments[ func_call->func_call_arguments_count - 1] = argument;
+}
+
+void addFuncDecArgument(AST* func_dec, AST* argument) {
+    func_dec->func_dec_arguments_count += 1;
+    
+    func_dec->func_dec_arguments = (AST**)realloc(
+        func_dec->func_dec_arguments,
+        func_dec->func_dec_arguments_count * sizeof(AST*)
+    );
+    
+    func_dec->func_dec_arguments[func_dec->func_dec_arguments_count - 1] = argument;
+}
+
+
 bool isBuiltInType(Token* tok) {
     if(strcmp(tok->value, "int") == 0) return true;
     if(strcmp(tok->value, "void") == 0) return true;
@@ -27,7 +50,7 @@ bool isBuiltInType(Token* tok) {
 void increaseVariableDefinitions(AST* variables) {
     variables->vars_def_count += 1;
     
-    variables->vars_def_name = (char**)realloc(
+    variables->vars_def_name = (AST**)realloc(
         variables->vars_def_name,
         variables->vars_def_count * sizeof(char*)
     );
@@ -56,7 +79,7 @@ AST* getTypeDefaultValue(BuildInType type) {
     return nullptr;
 }
 
-void addVariableDefinitionName(AST* variables, char* name) {
+void addVariableDefinitionName(AST* variables, AST* name) {
     variables->vars_def_name[ variables->vars_def_count - 1] = name;
 }
 
@@ -122,23 +145,61 @@ void parserReadToken(Parser* parser, Token::TokenType type) {
     }
 }
 
-// PROGRAM → STATEMENT* EOF
+// PROGRAM → SCOPE_DECLARATION* EOF
 AST* parseStart(Parser* parser) {
     AST* root = initAST(AST::ASTType::STATEMETNS);
 
     while(parser->current_token->token_type != Token::TokenType::TOKEN_EOF) {
-        AST* statement = parseDeclaration(parser);
+        AST* statement = parseProgram(parser);
         addStatement(root, statement);
     }
 
     return root;
 }
 
-// DECLARATION → VAR_DECL | STATEMENT;
+// GLOBAL_DECLARATION → FUNC_DECL | VAR_DECL
+AST* parseProgram(Parser* parser) {
+    printf("Parsing Program...\n");
+
+    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isBuiltInType(parser->current_token)) {
+        // Save parser and lexer state
+        int i = parser->lexer->i;
+        char c = parser->lexer->c;
+
+        Token* current = parser->current_token;
+        Token* previous = parser->previous_token;
+
+        parserReadToken(parser, Token::TokenType::IDENTIFIER);
+        parserReadToken(parser, Token::TokenType::IDENTIFIER);
+        Token* tok = parser->current_token;
+        
+        // Restore parser and lexer state
+        parser->lexer->i = i;
+        parser->lexer->c = c;
+        parser->current_token = current;
+        parser->previous_token = previous;
+        if(tok->token_type == Token::TokenType::OPEN_PARENTESIS) {
+            AST* function = parseFunctionDeclaration(parser);
+            printf("Parsed Program as Function Declaration!\n");
+            return function;
+        } else {
+            AST* var_decl = parseVariableDeclaration(parser);
+            parserReadToken(parser, Token::TokenType::SEMICOLON);
+            printf("Parsed Program as Variable Declaration!\n");
+            return var_decl;
+        }
+    }
+
+    printf("\033[1mERROR: Unknow Global declaration '%s'!\033[0m\n", parser->current_token->value);
+    exit(-1);
+    return nullptr;
+}
+
+
+// SCOPE_DECLARATION →  VAR_DECL | STATEMENT;
 AST* parseDeclaration(Parser* parser) {
     printf("Parsing Declaration...\n");
 
-    // KKKKK thats strange
     if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isBuiltInType(parser->current_token)) {
         AST* var_decl = parseVariableDeclaration(parser);
         parserReadToken(parser, Token::TokenType::SEMICOLON);
@@ -151,6 +212,62 @@ AST* parseDeclaration(Parser* parser) {
     printf("Parsed Declaration!\n");
     return statement;
 }
+
+// FUNC_DECL → IDENTIFIER IDENTIFIER'('(IDENTIFIER IDENRIFIER)? (',' IDENTIFIER IDENTIFIER)*')' BLOCK
+AST* parseFunctionDeclaration(Parser* parser) {
+    AST* root = initAST(AST::ASTType::FUNCTION_DECLARATION);
+    BuildInType return_type = getTypeFromId(parser->current_token->value);
+    root->func_dec_return_type = return_type;
+    printf("0 %s\n", parser->current_token->value);
+    parserReadToken(parser, Token::TokenType::IDENTIFIER);
+    printf("1 %s\n", parser->current_token->value);
+    root->func_dec_identifier = parsePrimary(parser);
+    parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+    if(parser->current_token->token_type != Token::TokenType::CLOSE_PARENTESIS) {
+        // IDENTIFIER IDEDNTIFIER
+        AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
+        BuildInType type = getTypeFromId(parser->current_token->value);
+        parserReadToken(parser, Token::TokenType::IDENTIFIER);
+        AST* identifier = parsePrimary(parser);
+        
+        if(identifier->type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", identifier->type);
+            exit(-1);
+        }
+
+        argument->func_argument_id = identifier;
+        argument->func_argument_type = type;
+    
+        addFuncDecArgument(root, argument);
+
+
+        // (','IDENTIFIER IDEDNTIFIER)*
+        while(parser->current_token->token_type == Token::TokenType::COMMA) {
+            parserReadToken(parser, Token::TokenType::COMMA);
+            AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
+            BuildInType type = getTypeFromId(parser->current_token->value);
+            parserReadToken(parser, Token::TokenType::IDENTIFIER);
+
+            AST* identifier = parsePrimary(parser);
+            
+            if(identifier->type != AST::ASTType::IDENTIFIER) {
+                printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", identifier->type);
+                exit(-1);
+
+            }
+            argument->func_argument_id = identifier;
+            argument->func_argument_type = type;
+            addFuncDecArgument(root, argument);
+        }
+    }
+
+    parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+    root->func_dec_body = parseBlock(parser);
+    
+    // TODO check return statement
+    return root;
+}
+
 
 // STATEMENT → EXPRESSION_STATEMENT | IF | WHILE | DO_WHILE | FOR |  BLOCK
 AST* parseStatement(Parser* parser) {
@@ -297,7 +414,7 @@ AST* parseFor(Parser* parser) {
     return for_sttmnt;
 }
 
-// BLOCK → '{' DECLARATION '}'
+// BLOCK → '{' SCOPE_DECLARATION '}'
 AST* parseBlock(Parser* parser) {
     AST* block = initAST(AST::ASTType::BLOCK);
 
@@ -315,13 +432,18 @@ AST* parseVariableDeclaration(Parser* parser) {
 
     char* type_id = copyString(parser->current_token->value);
     parserReadToken(parser, Token::TokenType::IDENTIFIER);
-    char* id = copyString(parser->current_token->value);
-    parserReadToken(parser, Token::TokenType::IDENTIFIER);
+    AST* identifier = parsePrimary(parser);
+
+    if(identifier->type != AST::ASTType::IDENTIFIER) {
+        printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->type);
+        exit(-1);
+
+    }
 
     variables_definitions->vars_def_type = getTypeFromId(type_id);
 
     increaseVariableDefinitions(variables_definitions);
-    addVariableDefinitionName(variables_definitions, id);
+    addVariableDefinitionName(variables_definitions, identifier);
 
 
     if(parser->current_token->token_type == Token::TokenType::EQUALS) {
@@ -336,11 +458,16 @@ AST* parseVariableDeclaration(Parser* parser) {
         printf("Parsed Compound Variable Definition!\n");
         parserReadToken(parser, Token::TokenType::COMMA);
 
-        char* id = copyString(parser->current_token->value);
-        parserReadToken(parser, Token::TokenType::IDENTIFIER);
+        AST* identifier = parsePrimary(parser);
+
+        if(identifier->type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->type);
+            exit(-1);
+
+        }
     
         increaseVariableDefinitions(variables_definitions);
-        addVariableDefinitionName(variables_definitions, id);
+        addVariableDefinitionName(variables_definitions, identifier);
 
 
         if(parser->current_token->token_type == Token::TokenType::EQUALS) {
@@ -492,6 +619,41 @@ AST* parseTerm(Parser* parser) {
 
     return root;
 }
+
+// CALL → PRIMARY('('ARGUMENTS?')')?
+AST* parseCall(Parser* parser) {
+    AST* root = parsePrimary(parser);
+
+    if(root->type == AST::ASTType::IDENTIFIER) {
+        // Function call
+        // TODO: Maybe this is a good spot to check if the function is
+        // making a call to a defined function
+        AST* func_call = initAST(AST::ASTType::FUNCTION_CALL);
+        func_call->func_call_identifier = root;
+    
+        parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+        if(parser->current_token->token_type != Token::TokenType::CLOSE_PARENTESIS) {
+            // Exist arguments fot the call
+            AST* argument = parseExpression(parser);
+            addFuncCallArgument(func_call, argument);
+
+            while(parser->current_token->token_type == Token::TokenType::COMMA) {
+                parserReadToken(parser, Token::TokenType::COMMA);
+                AST* argument = parseExpression(parser);
+                addFuncCallArgument(func_call, argument);
+            }
+        }
+        parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+        root = func_call;
+    } else {
+        // Variable Access
+        // TODO: Maybe this is a good spot to check if the variable is
+        // defined.
+    }
+
+    return root;
+}
+
 
 // FACTOR → UNARY (('/' | '*') UNARY)*;
 AST* parseFactor(Parser* parser) {

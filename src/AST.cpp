@@ -81,6 +81,23 @@ AST* initAST(AST::ASTType type) {
     ast->for_statement2 = nullptr;
     ast->for_statement3 = nullptr;
     ast->for_body = nullptr;
+
+    // FUNCTION CALL
+    ast->func_call_identifier = nullptr;
+    ast->func_call_arguments = nullptr;
+    ast->func_call_arguments_count = 0;
+
+    // FUNCTION DECLARATION
+    ast->func_dec_return_type = BuildInType::TYPE_VOID;
+    ast->func_dec_identifier = nullptr;
+    ast->func_dec_arguments = nullptr;
+    ast->func_dec_arguments_count = 0;
+    ast->func_dec_body = nullptr;
+
+
+    //FUNCTION_ARGUMENT
+    ast->func_argument_type = BuildInType::TYPE_VOID;
+    ast->func_argument_id = nullptr;
 }
 
 void printAST(AST* root, int tabs) {
@@ -97,6 +114,28 @@ void printAST(AST* root, int tabs) {
         printAST(root->for_body, tabs + 3);
     }
 
+    if(root->type == AST::ASTType::FUNCTION_DECLARATION) {
+        printf("%*cFUNCTION DECLARATION:\n", tabs, ' ');
+        printf("%*cFUNCTION RETURN TYPE = '%i'\n", tabs, ' ', root->func_dec_return_type);
+        printf("%*cFUNCTION IDENTIFIER:\n", tabs, ' ');
+
+        printAST( root->func_dec_identifier, tabs+3);
+
+        for(int i=0; i<root->func_dec_arguments_count; i++) {
+            printf("%*cARGUMENT %i\n", tabs, ' ', i);
+            printAST(root->func_dec_arguments[i], tabs+3);
+        }
+
+        printf("%*cBODY:\n", tabs, ' ');
+        printAST(root->func_dec_body, tabs+3);
+    }
+
+    if(root->type == AST::ASTType::FUNCTION_ARGUMENT) {
+        printf("%*cFUNCTION ARGUMENT:\n", tabs, ' ');
+        printf("%*cTYPE = '%i'\n", tabs, ' ', root->func_argument_type);
+        printf("%*cFUNCTION INDENTIFIER:\n", tabs, ' ');
+        printAST(root->func_argument_id, tabs + 3);
+    }
 
     if(root->type == AST::ASTType::IF) {
         printf("%*cIF:\n", tabs, ' ');
@@ -149,7 +188,8 @@ void printAST(AST* root, int tabs) {
         printf("%*cVARIABLES DECLARATIONS:\n", tabs, ' ');
         printf("%*cTYPE: %s\n", tabs, ' ', BuildInTypesNames[root->vars_def_type]);
         for(int i=0; i<root->vars_def_count; i++) {
-            printf("%*cVARIABLE NAME = %s\n", tabs, ' ', root->vars_def_name[i]);
+            printf("%*cVARIABLE IDENTIFIER:\n", tabs, ' ');
+            printAST(root->vars_def_name[i], tabs+ 3);
             printf("%*cVARIABLE VALUE:\n", tabs, ' ');
             printAST(root->vars_def_value[i], tabs + 3);
         }

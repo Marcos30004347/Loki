@@ -1,0 +1,3 @@
+int main(int arg0, int arg2) {
+    int i = 3 + 3;
+}
