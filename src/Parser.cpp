@@ -570,7 +570,7 @@ AST* parsePrimary(Parser* parser) {
     printf("Parsing Primary\n");
 
     if(parser->current_token->token_type == Token::TokenType::IDENTIFIER) {
-        if(isIdentifier(parser->current_token)) {
+        if(!isBuiltInType(parser->current_token)) {
             AST* root = initAST(AST::ASTType::IDENTIFIER);
             root->identifier = parser->current_token->value;
             parserReadToken(parser, Token::TokenType::IDENTIFIER);
