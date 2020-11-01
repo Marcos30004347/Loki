@@ -41,6 +41,7 @@ struct Token {
         WHILE,
         DO,
         ELSE,
+        FOR,
         RETURN,
     };
 

@@ -1,0 +1,7 @@
+if(3 == 3) {
+    int teste = 4;
+} else if(4 == 5) {
+    int teste = 1 + 1;
+} else {
+    teste = teste2 == 1;
+}

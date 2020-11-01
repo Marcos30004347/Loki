@@ -75,9 +75,28 @@ AST* initAST(AST::ASTType type) {
     // DO_WHILE
     ast->do_while_statements = nullptr;
     ast->do_while_condition = nullptr;
+
+    // FOR
+    ast->for_statement1 = nullptr;
+    ast->for_statement2 = nullptr;
+    ast->for_statement3 = nullptr;
+    ast->for_body = nullptr;
 }
 
 void printAST(AST* root, int tabs) {
+
+    if(root->type == AST::ASTType::FOR) {
+        printf("%*cFOR:\n", tabs, ' ');
+        printf("%*cSTATEMENT0:\n", tabs, ' ');
+        printAST(root->for_statement1, tabs + 3);
+        printf("%*cSTATEMENT1:\n", tabs, ' ');
+        printAST(root->for_statement2, tabs + 3);
+        printf("%*cSTATEMENT0:\n", tabs, ' ');
+        printAST(root->for_statement3, tabs + 3);
+        printf("%*cBODY:\n", tabs, ' ');
+        printAST(root->for_body, tabs + 3);
+    }
+
 
     if(root->type == AST::ASTType::IF) {
         printf("%*cIF:\n", tabs, ' ');

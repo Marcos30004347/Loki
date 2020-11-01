@@ -1,0 +1,8 @@
+Add += operator
+Add -= operator
+Add /= operator
+Add *= operator
+Add ++ operator
+Add -- operator
+
+Add more types...

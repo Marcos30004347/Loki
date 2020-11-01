@@ -17,12 +17,12 @@ void addStatement(AST* statements, AST* item) {
     statements->statements_list[ statements->statements_list_count - 1] = item;
 }
 
-bool isIdentifier(Token* tok) {
-    if(strcmp(tok->value, "int") == 0) return false;
-    if(strcmp(tok->value, "void") == 0) return false;
+bool isBuiltInType(Token* tok) {
+    if(strcmp(tok->value, "int") == 0) return true;
+    if(strcmp(tok->value, "void") == 0) return true;
 
-    return true;
-}   
+    return false;
+}
 
 void increaseVariableDefinitions(AST* variables) {
     variables->vars_def_count += 1;
@@ -138,9 +138,11 @@ AST* parseStart(Parser* parser) {
 AST* parseDeclaration(Parser* parser) {
     printf("Parsing Declaration...\n");
 
-    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && !isIdentifier(parser->current_token)) {
+    // KKKKK thats strange
+    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isBuiltInType(parser->current_token)) {
         AST* var_decl = parseVariableDeclaration(parser);
-        printf("Parsed Statement!\n");
+        parserReadToken(parser, Token::TokenType::SEMICOLON);
+        printf("Parsed Statement as Variable Declaration!\n");
         return var_decl;
     }
 
@@ -150,7 +152,7 @@ AST* parseDeclaration(Parser* parser) {
     return statement;
 }
 
-// STATEMENT → EXPRESSION_STATEMENT | IF | BLOCK
+// STATEMENT → EXPRESSION_STATEMENT | IF | WHILE | DO_WHILE | FOR |  BLOCK
 AST* parseStatement(Parser* parser) {
     printf("Parsing Statement...\n");
 
@@ -177,7 +179,15 @@ AST* parseStatement(Parser* parser) {
         return ifsttmnt;
     }
 
-    AST* exp_sttmnt = parseExpressionStatement(parser);
+    if(parser->current_token->token_type == Token::TokenType::FOR) {
+        AST* ifsttmnt = parseFor(parser);
+        printf("Parsed Statement as For Statement!\n");
+        return ifsttmnt;
+    }
+
+    AST* exp_sttmnt = parseExpression(parser);
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+
     printf("Parsed Statement as Expression!\n");
     return exp_sttmnt;
 }
@@ -258,6 +268,34 @@ AST* parseDoWhile(Parser* parser) {
     return do_while_sttmnt;
 }
 
+// FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
+AST* parseFor(Parser* parser) {
+    parserReadToken(parser, Token::TokenType::FOR);
+    AST* for_sttmnt = initAST(AST::ASTType::FOR);
+    parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
+
+    AST* statement1 = nullptr;
+    
+    // KKKKK thats strange
+    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isBuiltInType(parser->current_token)) {
+        printf("ACTUALY GET THERE\n");
+        statement1 = parseVariableDeclaration(parser);
+    } else statement1 = parseExpression(parser);
+
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+    AST* statement2 = parseExpression(parser);
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+    AST* statement3 = parseExpression(parser);
+
+
+    for_sttmnt->for_statement1 = statement1;
+    for_sttmnt->for_statement2 = statement2;
+    for_sttmnt->for_statement3 = statement3;
+
+    parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
+    for_sttmnt->for_body = parseStatement(parser);
+    return for_sttmnt;
+}
 
 // BLOCK → '{' DECLARATION '}'
 AST* parseBlock(Parser* parser) {
@@ -313,17 +351,8 @@ AST* parseVariableDeclaration(Parser* parser) {
         }
     }
 
-    parserReadToken(parser, Token::TokenType::SEMICOLON);
-    
     printf("Parsed Variable Definition!\n");
     return variables_definitions;
-}
-
-// EXPRESSION_STATEMENT → EXPRESSION';'
-AST* parseExpressionStatement(Parser* parser) {
-    AST* expression = parseExpression(parser);
-    parserReadToken(parser, Token::TokenType::SEMICOLON);
-    return expression;
 }
 
 // EXPRESSION → ASSIGNMENT;

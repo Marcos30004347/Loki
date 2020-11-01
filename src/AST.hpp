@@ -50,6 +50,7 @@ struct AST {
         IF,
         WHILE,
         DO_WHILE,
+        FOR,
     };
 
     //AST data:
@@ -100,6 +101,12 @@ struct AST {
     // DO_WHILE
     AST* do_while_statements;
     AST* do_while_condition;
+
+    // FOR
+    AST* for_statement1;
+    AST* for_statement2;
+    AST* for_statement3;
+    AST* for_body;
 };
 
 AST* initAST(AST::ASTType type);

@@ -21,8 +21,11 @@ AST* parseStart(Parser* parser);
 // DECLARATION → VAR_DECL | STATEMENT;
 AST* parseDeclaration(Parser* parser);
 
-// STATEMENT → EXPRESSION_STATEMENT | IF | BLOCK
+// STATEMENT → EXPRESSION';' | IF | FOR | BLOCK
 AST* parseStatement(Parser* parser);
+
+// FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
+AST* parseFor(Parser* parser);
 
 // IF → 'if' '(' EXPRESSION ')' STATEMENT (else STATEMENT)? 
 AST* parseIf(Parser* parser);
@@ -39,16 +42,13 @@ AST* parseBlock(Parser* parser);
 // VAR_DECL → IDENTIFIER (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'
 AST* parseVariableDeclaration(Parser* parser);
 
-// EXPRESSION_STATEMENT → EXPRESSION';'
-AST* parseExpressionStatement(Parser* parser);
-
 // EXPRESSION → ASSIGNMENT
 AST* parseExpression(Parser* parser);
 
 // ASSIGNMENT → IDENTIFIER '=' ASSIGNMENT | EQUALITY
 AST* parseAssignment(Parser* parser);
 
-// EQUALITY → COMPARISON (('!=' | '==') COMPARISON)*      ex: 1 == 1 != 3 == 3;
+// EQUALITY → COMPARISON (('!=' | '==') COMPARISON)*
 AST* parseEquality(Parser* parser);
 
 // COMPARISON → TERM (('>' | '>=' | '<' | '<=') TERM)* 
