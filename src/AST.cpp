@@ -98,6 +98,13 @@ AST* initAST(AST::ASTType type) {
     //FUNCTION_ARGUMENT
     ast->func_argument_type = BuildInType::TYPE_VOID;
     ast->func_argument_id = nullptr;
+
+    //RETURN
+    ast->return_value = nullptr;
+
+    //PROGRAM
+    ast->program_declarations = nullptr;
+    ast->program_declarations_count = 0;
 }
 
 void printAST(AST* root, int tabs) {
@@ -114,9 +121,15 @@ void printAST(AST* root, int tabs) {
         printAST(root->for_body, tabs + 3);
     }
 
+    if(root->type == AST::ASTType::RETURN) {
+        printf("%*cRETURN:\n", tabs, ' ');
+        printf("%*cRETURN VALUE:\n", tabs, ' ');
+        printAST( root->return_value, tabs+3);
+    }
+
     if(root->type == AST::ASTType::FUNCTION_DECLARATION) {
         printf("%*cFUNCTION DECLARATION:\n", tabs, ' ');
-        printf("%*cFUNCTION RETURN TYPE = '%i'\n", tabs, ' ', root->func_dec_return_type);
+        printf("%*cFUNCTION RETURN TYPE = '%s'\n", tabs, ' ', BuildInTypesNames[root->func_dec_return_type]);
         printf("%*cFUNCTION IDENTIFIER:\n", tabs, ' ');
 
         printAST( root->func_dec_identifier, tabs+3);
@@ -180,6 +193,14 @@ void printAST(AST* root, int tabs) {
         }
     }
     
+
+    if(root->type == AST::ASTType::PROGRAM) {
+        printf("%*cPROGRAM:\n", tabs, ' ');
+        for(int i=0; i<root->program_declarations_count; i++) {
+            printf("%*cDECLARATION %i:\n", tabs, ' ', i);
+            printAST(root->program_declarations[i], tabs + 3);
+        }
+    }
     if(root->type == AST::ASTType::IDENTIFIER) {
         printf("%*cIDENTIFIER = '%s'\n", tabs, ' ', root->identifier);
     }

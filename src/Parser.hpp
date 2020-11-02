@@ -21,13 +21,16 @@ AST* parseStart(Parser* parser);
 // PROGRAM → FUNC_DECL | VAR_DECL 
 AST* parseProgram(Parser* parser);
 
-// SCOPE_DECLARATION →  VAR_DECL | STATEMENT
+// DECLARATION →  VAR_DECL | STATEMENT
 AST* parseDeclaration(Parser* parser);
+
+// RETURN → 'return' EXPRESSION? ';'
+AST* parseReturn(Parser* parser);
 
 // FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER ( "," IDENTIFIER IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
 
-// STATEMENT → EXPRESSION';' | IF | FOR | BLOCK
+// STATEMENT → EXPRESSION';' | IF | FOR | BLOCK | RETURN
 AST* parseStatement(Parser* parser);
 
 // FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
@@ -42,7 +45,7 @@ AST* parseWhile(Parser* parser);
 // DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
 AST* parseDoWhile(Parser* parser);
 
-// BLOCK → '{' DECLARATION '}'
+// BLOCK → '{' DECLARATION* '}'
 AST* parseBlock(Parser* parser);
 
 // VAR_DECL → IDENTIFIER (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'

@@ -17,6 +17,18 @@ void addStatement(AST* statements, AST* item) {
     statements->statements_list[ statements->statements_list_count - 1] = item;
 }
 
+void addProgramDeclaration(AST* program, AST* declaration) {
+    program->program_declarations_count += 1;
+    
+    program->program_declarations = (AST**)realloc(
+        program->program_declarations,
+        program->program_declarations_count * sizeof(AST*)
+    );
+    
+    program->program_declarations[ program->program_declarations_count - 1] = declaration;
+}
+
+
 void addFuncCallArgument(AST* func_call, AST* argument) {
     func_call->func_call_arguments_count += 1;
     
@@ -60,6 +72,7 @@ void increaseVariableDefinitions(AST* variables) {
         variables->vars_def_count * sizeof(AST*)
     );
 }
+
 AST* getTypeDefaultValue(BuildInType type) {
     AST* default_value = nullptr; 
 
@@ -145,16 +158,16 @@ void parserReadToken(Parser* parser, Token::TokenType type) {
     }
 }
 
-// PROGRAM → SCOPE_DECLARATION* EOF
+// PROGRAM → DECLARATION* EOF
 AST* parseStart(Parser* parser) {
-    AST* root = initAST(AST::ASTType::STATEMETNS);
+    AST* program = initAST(AST::ASTType::PROGRAM);
 
     while(parser->current_token->token_type != Token::TokenType::TOKEN_EOF) {
-        AST* statement = parseProgram(parser);
-        addStatement(root, statement);
+        AST* declaration = parseProgram(parser);
+        addProgramDeclaration(program, declaration);
     }
 
-    return root;
+    return program;
 }
 
 // GLOBAL_DECLARATION → FUNC_DECL | VAR_DECL
@@ -196,7 +209,7 @@ AST* parseProgram(Parser* parser) {
 }
 
 
-// SCOPE_DECLARATION →  VAR_DECL | STATEMENT;
+// DECLARATION →  VAR_DECL | STATEMENT
 AST* parseDeclaration(Parser* parser) {
     printf("Parsing Declaration...\n");
 
@@ -213,14 +226,27 @@ AST* parseDeclaration(Parser* parser) {
     return statement;
 }
 
+// RETURN → 'return' EXPRESSION?';'
+AST* parseReturn(Parser* parser) {
+    AST* return_sttmnt = initAST(AST::ASTType::RETURN);
+    parserReadToken(parser, Token::TokenType::RETURN);
+
+    if(parser->current_token->token_type != Token::TokenType::SEMICOLON) {
+        return_sttmnt->return_value = parseExpression(parser);
+    } else {
+        return_sttmnt->return_value = initAST(AST::ASTType::NO_OP);
+    }
+
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+    return return_sttmnt;
+}
+
 // FUNC_DECL → IDENTIFIER IDENTIFIER'('(IDENTIFIER IDENRIFIER)? (',' IDENTIFIER IDENTIFIER)*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser) {
     AST* root = initAST(AST::ASTType::FUNCTION_DECLARATION);
     BuildInType return_type = getTypeFromId(parser->current_token->value);
     root->func_dec_return_type = return_type;
-    printf("0 %s\n", parser->current_token->value);
     parserReadToken(parser, Token::TokenType::IDENTIFIER);
-    printf("1 %s\n", parser->current_token->value);
     root->func_dec_identifier = parsePrimary(parser);
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
     if(parser->current_token->token_type != Token::TokenType::CLOSE_PARENTESIS) {
@@ -264,14 +290,43 @@ AST* parseFunctionDeclaration(Parser* parser) {
     parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
     root->func_dec_body = parseBlock(parser);
     
+    int returnStatementIndex = 0;
+    bool returnStatementFound = false;
+    
+    for(int i=0; i<root->func_dec_body->block_statements->statements_list_count; i++) {
+
+        if(root->func_dec_body->block_statements->statements_list[i]->type == AST::ASTType::RETURN) {
+            returnStatementFound = true;
+            returnStatementIndex = i;
+            break;
+        }
+    }
+    if(return_type != BuildInType::TYPE_VOID) {
+        if(returnStatementFound) {
+            if(returnStatementIndex < root->func_dec_body->block_statements->statements_list_count - 1) {
+                printf("\033[33mWARNING: Return Statement reached bedore end of function %s!\033[0m\n", root->func_dec_identifier->identifier);
+            }
+        } else {
+            printf("\033[33mWARNING: Return Statement not found for function %s!\033[0m\n", root->func_dec_identifier->identifier);
+        }
+    } else {
+        if(returnStatementFound && root->func_dec_body->block_statements->statements_list[returnStatementIndex]->return_value->type != AST::ASTType::NO_OP) {
+            printf("\033[33mWARNING: Return Statement returning value in void function %s!\033[0m\n", root->func_dec_identifier->identifier);
+        }
+    }
     // TODO check return statement
     return root;
 }
 
 
-// STATEMENT → EXPRESSION_STATEMENT | IF | WHILE | DO_WHILE | FOR |  BLOCK
+// STATEMENT → EXPRESSION_STATEMENT | IF | WHILE | DO_WHILE | FOR |  BLOCK | RETURN
 AST* parseStatement(Parser* parser) {
     printf("Parsing Statement...\n");
+    AST* root = initAST(AST::ASTType::STATEMETNS);
+
+    if(parser->current_token->token_type == Token::TokenType::RETURN) {
+        return parseReturn(parser);
+    }
 
     if(parser->current_token->token_type == Token::TokenType::OPEN_BRACKET) {
         AST* block = parseBlock(parser);
@@ -304,6 +359,8 @@ AST* parseStatement(Parser* parser) {
 
     AST* exp_sttmnt = parseExpression(parser);
     parserReadToken(parser, Token::TokenType::SEMICOLON);
+
+
 
     printf("Parsed Statement as Expression!\n");
     return exp_sttmnt;
@@ -414,12 +471,18 @@ AST* parseFor(Parser* parser) {
     return for_sttmnt;
 }
 
-// BLOCK → '{' SCOPE_DECLARATION '}'
+// BLOCK → '{' DECLARATION* '}'
 AST* parseBlock(Parser* parser) {
     AST* block = initAST(AST::ASTType::BLOCK);
 
     parserReadToken(parser, Token::TokenType::OPEN_BRACKET);
-    block->block_statements = parseDeclaration(parser);
+    AST* statements = initAST(AST::ASTType::STATEMETNS);
+
+    while (parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET) {
+        addStatement(statements, parseDeclaration(parser));
+    }
+
+    block->block_statements = statements;
     parserReadToken(parser, Token::TokenType::CLOSE_BRACKET);
     return block;
 }

@@ -44,6 +44,7 @@ struct AST {
         UNARY_EXPRESSION,
         IDENTIFIER,
         VARIABLES_DECLARATIONS,
+        PROGRAM,
         STATEMETNS,
         BLOCK,
         ASSIGNMENT,
@@ -54,6 +55,7 @@ struct AST {
         FUNCTION_CALL,
         FUNCTION_DECLARATION,
         FUNCTION_ARGUMENT,
+        RETURN,
     };
 
     //AST data:
@@ -126,6 +128,14 @@ struct AST {
     //FUNCTION_ARGUMENT
     BuildInType func_argument_type;
     AST* func_argument_id;
+
+    // RETURN
+    AST* return_value;
+
+    //PROGRAM
+    AST** program_declarations;
+    unsigned int program_declarations_count;
+
 };
 
 AST* initAST(AST::ASTType type);

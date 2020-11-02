@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 
+
 int main(int argc, char *argv[]) {
     if(argc < 2) { printf("No code given!\n"); exit(-1); }
 
