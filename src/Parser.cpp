@@ -596,11 +596,31 @@ AST* parseVariableDeclaration(Parser* parser) {
     return variables_definitions;
 }
 
-// EXPRESSION → IDENTIFIER '=' ASSIGNMENT | EQUALITY
+// EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY
 AST* parseExpression(Parser* parser) {
     AST* root = parseEquality(parser);
 
-    while(parser->current_token->token_type == Token::TokenType::EQUALS) {
+    while(
+        tokenMatchesTypes(parser,
+            Token::TokenType::EQUALS,
+            Token::TokenType::PIPE_EQUALS,
+            Token::TokenType::AMPERSAND_EQUALS,
+            Token::TokenType::DIVIDE_EQUALS,
+            Token::TokenType::MULTIPLICATION_EQUALS
+        )
+    ) {
+        AssingmentType op;
+        Token* operation = parser->previous_token;
+
+        switch (operation->token_type) {
+            case Token::TokenType::EQUALS: op = AssingmentType::ASSIGN_ASSIGN; break;
+            case Token::TokenType::PIPE_EQUALS: op = AssingmentType::ASSIGN_PIPE_ASSIGN; break;
+            case Token::TokenType::AMPERSAND_EQUALS: op = AssingmentType::ASSIGN_AMPERSAND_ASSIGN; break;
+            case Token::TokenType::DIVIDE_EQUALS: op = AssingmentType::ASSIGN_DIVIDE_ASSIGN; break;
+            case Token::TokenType::MULTIPLICATION_EQUALS: op = AssingmentType::ASSIGN_MULTIPLY_ASSIGN; break;
+            default: printf("\033[1mERROR: Unknow equality operator '%s'!\033[0m\n", operation->value); exit(-1);
+        }
+    
         parserReadToken(parser, Token::TokenType::EQUALS);
         AST* left = root;
 
@@ -611,7 +631,8 @@ AST* parseExpression(Parser* parser) {
         AST* right = parseExpression(parser);
        
         root = initAST(AST::ASTType::ASSIGNMENT);
-       
+    
+        root->assignment_type = op;
         root->assignment_left = left;
         root->assignment_right = right;
     }
@@ -648,7 +669,7 @@ AST* parseEquality(Parser* parser) {
     return root;
 }
 
-// COMPARISON → TERM (('>' | '>=' | '<' | '<=') TERM)* ;
+// COMPARISON → TERM (('>' | '>=' | '<' | '<=' | '|' | '&' | '&&' | '||' ) TERM)* 
 AST* parseComparison(Parser* parser) {
     AST* root = parseTerm(parser);
 
@@ -657,7 +678,11 @@ AST* parseComparison(Parser* parser) {
         Token::TokenType::LESS,
         Token::TokenType::GREATER,
         Token::TokenType::LESS_OR_EQUALS,
-        Token::TokenType::GREATER_OR_EQUALS
+        Token::TokenType::GREATER_OR_EQUALS,
+        Token::TokenType::PIPE,
+        Token::TokenType::PIPE_PIPE,
+        Token::TokenType::AMPERSAND,
+        Token::TokenType::AMPERSAND_AMPERSAND
     )) {
         Token* operation = parser->previous_token;
         BinaryOperation op;
@@ -666,6 +691,10 @@ AST* parseComparison(Parser* parser) {
             case Token::TokenType::GREATER: op = BinaryOperation::GREATER; break;
             case Token::TokenType::LESS_OR_EQUALS: op = BinaryOperation::LESS_OR_EQUAL; break;
             case Token::TokenType::GREATER_OR_EQUALS: op = BinaryOperation::GREATER_OR_EQUAL; break;
+            case Token::TokenType::PIPE: op = BinaryOperation::BINARY_OR; break;
+            case Token::TokenType::PIPE_PIPE: op = BinaryOperation::OR; break;
+            case Token::TokenType::AMPERSAND: op = BinaryOperation::BINARY_AND; break;
+            case Token::TokenType::AMPERSAND_AMPERSAND: op = BinaryOperation::AND; break;
             default: printf("\033[1mERROR: Unknow comparison operator '%s'!\033[0m\n", operation->value); exit(-1);
         }
 
@@ -689,16 +718,16 @@ AST* parseTerm(Parser* parser) {
 
     while(tokenMatchesTypes(
         parser,
-        Token::TokenType::ADDITION,
-        Token::TokenType::SUBTRACION
+        Token::TokenType::PLUS,
+        Token::TokenType::MINUS
     )) {
     
     
         Token* operation = parser->previous_token;
         BinaryOperation op;
         switch (operation->token_type) {
-            case Token::TokenType::ADDITION: op = BinaryOperation::ADDITION; break;
-            case Token::TokenType::SUBTRACION: op = BinaryOperation::SUBTRACTION; break;
+            case Token::TokenType::PLUS: op = BinaryOperation::ADDITION; break;
+            case Token::TokenType::MINUS: op = BinaryOperation::SUBTRACTION; break;
             default: printf("\033[1mERROR: Unknow Term operator '%s'!\033[0m\n", operation->value); exit(-1);
         }
 
@@ -783,12 +812,14 @@ AST* parseFactor(Parser* parser) {
     return root;
 }
 
-// UNARY → ('!' | '-')UNARY | PRIMARY
+// UNARY → ('!' | '-' | '++' | '--')UNARY | UNARY('++' | '--') | PRIMARY
 AST* parseUnary(Parser* parser) {
     while(tokenMatchesTypes(
         parser,
         Token::TokenType::MINUS,
-        Token::TokenType::EXCLAMATION
+        Token::TokenType::EXCLAMATION,
+        Token::TokenType::PLUSS_PLUSS,
+        Token::TokenType::MINUS_MINUS
     )) {
         UExOperation op;
 
@@ -801,6 +832,14 @@ AST* parseUnary(Parser* parser) {
                 op = UExOperation::MINUS;
                 parserReadToken(parser, Token::TokenType::MINUS);
                 break;
+            case Token::TokenType::MINUS_MINUS:
+                op = UExOperation::PRE_MINUS_MINUS;
+                parserReadToken(parser, Token::TokenType::MINUS_MINUS);
+                break;
+            case Token::TokenType::PLUSS_PLUSS:
+                op = UExOperation::PRE_ADD_ADD;
+                parserReadToken(parser, Token::TokenType::PLUSS_PLUSS);
+                break;
             default:
                 printf("\033[31mUnknow Unary operator '%s'!\033[0m\n", parser->current_token->value);
                 exit(-1);
@@ -812,7 +851,38 @@ AST* parseUnary(Parser* parser) {
         root->unary_binary_exp_right_operand = right_operand;
         return root;
     }
+
     AST* tmp = parsePrimary(parser);
+
+    while(tokenMatchesTypes(
+        parser,
+        Token::TokenType::PLUSS_PLUSS,
+        Token::TokenType::MINUS_MINUS
+    )) {
+        UExOperation op;
+
+        switch (parser->current_token->token_type) {
+            case Token::TokenType::MINUS_MINUS:
+                op = UExOperation::AFTER_MINUS_MINUS;
+                parserReadToken(parser, Token::TokenType::MINUS_MINUS);
+                break;
+            case Token::TokenType::PLUSS_PLUSS:
+                op = UExOperation::AFTER_ADD_ADD;
+                parserReadToken(parser, Token::TokenType::PLUSS_PLUSS);
+                break;
+            default:
+                printf("\033[31mUnknow Unary operator '%s'!\033[0m\n", parser->current_token->value);
+                exit(-1);
+                break;
+    
+            AST* root = initAST(AST::ASTType::UNARY_EXPRESSION);
+            root->unary_binary_exp_operation = op;
+            root->unary_binary_exp_right_operand = tmp;
+            return root;
+
+        }
+    }
+
     return tmp;
 }
 

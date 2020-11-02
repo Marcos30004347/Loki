@@ -33,7 +33,7 @@ AST* parseReturn(Parser* parser);
 // FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER ( "," IDENTIFIER IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
 
-// STATEMENT → VAR_DECL';' | EXPRESSION';' | IF | FOR | BLOCK | RETURN | BREAK | SWITCH
+// STATEMENT → VAR_DECL';' | EXPRESSION | IF | WHILE | DO_WHILE | FOR |  BLOCK | RETURN | BREAK | SWITCH
 AST* parseStatement(Parser* parser);
 
 // FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
@@ -48,7 +48,6 @@ AST* parseWhile(Parser* parser);
 // SWITCH  → 'switch' '(' EXPRESSION ')' '{' ('case' expression ':' STATEMENT? 'break'? )* ('default'':' STATEMENT? 'break'?)'}'; 
 AST* parseSwitch(Parser* parser);
 
-
 // DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
 AST* parseDoWhile(Parser* parser);
 
@@ -58,13 +57,13 @@ AST* parseBlock(Parser* parser);
 // VAR_DECL → IDENTIFIER (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'
 AST* parseVariableDeclaration(Parser* parser);
 
-// EXPRESSION → IDENTIFIER '=' ASSIGNMENT | EQUALITY
+// EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY
 AST* parseExpression(Parser* parser);
 
 // EQUALITY → COMPARISON (('!=' | '==') COMPARISON)*
 AST* parseEquality(Parser* parser);
 
-// COMPARISON → TERM (('>' | '>=' | '<' | '<=') TERM)* 
+// COMPARISON → TERM (('>' | '>=' | '<' | '<=' | '|' | '&' | '&&' | '||' ) TERM)* 
 AST* parseComparison(Parser* parser);
 
 // TERM → FACTOR (('+' | '-') FACTOR)*
@@ -73,7 +72,7 @@ AST* parseTerm(Parser* parser);
 // FACTOR → UNARY (('/' | '*') UNARY)*
 AST* parseFactor(Parser* parser);
 
-// UNARY → ('!' | '-')UNARY | CALL
+// UNARY → ('!' | '-' | '++' | '--')UNARY | UNARY('++' | '--') | PRIMARY
 AST* parseUnary(Parser* parser);
 
 // CALL → PRIMARY('('ARGUMENTS?')')?

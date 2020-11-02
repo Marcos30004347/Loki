@@ -18,6 +18,10 @@ const char* BinaryOperationNames[] = {
     "<",
     ">=",
     "<=",
+    "|",
+    "&"
+    "||",
+    "&&",
 };
 
 const char* BuildInTypesNames[] = {
@@ -62,6 +66,7 @@ AST* initAST(AST::ASTType type) {
     // ASSIGNMENT
     ast->assignment_right = nullptr;
     ast->assignment_left = nullptr;
+    ast->assignment_type = AssingmentType::ASSIGN_NONE;
 
     // IF
     ast->if_condition = nullptr;

@@ -21,6 +21,10 @@ enum BinaryOperation {
     LESS,
     GREATER_OR_EQUAL,
     LESS_OR_EQUAL,
+    BINARY_OR,
+    BINARY_AND,
+    OR,
+    AND
 };
 
 
@@ -28,12 +32,25 @@ enum BinaryOperation {
 enum UExOperation {
     UNARY_NONE,
     EXCLAMATION,
+    PRE_ADD_ADD,
+    AFTER_ADD_ADD,
+    PRE_MINUS_MINUS,
+    AFTER_MINUS_MINUS,
     MINUS,
 };
 
 enum BuildInType {
     TYPE_VOID = 0,
     TYPE_INT,
+};
+
+enum AssingmentType {
+    ASSIGN_NONE,
+    ASSIGN_ASSIGN,
+    ASSIGN_PIPE_ASSIGN,
+    ASSIGN_AMPERSAND_ASSIGN,
+    ASSIGN_MULTIPLY_ASSIGN,
+    ASSIGN_DIVIDE_ASSIGN,
 };
 
 struct AST {
@@ -90,6 +107,7 @@ struct AST {
     // ASSIGNMENT
     AST* assignment_right;
     AST* assignment_left;
+    AssingmentType assignment_type;
 
     // BLOCK
     AST* block_statements;

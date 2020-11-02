@@ -139,10 +139,42 @@ Token* lexerGetNextToken(Lexer* lex) {
             case '}': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_BRACKET, lexerGetCurrentCharAsString(lex)));
             case ',': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::COMMA, lexerGetCurrentCharAsString(lex)));
             case '.': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PERIOD, lexerGetCurrentCharAsString(lex)));
-            case '*': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MULTIPLICATION, lexerGetCurrentCharAsString(lex)));
-            case '/': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIVISION, lexerGetCurrentCharAsString(lex)));
-            case '-': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SUBTRACION, lexerGetCurrentCharAsString(lex)));
-            case '+': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::ADDITION, lexerGetCurrentCharAsString(lex)));
+            case '*':
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MULTIPLICATION_EQUALS, (char*)"*="));
+                } 
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MULTIPLICATION, lexerGetCurrentCharAsString(lex)));
+            case '/':
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIVIDE_EQUALS, (char*)"/-"));
+                } 
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIVISION, lexerGetCurrentCharAsString(lex)));
+            case '-':
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '-') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MINUS_MINUS, (char*)"--"));
+                } else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MINUS_EQUALS, (char*)"-="));
+                }
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MINUS, lexerGetCurrentCharAsString(lex)));
+            case '+': 
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '+') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PLUSS_PLUSS, (char*)"++"));
+                } else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PLUSS_EQUALS, (char*)"+="));
+                }
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PLUS, lexerGetCurrentCharAsString(lex)));
             case ':': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::TWO_POINTS, lexerGetCurrentCharAsString(lex)));
             case '>':
                 if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
@@ -158,6 +190,28 @@ Token* lexerGetNextToken(Lexer* lex) {
                     return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS_OR_EQUALS, (char*)"<="));
                 }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS, lexerGetCurrentCharAsString(lex)));
+            case '|':
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PIPE_EQUALS, (char*)"|="));
+                } else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '|')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PIPE_PIPE, (char*)"||"));
+                }
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PIPE, lexerGetCurrentCharAsString(lex)));
+            case '&':
+                if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::AMPERSAND_EQUALS, (char*)"&="));
+                } else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '&')  {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::AMPERSAND_AMPERSAND, (char*)"&&"));
+                }
+                else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::AMPERSAND, lexerGetCurrentCharAsString(lex)));
 
             default: printf("Unknow token!\n") ;exit(-1);
         }

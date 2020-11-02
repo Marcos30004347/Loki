@@ -19,12 +19,17 @@ void vertex(vector3 position : CHANNEL0, vector3 normals) {
 }
 
 
-pixel fragment(float4 color, vector2 uv) {
+[pixel main]
+void fragment(float4 color, vector2 uv) {
     pixel.texture = texture2D(texture, uv);
     pixel.color = color; 
 }
 
-
+[x=100; y=100; z=100]
 void compute() {
 
 }
+
+
+vertex = default
+fragment = default
