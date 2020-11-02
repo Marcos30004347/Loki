@@ -47,6 +47,8 @@ struct Token {
         ELSE,
         FOR,
         RETURN,
+        STRUCT,
+        TWO_POINTS,
     };
 
     TokenType token_type;

@@ -7,8 +7,6 @@ Add -- operator
 Add || operator
 Add && operator
 
-Add Switch statement
-Add support for structs
-Add support for funtion default arguments
 Add more types...
-Add support for custom types
+Add support for funtion default arguments
+Add verification to check if break is insile loop/switch statements

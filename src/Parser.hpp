@@ -15,14 +15,17 @@ Parser* initParser(Lexer* lexer);
 
 void parserReadToken(Parser* parser, Token::TokenType type);
 
-// START → PROGRAM* EOF
+// START → DECLARATIONS* EOF
 AST* parseStart(Parser* parser);
 
-// PROGRAM → FUNC_DECL | VAR_DECL 
-AST* parseProgram(Parser* parser);
+// FUNC_VAR_DECL → FUNC_DECL | VAR_DECL
+AST* parseFuncVarDecl(Parser* parser);
 
-// DECLARATION →  VAR_DECL | STATEMENT
+// DECLARATION → FUNC_VAR_DECL | STRUCT_DECL
 AST* parseDeclaration(Parser* parser);
+
+// STRUCT_DECL → 'struct' IDENTIFIER '{' FUNC_VAR_DECL '}'';'
+AST* parseStruct(Parser* parser);
 
 // RETURN → 'return' EXPRESSION? ';'
 AST* parseReturn(Parser* parser);
@@ -30,7 +33,7 @@ AST* parseReturn(Parser* parser);
 // FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER ( "," IDENTIFIER IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
 
-// STATEMENT → EXPRESSION';' | IF | FOR | BLOCK | RETURN
+// STATEMENT → VAR_DECL';' | EXPRESSION';' | IF | FOR | BLOCK | RETURN | BREAK | SWITCH
 AST* parseStatement(Parser* parser);
 
 // FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
@@ -42,20 +45,21 @@ AST* parseIf(Parser* parser);
 // WHILE  → 'while' '(' EXPRESSION ')' STATEMENT; 
 AST* parseWhile(Parser* parser);
 
+// SWITCH  → 'switch' '(' EXPRESSION ')' '{' ('case' expression ':' STATEMENT? 'break'? )* ('default'':' STATEMENT? 'break'?)'}'; 
+AST* parseSwitch(Parser* parser);
+
+
 // DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
 AST* parseDoWhile(Parser* parser);
 
-// BLOCK → '{' DECLARATION* '}'
+// BLOCK → '{' STATEMENT* '}'
 AST* parseBlock(Parser* parser);
 
 // VAR_DECL → IDENTIFIER (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'
 AST* parseVariableDeclaration(Parser* parser);
 
-// EXPRESSION → ASSIGNMENT
+// EXPRESSION → IDENTIFIER '=' ASSIGNMENT | EQUALITY
 AST* parseExpression(Parser* parser);
-
-// ASSIGNMENT → IDENTIFIER '=' ASSIGNMENT | EQUALITY
-AST* parseAssignment(Parser* parser);
 
 // EQUALITY → COMPARISON (('!=' | '==') COMPARISON)*
 AST* parseEquality(Parser* parser);

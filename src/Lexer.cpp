@@ -84,6 +84,8 @@ Token* lexerCollectId(Lexer* lex) {
     if(strcmp(value, "switch") == 0) return initToken(Token::TokenType::SWITCH, value);
     if(strcmp(value, "break") == 0) return initToken(Token::TokenType::BREAK, value);
     if(strcmp(value, "default") == 0) return initToken(Token::TokenType::DEFAULT, value);
+    if(strcmp(value, "struct") == 0) return initToken(Token::TokenType::STRUCT, value);
+    if(strcmp(value, "case") == 0) return initToken(Token::TokenType::CASE, value);
 
     return initToken(Token::TokenType::IDENTIFIER, value);
 }
@@ -141,6 +143,7 @@ Token* lexerGetNextToken(Lexer* lex) {
             case '/': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::DIVISION, lexerGetCurrentCharAsString(lex)));
             case '-': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SUBTRACION, lexerGetCurrentCharAsString(lex)));
             case '+': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::ADDITION, lexerGetCurrentCharAsString(lex)));
+            case ':': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::TWO_POINTS, lexerGetCurrentCharAsString(lex)));
             case '>':
                 if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '=') {
                     lex->i++;

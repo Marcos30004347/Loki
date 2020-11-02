@@ -1,0 +1,7 @@
+struct teste {
+    int varInt = 0;
+
+    int funcInt() {
+        return 3 + 3;
+    }
+};

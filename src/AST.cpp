@@ -102,9 +102,23 @@ AST* initAST(AST::ASTType type) {
     //RETURN
     ast->return_value = nullptr;
 
-    //PROGRAM
-    ast->program_declarations = nullptr;
-    ast->program_declarations_count = 0;
+    //DECLARATIONS
+    ast->declarations_list = nullptr;
+    ast->declarations_list_count = 0;
+
+    // STRUCT
+    ast->struct_declarations = nullptr;
+    ast->struct_identifier = nullptr;
+
+    // SWITCH
+    ast->switch_expression = nullptr;
+    ast->switch_default_case = nullptr;
+    ast->switch_cases = nullptr;
+    ast->switch_cases_count = 0;
+
+    // CASE
+    ast->case_expression = nullptr;
+    ast->case_statement = nullptr;
 }
 
 void printAST(AST* root, int tabs) {
@@ -133,6 +147,7 @@ void printAST(AST* root, int tabs) {
         printf("%*cFUNCTION IDENTIFIER:\n", tabs, ' ');
 
         printAST( root->func_dec_identifier, tabs+3);
+        printf("%*cARGUMENTS = %i\n", tabs, ' ', root->func_dec_arguments_count);
 
         for(int i=0; i<root->func_dec_arguments_count; i++) {
             printf("%*cARGUMENT %i\n", tabs, ' ', i);
@@ -176,8 +191,8 @@ void printAST(AST* root, int tabs) {
         printAST(root->do_while_condition, tabs + 3);
     }
 
-    if(root->type == AST::ASTType::NO_OP) {
-        printf("%*cNO_OP:\n", tabs, ' ');
+    if(root->type == AST::ASTType::UNDEFINED) {
+        printf("%*cUNDEFINED!\n", tabs, ' ');
     }
 
     if(root->type == AST::ASTType::BLOCK) {
@@ -194,11 +209,11 @@ void printAST(AST* root, int tabs) {
     }
     
 
-    if(root->type == AST::ASTType::PROGRAM) {
-        printf("%*cPROGRAM:\n", tabs, ' ');
-        for(int i=0; i<root->program_declarations_count; i++) {
+    if(root->type == AST::ASTType::DECLARATIONS) {
+        printf("%*cDECLARATIONS:\n", tabs, ' ');
+        for(int i=0; i<root->declarations_list_count; i++) {
             printf("%*cDECLARATION %i:\n", tabs, ' ', i);
-            printAST(root->program_declarations[i], tabs + 3);
+            printAST(root->declarations_list[i], tabs + 3);
         }
     }
     if(root->type == AST::ASTType::IDENTIFIER) {
@@ -240,7 +255,36 @@ void printAST(AST* root, int tabs) {
     }
 
     if(root->type == AST::ASTType::INTEGER) {
-        printf("%*cINTEGER = %i\n", tabs, ' ', root->integer_value);
+        printf("%*cINTEGER '%i'\n", tabs, ' ', root->integer_value);
     }
 
+    if(root->type == AST::ASTType::STRUCT) {
+        printf("%*cSTRUCT:\n", tabs, ' ');
+        printf("%*cSTRUCT IDENTIFIER:\n", tabs, ' ');
+        printAST(root->struct_identifier, tabs+3);
+        printf("%*cSTRUCT DECLARATIONS:\n", tabs, ' ');
+        printAST(root->struct_declarations, tabs+3);
+    }
+
+    if(root->type == AST::ASTType::SWITCH) {
+        printf("%*cSWITCH:\n", tabs, ' ');
+        printf("%*cDEFAULT:\n", tabs, ' ');
+        printAST(root->switch_default_case, tabs+3);
+        for(int i=0; i<root->switch_cases_count; i++) {
+            printf("%*cCASE %i:\n", tabs, ' ', i);
+            printAST(root->switch_cases[i], tabs+3);
+        }
+    }
+
+    if(root->type == AST::ASTType::BREAK) {
+        printf("%*cBREAK:\n", tabs, ' ');
+    }
+
+    if(root->type == AST::ASTType::CASE) {
+        printf("%*cCASE:\n", tabs, ' ');
+        printf("%*cEXPRESSION:\n", tabs, ' ');
+        printAST(root->case_expression, tabs+3);
+        printf("%*cSTATEMENT:\n", tabs, ' ');
+        printAST(root->case_statement, tabs+3);
+    }
 }

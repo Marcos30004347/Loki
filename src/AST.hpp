@@ -38,24 +38,28 @@ enum BuildInType {
 
 struct AST {
     enum ASTType {
-        NO_OP,
+        UNDEFINED,
         INTEGER,
         BINARY_EXPRESSION,
         UNARY_EXPRESSION,
         IDENTIFIER,
         VARIABLES_DECLARATIONS,
-        PROGRAM,
+        DECLARATIONS,
         STATEMETNS,
         BLOCK,
         ASSIGNMENT,
         IF,
         WHILE,
         DO_WHILE,
+        SWITCH,
+        CASE,
         FOR,
         FUNCTION_CALL,
         FUNCTION_DECLARATION,
         FUNCTION_ARGUMENT,
         RETURN,
+        STRUCT,
+        BREAK,
     };
 
     //AST data:
@@ -132,10 +136,23 @@ struct AST {
     // RETURN
     AST* return_value;
 
-    //PROGRAM
-    AST** program_declarations;
-    unsigned int program_declarations_count;
+    //DECLARATINONS
+    AST** declarations_list;
+    unsigned int declarations_list_count;
 
+    // STRUCT
+    AST* struct_declarations;
+    AST* struct_identifier;
+
+    //SWITCH
+    AST* switch_expression;
+    AST** switch_cases;
+    AST* switch_default_case;
+    unsigned int switch_cases_count;
+
+    // CASE
+    AST* case_expression;
+    AST* case_statement;
 };
 
 AST* initAST(AST::ASTType type);
