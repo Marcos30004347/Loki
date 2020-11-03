@@ -7,6 +7,7 @@ struct Lexer {
     char* contents;
     unsigned int i;
     char c;
+    unsigned int line;
 };
 
 
@@ -60,6 +61,12 @@ struct Token {
         AMPERSAND,
         AMPERSAND_EQUALS,
         AMPERSAND_AMPERSAND,
+        FORWARD_ARROW,
+        BACKWARD_ARROW,
+        FLOATING,
+        EXPORT,
+        TRUE,
+        FALSE,
     };
 
     TokenType token_type;

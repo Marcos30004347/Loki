@@ -12,6 +12,7 @@ Lexer* initLexer(char* contents) {
     Lexer* lex = (Lexer*)calloc(1, sizeof(Lexer));
     lex->contents = contents;
     lex->i = 0;
+    lex->line = 0;
     lex->c = lex->contents[lex->c];
     return lex;
 }
@@ -32,6 +33,8 @@ void lexerAdvance(Lexer* lex) {
 
 void lexerSkipWhitespace(Lexer* lex) {
     while(lex->c == ' ' || lex->c == 10) {
+        if(lex->c == 10) lex->line++;
+
         lexerAdvance(lex);
     }
 }
@@ -75,6 +78,7 @@ Token* lexerCollectId(Lexer* lex) {
         lexerAdvance(lex);
     }
 
+
     if(strcmp(value, "for") == 0) return initToken(Token::TokenType::FOR, value);
     if(strcmp(value, "if") == 0) return initToken(Token::TokenType::IF, value);
     if(strcmp(value, "else") == 0) return initToken(Token::TokenType::ELSE, value);
@@ -86,6 +90,9 @@ Token* lexerCollectId(Lexer* lex) {
     if(strcmp(value, "default") == 0) return initToken(Token::TokenType::DEFAULT, value);
     if(strcmp(value, "struct") == 0) return initToken(Token::TokenType::STRUCT, value);
     if(strcmp(value, "case") == 0) return initToken(Token::TokenType::CASE, value);
+    if(strcmp(value, "export") == 0) return initToken(Token::TokenType::EXPORT, value);
+    if(strcmp(value, "true") == 0) return initToken(Token::TokenType::TRUE, value);
+    if(strcmp(value, "false") == 0) return initToken(Token::TokenType::FALSE, value);
 
     return initToken(Token::TokenType::IDENTIFIER, value);
 }
@@ -96,11 +103,26 @@ Token* lexerCollectInt(Lexer* lex) {
     char* value = (char*)calloc(1, sizeof(char));
     value[0] = '\0';
 
-    while(isdigit(lex->c)) {
-        char* s = lexerGetCurrentCharAsString(lex);
-        value = (char*)realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
-        strcat(value, s);
-        lexerAdvance(lex);
+    if(isdigit(lex->c)) {
+        while(isdigit(lex->c)) {
+            char* s = lexerGetCurrentCharAsString(lex);
+            value = (char*)realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
+            strcat(value, s);
+            lexerAdvance(lex);
+        }
+        if(lex->c == '.') {
+            char* s = lexerGetCurrentCharAsString(lex);
+            value = (char*)realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
+            strcat(value, s);
+            lexerAdvance(lex);
+            while(isdigit(lex->c)) {
+                char* s = lexerGetCurrentCharAsString(lex);
+                value = (char*)realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
+                strcat(value, s);
+                lexerAdvance(lex);
+            }
+            return initToken(Token::TokenType::FLOATING, value);
+        }
     }
 
     return initToken(Token::TokenType::INTEGER, value);
@@ -162,6 +184,10 @@ Token* lexerGetNextToken(Lexer* lex) {
                     lex->i++;
                     lex->i++;
                     return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MINUS_EQUALS, (char*)"-="));
+                } else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '>') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::FORWARD_ARROW, (char*)"->"));
                 }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::MINUS, lexerGetCurrentCharAsString(lex)));
             case '+': 
@@ -188,6 +214,10 @@ Token* lexerGetNextToken(Lexer* lex) {
                     lex->i++;
                     lex->i++;
                     return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS_OR_EQUALS, (char*)"<="));
+                }else if(lex->i + 1 != eof && lex->contents[lex->i + 1] == '-') {
+                    lex->i++;
+                    lex->i++;
+                    return lexerAdvanceWithToken(lex, initToken(Token::TokenType::BACKWARD_ARROW, (char*)"<-"));
                 }
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::LESS, lexerGetCurrentCharAsString(lex)));
             case '|':

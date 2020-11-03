@@ -1,33 +1,14 @@
-Define actual loki language:
-    For that:
-        1. Study HLSL and GLSL.
+Fix Problem: Functions can only return built in types
 
-Add types:
-    uint
-    float
-    float2
-    float3On types, also add precision configuration like mediump highp lowp etc...
-
-    matrix3
-    matrix4
-
-On types, also add precision configuration like mediump highp lowp etc...
-
-Think how to represent Uniforms
-Think how to represent Attributes
-Think how to vertex shaders (hlsl/glsl)
-Think how to fragment shaders (hlsl/glsl)
-Think how to compute shaders (hlsl/glsl/kernels)
-Think how to mesh shaders (hlsl/glsl)
-
-Add static ?
-Add macros support ?
+Add static
+Add Export
+Add Buffer
+Add Uniform
+Add macros support
 Add support for funtion default arguments
 Add verification to check if break is insile loop/switch statements
 
-// https://www.geeks3d.com/20200519/introduction-to-mesh-shaders-opengl-and-vulkan/
-// http://zone.dog/braindump/mesh_shaders/
-// https://www.youtube.com/watch?v=CFXKTXtil34
-// https://www.youtube.com/watch?v=ma8KGpoSjWM
-// https://www.youtube.com/watch?v=C0uJ4sZelio
-// https://www.youtube.com/watch?v=72lYVTlPfI8
+Add Better error report for user including lines and more.
+Add Midle stage between parser and translation to check for errors
+
+Fix the thousands memory leaks that the code already have

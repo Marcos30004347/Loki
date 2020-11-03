@@ -1,0 +1,64 @@
+//Globals
+[layout = packed]
+uniform buffer Projections {
+    mat4x4 projection;
+    mat4x4 view;
+};
+
+// Vertex Shader
+struct Vertice {
+    vec4 position -> SYSTEM_POSITION;
+    vec2 uv;
+};
+
+void vertexMain(mat4 model <- MODEL_MATRIX, vec3 position <- POSITION) {
+    Vertice out;
+
+    out.uv = vec2(1.0, 1.0);
+    out.position = model * Projections.view * Projections.projection * vec4(10,10,10,10);
+
+    out -> VERTEX_OUTPUT;
+}
+
+// Pixel Shader
+struct Pixel {
+    vec4 color -> SYSTEM_COLOR;
+};
+
+void pixelMain(Vertice vertice <- VERTEX_OUTPUT, float4 color <- COLOR) {
+    Pixel pixel;
+    
+    pixel.color = float4(1.0, 1.0, 1.0, 1.0);
+    
+    pixel -> PIXEL_OUTPUT;
+}
+
+
+// Computes
+struct ComputeData {
+
+};
+
+void computeMain(ComputeData[] data) {
+
+}
+
+// Exports
+export vertexShader = {
+    type: VertexShader,
+    main: vertexMain,
+};
+
+export fragmentShader = {
+    type: PixelShader,
+    main: pixelMain,
+};
+
+export computeShader {
+    type: ComputeShader,
+    main: computeMain,
+    layoutX: 1,
+    layoutY: 1,
+    layoutZ: 1,
+};
+

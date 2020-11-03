@@ -1,9 +1,0 @@
-int main() {
-    switch(1) {
-        case 3:
-            int i = 4;
-            break;
-        default:
-            break;
-    }
-}

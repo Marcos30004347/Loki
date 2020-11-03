@@ -6,6 +6,9 @@
 #include <ctype.h>
 #include <vector>
 
+
+#include "Operators.hpp"
+
 const char* BinaryOperationNames[] = {
     "None",
     "+",
@@ -24,14 +27,50 @@ const char* BinaryOperationNames[] = {
     "&&",
 };
 
+
+const char* UnaryOperationNames[] = {
+    "None",
+    "!",
+    "++",
+    "++",
+    "--",
+    "--",
+    "-",
+};
+
+const char* ChannelTypeName[] = {
+    "None",
+    "Output",
+    "Input",
+};
+
 const char* BuildInTypesNames[] = {
     "void",
-    "int"
+    "int",
+    "uint",
+    "float",
+    "bool",
+    "vec2",
+    "vec3",
+    "vec4",
+    "mat2",
+    "mat2x2",
+    "mat2x3",
+    "mat2x4",
+    "mat3",
+    "mat3x2",
+    "mat3x3",
+    "mat3x4",
+    "mat4",
+    "mat4x2",
+    "mat4x3",
+    "mat4x4",
+    "sampler",
+    "sampler3d"
 };
 
 AST* initAST(AST::ASTType type) {
     AST* ast = (AST*)malloc(sizeof(AST));
-    ast->scope = nullptr;
     ast->type = type;
 
     //INTEGER
@@ -47,7 +86,7 @@ AST* initAST(AST::ASTType type) {
     ast->binary_exp_right_operand = nullptr;
 
     // UNARY EXPRESSION
-    ast->unary_binary_exp_operation = UExOperation::UNARY_NONE;
+    ast->unary_binary_exp_operation = UnaryOperation::UNARY_NONE;
     ast->unary_binary_exp_right_operand = nullptr;
     return ast;
 
@@ -55,10 +94,14 @@ AST* initAST(AST::ASTType type) {
     ast->identifier = nullptr;
 
     // VARIABLES_DECLARATIONS
-    ast->vars_def_name = nullptr;
-    ast->vars_def_type = BuildInType::TYPE_VOID;
-    ast->vars_def_value = nullptr;
-    ast->vars_def_count = 0;
+    ast->vars_declarations = nullptr;
+    ast->vars_declarations_count = 0;
+
+    // VARIABLE DECLARATION
+    ast->var_def_identifier = nullptr;
+    ast->var_def_value = nullptr;
+    ast->var_def_channel = nullptr;
+    ast->var_def_type = BuildInType::TYPE_VOID;
 
     //BLOCK
     ast->block_statements = nullptr;
@@ -103,6 +146,7 @@ AST* initAST(AST::ASTType type) {
     //FUNCTION_ARGUMENT
     ast->func_argument_type = BuildInType::TYPE_VOID;
     ast->func_argument_id = nullptr;
+    ast->func_argument_channel = nullptr;
 
     //RETURN
     ast->return_value = nullptr;
@@ -124,6 +168,16 @@ AST* initAST(AST::ASTType type) {
     // CASE
     ast->case_expression = nullptr;
     ast->case_statement = nullptr;
+
+    // CHANNEL
+    ast->channel_identifier = nullptr;
+    ast->channel_type = ChannelType::CHANNEL_NONE;
+
+    //FLOAT
+    ast->float_value = 0;
+
+    //BOOL
+    ast->bool_value = false;
 }
 
 void printAST(AST* root, int tabs) {
@@ -168,6 +222,8 @@ void printAST(AST* root, int tabs) {
         printf("%*cTYPE = '%i'\n", tabs, ' ', root->func_argument_type);
         printf("%*cFUNCTION INDENTIFIER:\n", tabs, ' ');
         printAST(root->func_argument_id, tabs + 3);
+        printf("%*cFUNCTION CHANNEL:\n", tabs, ' ');
+        printAST(root->func_argument_channel, tabs + 3);
     }
 
     if(root->type == AST::ASTType::IF) {
@@ -221,18 +277,27 @@ void printAST(AST* root, int tabs) {
             printAST(root->declarations_list[i], tabs + 3);
         }
     }
+
     if(root->type == AST::ASTType::IDENTIFIER) {
         printf("%*cIDENTIFIER = '%s'\n", tabs, ' ', root->identifier);
     }
 
+    if(root->type == AST::ASTType::VARIABLE_DECLARATION) {
+        printf("%*cVARIABLE DECLARATION\n", tabs, ' ');
+        printf("%*cTYPE: %s\n", tabs, ' ', BuildInTypesNames[root->var_def_type]);
+        printf("%*cVARIABLE IDENTIFIER:\n", tabs, ' ');
+        printAST(root->var_def_identifier, tabs+ 3);
+        printf("%*cVARIABLE VALUE:\n", tabs, ' ');
+        printAST(root->var_def_value, tabs + 3);
+        printf("%*cVARIABLE CHANNEL:\n", tabs, ' ');
+        printAST(root->var_def_channel, tabs + 3);
+    }
+
+
     if(root->type == AST::ASTType::VARIABLES_DECLARATIONS) {
         printf("%*cVARIABLES DECLARATIONS:\n", tabs, ' ');
-        printf("%*cTYPE: %s\n", tabs, ' ', BuildInTypesNames[root->vars_def_type]);
-        for(int i=0; i<root->vars_def_count; i++) {
-            printf("%*cVARIABLE IDENTIFIER:\n", tabs, ' ');
-            printAST(root->vars_def_name[i], tabs+ 3);
-            printf("%*cVARIABLE VALUE:\n", tabs, ' ');
-            printAST(root->vars_def_value[i], tabs + 3);
+        for(int i=0; i<root->vars_declarations_count; i++) {
+            printAST(root->vars_declarations[i], tabs+ 3);
         }
     }
 
@@ -243,6 +308,13 @@ void printAST(AST* root, int tabs) {
         printAST(root->binary_exp_left_operand, tabs+3);
         printf("%*cRIGHT:\n", tabs, ' ');
         printAST(root->binary_exp_right_operand, tabs+3);
+    }
+
+    if(root->type == AST::ASTType::CHANNEL) {
+        printf("%*cCHANNEL:\n", tabs, ' ');
+        printf("%*cCHANNEL TYPE = '%s'\n", tabs, ' ', ChannelTypeName[root->channel_type]);
+        printf("%*cCHANNEL IDENTIFIER:\n", tabs, ' ');
+        printAST(root->channel_identifier, tabs+3);
     }
 
     if(root->type == AST::ASTType::UNARY_EXPRESSION) {

@@ -1,0 +1,5 @@
+int a <- POSITION = 3;
+
+int teste(int a <- POSITION, int b -> COLOR) {
+    return 0;
+}

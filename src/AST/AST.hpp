@@ -2,56 +2,10 @@
 #ifndef ABSTRACT_SYNTAX_TREE
 #define ABSTRACT_SYNTAX_TREE
 
-struct Scope;
-
-enum Type {
-    VOID,
-    INT,
-};
-
-enum BinaryOperation {
-    BINARY_NONE,
-    ADDITION,
-    SUBTRACTION,
-    DIVISION,
-    MULTIPLICATION,
-    DIFFERENT,
-    EQUALS_EQUALS,
-    GREATER,
-    LESS,
-    GREATER_OR_EQUAL,
-    LESS_OR_EQUAL,
-    BINARY_OR,
-    BINARY_AND,
-    OR,
-    AND
-};
-
-
-
-enum UExOperation {
-    UNARY_NONE,
-    EXCLAMATION,
-    PRE_ADD_ADD,
-    AFTER_ADD_ADD,
-    PRE_MINUS_MINUS,
-    AFTER_MINUS_MINUS,
-    MINUS,
-};
-
-enum BuildInType {
-    TYPE_VOID = 0,
-    TYPE_INT,
-};
-
-enum AssingmentType {
-    ASSIGN_NONE,
-    ASSIGN_ASSIGN,
-    ASSIGN_PIPE_ASSIGN,
-    ASSIGN_AMPERSAND_ASSIGN,
-    ASSIGN_MULTIPLY_ASSIGN,
-    ASSIGN_DIVIDE_ASSIGN,
-};
+#include "Types.hpp"
+#include "Channels.hpp"
+#include "Operators.hpp"
+#include "Assignments.hpp"
 
 struct AST {
     enum ASTType {
@@ -61,6 +15,7 @@ struct AST {
         UNARY_EXPRESSION,
         IDENTIFIER,
         VARIABLES_DECLARATIONS,
+        VARIABLE_DECLARATION,
         DECLARATIONS,
         STATEMETNS,
         BLOCK,
@@ -77,14 +32,19 @@ struct AST {
         RETURN,
         STRUCT,
         BREAK,
+        CHANNEL,
+        FLOAT,
+        BOOL,
     };
 
     //AST data:
     ASTType type;
-    Scope* scope;
 
     //INTEGER
     int integer_value;
+
+    //FLOAT
+    int float_value;
 
     // BINARY EXPRESSION
     AST* binary_exp_left_operand;
@@ -92,17 +52,21 @@ struct AST {
     AST* binary_exp_right_operand;
 
     // UNARY EXPRESSION
-    UExOperation unary_binary_exp_operation;
+    UnaryOperation unary_binary_exp_operation;
     AST* unary_binary_exp_right_operand;
 
     // IDENTIFIER
     char* identifier;
 
     // VARIABLES_DECLARATIONS
-    AST** vars_def_name;
-    AST** vars_def_value;
-    BuildInType vars_def_type;
-    unsigned int vars_def_count;
+    AST** vars_declarations;
+    unsigned int vars_declarations_count;
+
+    // VARIABLE DECLARATION
+    AST* var_def_identifier;
+    AST* var_def_value;
+    AST* var_def_channel;
+    BuildInType var_def_type;
 
     // ASSIGNMENT
     AST* assignment_right;
@@ -150,6 +114,7 @@ struct AST {
     //FUNCTION_ARGUMENT
     BuildInType func_argument_type;
     AST* func_argument_id;
+    AST* func_argument_channel;
 
     // RETURN
     AST* return_value;
@@ -171,8 +136,17 @@ struct AST {
     // CASE
     AST* case_expression;
     AST* case_statement;
+
+    // CHANNEL
+    AST* channel_identifier;
+    ChannelType channel_type;
+
+    // BOOL
+    bool bool_value;
 };
 
 AST* initAST(AST::ASTType type);
+
 void printAST(AST* root, int tabs = 0);
+
 #endif

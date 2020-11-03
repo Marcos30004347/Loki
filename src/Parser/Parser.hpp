@@ -2,8 +2,8 @@
 #ifndef PARSER
 #define PARSER
 
-#include "AST.hpp"
-#include "Lexer.hpp"
+#include "AST/AST.hpp"
+#include "Lexer/Lexer.hpp"
 
 struct Parser {
     Lexer* lexer;
@@ -30,8 +30,11 @@ AST* parseStruct(Parser* parser);
 // RETURN → 'return' EXPRESSION? ';'
 AST* parseReturn(Parser* parser);
 
-// FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER ( "," IDENTIFIER IDENTIFIER )*')' BLOCK
+// FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER CHANNEL? ( "," IDENTIFIER IDENTIFIER CHANNEL? )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
+
+//CHANNEL → ('<-' | '->') IDENTIFIER
+AST* parseChannel(Parser* parser);
 
 // STATEMENT → VAR_DECL';' | EXPRESSION | IF | WHILE | DO_WHILE | FOR |  BLOCK | RETURN | BREAK | SWITCH
 AST* parseStatement(Parser* parser);
@@ -54,7 +57,7 @@ AST* parseDoWhile(Parser* parser);
 // BLOCK → '{' STATEMENT* '}'
 AST* parseBlock(Parser* parser);
 
-// VAR_DECL → IDENTIFIER (IDENTIFIER ('=' EXPRESSION)?) (IDENTIFIER ('=' EXPRESSION)?,)* ';'
+// VAR_DECL → IDENTIFIER IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
 AST* parseVariableDeclaration(Parser* parser);
 
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY
@@ -81,8 +84,7 @@ AST* parseCall(Parser* parser);
 // ARGUMENTS → EXPRESSION (','EXPRESSION)*
 AST* parseArguments(Parser* parser);
 
-// PRIMARY → NUMBER | IDENTIFIER | STRING | 'true' | 'false' | 'nil | '('EXPRESSION')'
+// PRIMARY → INTEGER | FLOAT | 'true' | 'false' | IDENTIFIER | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser);
-
 
 #endif
