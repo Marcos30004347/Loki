@@ -87,36 +87,26 @@ void addSwitchCase(AST* swtch, AST* cs) {
 }
 
 char* copyString(const char* str) {
+    if(!str) {
+        char* copy = (char*)malloc(sizeof(char));
+        copy[0] = '\0';
+        return copy;
+    }
+
     unsigned int size = strlen(str);
-    char* copy = new char[size + 1];
+    char* copy = (char*)malloc(sizeof(char) * size);
+
     strcpy(copy, str);
-    copy[size] = '\0';
     return copy;
 }
 
 
-bool isASTStatement(AST* root) {
-    if(root->type == AST::ASTType::BLOCK)               return true; 
-    if(root->type == AST::ASTType::INTEGER)             return true;
-    if(root->type == AST::ASTType::FLOAT)               return true;
-    if(root->type == AST::ASTType::BREAK)               return true;
-    if(root->type == AST::ASTType::IF)                  return true; 
-    if(root->type == AST::ASTType::FOR)                 return true; 
-    if(root->type == AST::ASTType::DO_WHILE)            return true; 
-    if(root->type == AST::ASTType::WHILE)               return true; 
-    if(root->type == AST::ASTType::SWITCH)              return true; 
-    if(root->type == AST::ASTType::BINARY_EXPRESSION)   return true; 
-    if(root->type == AST::ASTType::UNARY_EXPRESSION)    return true; 
-    if(root->type == AST::ASTType::ASSIGNMENT)          return true;
-
-    return false;
+char* getIdentifierString(AST* node) {
+    return copyString(node->identifier);
 }
 
-void addShaderAttribute(Shader* shader, char* attribute_str) {
-    shader->attributes_count += 1;
-    shader->attributes = (char**)realloc(
-        shader->attributes,
-        shader->attributes_count * sizeof(char*)
-    );
-    shader->attributes[shader->attributes_count - 1] = copyString(attribute_str);
+char* append(char* a, const char* b) {
+    char* fallback = new char[1];
+    fallback[0] = '\0';
+    return strcat(a ? a : fallback, b);
 }

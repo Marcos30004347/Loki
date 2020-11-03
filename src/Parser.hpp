@@ -2,8 +2,8 @@
 #ifndef PARSER
 #define PARSER
 
-#include "AST/AST.hpp"
-#include "Lexer/Lexer.hpp"
+#include "AST.hpp"
+#include "Lexer.hpp"
 
 struct Parser {
     Lexer* lexer;
@@ -14,6 +14,9 @@ struct Parser {
 Parser* initParser(Lexer* lexer);
 
 void parserReadToken(Parser* parser, Token::TokenType type);
+
+// TYPE → TYPEID | IDENTIFIER
+AST* parseType(Parser* parser);
 
 // START → DECLARATIONS* EOF
 AST* parseStart(Parser* parser);
@@ -30,7 +33,7 @@ AST* parseStruct(Parser* parser);
 // RETURN → 'return' EXPRESSION? ';'
 AST* parseReturn(Parser* parser);
 
-// FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER CHANNEL? ( "," IDENTIFIER IDENTIFIER CHANNEL? )*')' BLOCK
+// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER CHANNEL? ( "," TYPE IDENTIFIER CHANNEL? )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
 
 //CHANNEL → ('<-' | '->') IDENTIFIER
@@ -57,7 +60,7 @@ AST* parseDoWhile(Parser* parser);
 // BLOCK → '{' STATEMENT* '}'
 AST* parseBlock(Parser* parser);
 
-// VAR_DECL → IDENTIFIER IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
+// VAR_DECL → TYPE IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
 AST* parseVariableDeclaration(Parser* parser);
 
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY

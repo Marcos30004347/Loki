@@ -1,8 +1,8 @@
 #ifndef PARSER_UTILS
 #define PARSER_UTILS
 
-#include "Parser/Parser.hpp"
-#include "Translator/GLES2Translator.hpp"
+#include "Parser.hpp"
+#include "Shader.hpp"
 
 #include <string.h>
 #include <stdlib.h>
@@ -28,7 +28,6 @@ bool tokenMatchesTypes(Parser* parser, T t, Args... args) {
     else return tokenMatchesTypes(parser, args...);
 }
 
-void addShaderAttribute(Shader* shader, char* attribute_str);
 bool isASTStatement(AST* root);
 void parserReadToken(Parser* parser, Token::TokenType type);
 void addStatement(AST* statements, AST* item);
@@ -38,5 +37,6 @@ void addFuncDecArgument(AST* func_dec, AST* argument);
 void addVariableDefinitions(AST* variables, AST* variable);
 void addSwitchCase(AST* swtch, AST* cs);
 char* copyString(const char* str);
-
+char* getIdentifierString(AST* node);
+char* append(char* a, const char* b);
 #endif

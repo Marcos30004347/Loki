@@ -1,10 +1,11 @@
 #ifndef BUILD_IN_TYPES
 #define BUILD_IN_TYPES
 
-#include "Lexer/Lexer.hpp"
+#include "Lexer.hpp"
 
 enum BuildInType {
     TYPE_VOID = 0,
+    TYPE_STRUCT,
     TYPE_INT,
     TYPE_UINT,
     TYPE_FLOAT,
@@ -29,8 +30,6 @@ enum BuildInType {
 };
 
 
-
-bool isTokenType(Token* tok);
-BuildInType getTypeFromString(const char* type_id);
+// bool isTokenType(Token* tok);
 
 #endif

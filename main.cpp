@@ -1,5 +1,6 @@
-#include "Lexer/Lexer.hpp"
-#include "Parser/Parser.hpp"
+#include "src/Lexer.hpp"
+#include "src/Parser.hpp"
+#include "src/Visitor.hpp"
 
 #include <fstream>
 #include <string>
@@ -17,6 +18,23 @@ int main(int argc, char *argv[]) {
     Parser* parser = initParser(lexer);
     AST* root = parseStart(parser);
 
+    Visitor* visitor = initVisitor();
+
     printAST(root);
+
+    visitDeclarations(visitor, root);
+
+    for(int i=0; i<visitor->gles_vertex_shader->program->gles_funcs_defs_count; i++) {
+        printf("%s\n", visitor->gles_vertex_shader->program->gles_funcs_defs[i]);
+    }
+    for(int i=0; i<visitor->gles_vertex_shader->program->gles_attributes_count; i++) {
+        printf("%s\n", visitor->gles_vertex_shader->program->gles_attributes[i]);
+    }
+    for(int i=0; i<visitor->gles_vertex_shader->program->gles_inputs_count; i++) {
+        printf("%s\n", visitor->gles_vertex_shader->program->gles_inputs[i]);
+    }
+    for(int i=0; i<visitor->gles_vertex_shader->program->gles_outputs_count; i++) {
+        printf("%s\n", visitor->gles_vertex_shader->program->gles_outputs[i]);
+    }
     return 0;
 }

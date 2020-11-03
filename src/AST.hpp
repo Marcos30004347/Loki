@@ -35,10 +35,11 @@ struct AST {
         CHANNEL,
         FLOAT,
         BOOL,
+        TYPE,
     };
 
     //AST data:
-    ASTType type;
+    ASTType ast_type;
 
     //INTEGER
     int integer_value;
@@ -66,7 +67,7 @@ struct AST {
     AST* var_def_identifier;
     AST* var_def_value;
     AST* var_def_channel;
-    BuildInType var_def_type;
+    AST* var_def_type_identifier;
 
     // ASSIGNMENT
     AST* assignment_right;
@@ -105,14 +106,14 @@ struct AST {
     unsigned int func_call_arguments_count;
     
     //FUNCTION DEFINITION
-    BuildInType func_dec_return_type;
+    AST* func_dec_return_type_identifier;
     AST* func_dec_identifier;
     AST* func_dec_body;
     AST** func_dec_arguments;
     unsigned int func_dec_arguments_count;
 
     //FUNCTION_ARGUMENT
-    BuildInType func_argument_type;
+    AST* func_argument_type_identifier;
     AST* func_argument_id;
     AST* func_argument_channel;
 
@@ -143,6 +144,10 @@ struct AST {
 
     // BOOL
     bool bool_value;
+
+    // TYPE
+    BuildInType type_type;
+    AST* type_struct_identifier;
 };
 
 AST* initAST(AST::ASTType type);

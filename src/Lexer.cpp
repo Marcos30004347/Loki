@@ -78,21 +78,40 @@ Token* lexerCollectId(Lexer* lex) {
         lexerAdvance(lex);
     }
 
-
-    if(strcmp(value, "for") == 0) return initToken(Token::TokenType::FOR, value);
-    if(strcmp(value, "if") == 0) return initToken(Token::TokenType::IF, value);
-    if(strcmp(value, "else") == 0) return initToken(Token::TokenType::ELSE, value);
-    if(strcmp(value, "do") == 0) return initToken(Token::TokenType::DO, value);
-    if(strcmp(value, "while") == 0) return initToken(Token::TokenType::WHILE, value);
-    if(strcmp(value, "return") == 0) return initToken(Token::TokenType::RETURN, value);
-    if(strcmp(value, "switch") == 0) return initToken(Token::TokenType::SWITCH, value);
-    if(strcmp(value, "break") == 0) return initToken(Token::TokenType::BREAK, value);
-    if(strcmp(value, "default") == 0) return initToken(Token::TokenType::DEFAULT, value);
-    if(strcmp(value, "struct") == 0) return initToken(Token::TokenType::STRUCT, value);
-    if(strcmp(value, "case") == 0) return initToken(Token::TokenType::CASE, value);
-    if(strcmp(value, "export") == 0) return initToken(Token::TokenType::EXPORT, value);
-    if(strcmp(value, "true") == 0) return initToken(Token::TokenType::TRUE, value);
-    if(strcmp(value, "false") == 0) return initToken(Token::TokenType::FALSE, value);
+    if(strcmp(value, "for") == 0)       return initToken(Token::TokenType::FOR, value);
+    if(strcmp(value, "if") == 0)        return initToken(Token::TokenType::IF, value);
+    if(strcmp(value, "else") == 0)      return initToken(Token::TokenType::ELSE, value);
+    if(strcmp(value, "do") == 0)        return initToken(Token::TokenType::DO, value);
+    if(strcmp(value, "while") == 0)     return initToken(Token::TokenType::WHILE, value);
+    if(strcmp(value, "return") == 0)    return initToken(Token::TokenType::RETURN, value);
+    if(strcmp(value, "switch") == 0)    return initToken(Token::TokenType::SWITCH, value);
+    if(strcmp(value, "break") == 0)     return initToken(Token::TokenType::BREAK, value);
+    if(strcmp(value, "default") == 0)   return initToken(Token::TokenType::DEFAULT, value);
+    if(strcmp(value, "struct") == 0)    return initToken(Token::TokenType::STRUCT, value);
+    if(strcmp(value, "case") == 0)      return initToken(Token::TokenType::CASE, value);
+    if(strcmp(value, "export") == 0)    return initToken(Token::TokenType::EXPORT, value);
+    if(strcmp(value, "true") == 0)      return initToken(Token::TokenType::TRUE, value);
+    if(strcmp(value, "false") == 0)     return initToken(Token::TokenType::FALSE, value);
+    if(strcmp(value, "void") == 0)      return initToken(Token::TokenType::VOID, value); 
+    if(strcmp(value, "int") == 0)       return initToken(Token::TokenType::INT, value);
+    if(strcmp(value, "uint") == 0)      return initToken(Token::TokenType::UINT, value); 
+    if(strcmp(value, "float") == 0)     return initToken(Token::TokenType::FLOAT, value);
+    if(strcmp(value, "bool") == 0)      return initToken(Token::TokenType::BOOL, value); 
+    if(strcmp(value, "vec2") == 0)      return initToken(Token::TokenType::VEC2, value); 
+    if(strcmp(value, "vec3") == 0)      return initToken(Token::TokenType::VEC3, value);
+    if(strcmp(value, "vec4") == 0)      return initToken(Token::TokenType::VEC4, value);
+    if(strcmp(value, "mat2") == 0)      return initToken(Token::TokenType::MAT2, value);
+    if(strcmp(value, "mat2x2") == 0)    return initToken(Token::TokenType::MAT2X2, value);
+    if(strcmp(value, "mat2x3") == 0)    return initToken(Token::TokenType::MAT2X3, value);
+    if(strcmp(value, "mat2x4") == 0)    return initToken(Token::TokenType::MAT2X4, value);
+    if(strcmp(value, "mat3") == 0)      return initToken(Token::TokenType::MAT3, value);
+    if(strcmp(value, "mat3x2") == 0)    return initToken(Token::TokenType::MAT3X2, value);
+    if(strcmp(value, "mat3x3") == 0)    return initToken(Token::TokenType::MAT3X3, value);
+    if(strcmp(value, "mat3x4") == 0)    return initToken(Token::TokenType::MAT3X4, value);
+    if(strcmp(value, "mat4") == 0)      return initToken(Token::TokenType::MAT4, value);
+    if(strcmp(value, "mat4x2") == 0)    return initToken(Token::TokenType::MAT4X2, value);
+    if(strcmp(value, "mat4x3") == 0)    return initToken(Token::TokenType::MAT4X3, value);
+    if(strcmp(value, "mat4x4") == 0)    return initToken(Token::TokenType::MAT4X4, value);
 
     return initToken(Token::TokenType::IDENTIFIER, value);
 }

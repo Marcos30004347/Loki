@@ -1,31 +1,9 @@
 #include "Types.hpp"
+#include "Utils.hpp"
+
 #include <string.h>
 #include <stdlib.h>
 #include <cstdio>
-
-bool isTokenType(Token* tok) {
-    if(strcmp(tok->value, "void") == 0) return true; 
-    if(strcmp(tok->value, "int") == 0) return true;
-    if(strcmp(tok->value, "uint") == 0) return true; 
-    if(strcmp(tok->value, "float") == 0) return true;
-    if(strcmp(tok->value, "bool") == 0) return true; 
-    if(strcmp(tok->value, "vec2") == 0) return true; 
-    if(strcmp(tok->value, "vec3") == 0) return true;
-    if(strcmp(tok->value, "vec4") == 0) return true;
-    if(strcmp(tok->value, "mat2") == 0) return true;
-    if(strcmp(tok->value, "mat2x2") == 0) return true;
-    if(strcmp(tok->value, "mat2x3") == 0) return true;
-    if(strcmp(tok->value, "mat2x4") == 0) return true;
-    if(strcmp(tok->value, "mat3") == 0) return true;
-    if(strcmp(tok->value, "mat3x2") == 0) return true;
-    if(strcmp(tok->value, "mat3x3") == 0) return true;
-    if(strcmp(tok->value, "mat3x4") == 0) return true;
-    if(strcmp(tok->value, "mat4") == 0) return true;
-    if(strcmp(tok->value, "mat4x2") == 0) return true;
-    if(strcmp(tok->value, "mat4x3") == 0) return true;
-    if(strcmp(tok->value, "mat4x4") == 0) return true;
-    return false;
-}
 
 
 BuildInType getTypeFromString(const char* type_id) {
@@ -54,3 +32,5 @@ BuildInType getTypeFromString(const char* type_id) {
     exit(-1);
     return BuildInType::TYPE_VOID; // Never reached
 }
+
+

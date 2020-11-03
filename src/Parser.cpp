@@ -1,7 +1,7 @@
 // https://craftinginterpreters.com/parsing-expressions.html
 
 #include "Parser.hpp"
-#include "Utils/Utils.hpp"   
+#include "Utils.hpp"   
 
 #include <string.h>
 #include <stdlib.h>
@@ -30,38 +30,125 @@ AST* parseStart(Parser* parser) {
     return declarations;
 }
 
-// FUNC_VAR_DECL → FUNC_DECL | VAR_DECL
-AST* parseFuncVarDecl(Parser* parser) {
-    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isTokenType(parser->current_token)) {
-        // Save parser and lexer state
-        int i = parser->lexer->i;
-        char c = parser->lexer->c;
+// TYPE → TYPEID | IDENTIFIER
+AST* parseType(Parser* parser) {
+    AST* ast = nullptr;
 
-        Token* current = parser->current_token;
-        Token* previous = parser->previous_token;
-
-        parserReadToken(parser, Token::TokenType::IDENTIFIER);
-        parserReadToken(parser, Token::TokenType::IDENTIFIER);
-        Token* tok = parser->current_token;
-        
-        // Restore parser and lexer state
-        parser->lexer->i = i;
-        parser->lexer->c = c;
-        parser->current_token = current;
-        parser->previous_token = previous;
-
-        if(tok->token_type == Token::TokenType::OPEN_PARENTESIS) {
-            return parseFunctionDeclaration(parser);
-        } else {
-            AST* var_decl = parseVariableDeclaration(parser);
-            parserReadToken(parser, Token::TokenType::SEMICOLON);
-            return var_decl;
-        }
+    switch(parser->current_token->token_type) {
+        case Token::TokenType::VOID:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_VOID;
+            break;
+        case Token::TokenType::FLOAT:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_FLOAT;
+            break;
+        case Token::TokenType::INT:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_INT;
+            break;
+        case Token::TokenType::UINT:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_UINT;
+            break;
+        case Token::TokenType::BOOL:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_BOOL;
+            break;
+        case Token::TokenType::MAT2:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT2;
+            break;
+        case Token::TokenType::MAT2X2:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT2X2;
+            break;
+        case Token::TokenType::MAT2X3:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT2X3;
+            break;
+        case Token::TokenType::MAT2X4:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT2X4;
+            break;
+        case Token::TokenType::MAT3:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT3;
+            break;
+        case Token::TokenType::MAT3X2:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT3X2;
+            break;
+        case Token::TokenType::MAT3X3:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT3X3;
+            break;
+        case Token::TokenType::MAT3X4:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT3X4;
+            break;
+        case Token::TokenType::MAT4:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT4;
+            break;
+        case Token::TokenType::MAT4X2:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT4X2;
+            break;
+        case Token::TokenType::MAT4X3:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT4X3;
+            break;
+        case Token::TokenType::MAT4X4:
+            ast = initAST(AST::ASTType::TYPE);
+            ast->type_type = BuildInType::TYPE_MAT4X4;
+            break;
+        case Token::TokenType::IDENTIFIER:
+            ast = initAST(AST::ASTType::IDENTIFIER);
+            ast->type_type = BuildInType::TYPE_STRUCT;
+            ast->type_struct_identifier = parsePrimary(parser);
+            break;
+        default: break;
     }
 
-    printf("\033[1mERROR: Unknow Global declaration '%s'!\033[0m\n", parser->current_token->value);
-    exit(-1);
-    return nullptr;
+    if(!ast) {
+        printf("ERROR: Undefined Symbol '%s'\n", parser->current_token->value);
+        exit(-1);
+    }
+
+    parserReadToken(parser, parser->current_token->token_type);
+    return ast;
+}
+
+
+// FUNC_VAR_DECL → FUNC_DECL | VAR_DECL
+AST* parseFuncVarDecl(Parser* parser) {
+    // Save parser and lexer state
+    int i = parser->lexer->i;
+    char c = parser->lexer->c;
+
+    Token* current = parser->current_token;
+    Token* previous = parser->previous_token;
+
+    parseType(parser);
+    parserReadToken(parser, Token::TokenType::IDENTIFIER);
+
+    Token* tok = parser->current_token;
+    
+    // Restore parser and lexer state
+    parser->lexer->i = i;
+    parser->lexer->c = c;
+    parser->current_token = current;
+    parser->previous_token = previous;
+
+    if(tok->token_type == Token::TokenType::OPEN_PARENTESIS) {
+        return parseFunctionDeclaration(parser);
+    }
+
+   
+    AST* var_decl = parseVariableDeclaration(parser);
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+    return var_decl;
 }
 
 
@@ -83,8 +170,8 @@ AST* parseStruct(Parser* parser) {
     parserReadToken(parser, Token::TokenType::STRUCT);
     AST* identifier = parsePrimary(parser);
 
-    if(identifier->type != AST::ASTType::IDENTIFIER) {
-        printf("\033[1mERROR: Struct have invalid name of type '%i'!\033[0m\n", identifier->type);
+    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[1mERROR: Struct have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
         exit(-1);
     }
 
@@ -128,8 +215,8 @@ AST* parseChannel(Parser* parser) {
         root->channel_type = ChannelType::CHANNEL_OUT;
         parserReadToken(parser, Token::TokenType::FORWARD_ARROW);
         AST* identifier = parsePrimary(parser);
-        if(identifier->type != AST::ASTType::IDENTIFIER) {
-            printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->type);
+        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->ast_type);
             exit(-1);
         }
         root->channel_identifier = identifier;
@@ -137,8 +224,8 @@ AST* parseChannel(Parser* parser) {
         root->channel_type = ChannelType::CHANNEL_IN;
         parserReadToken(parser, Token::TokenType::BACKWARD_ARROW);
         AST* identifier = parsePrimary(parser);
-        if(identifier->type != AST::ASTType::IDENTIFIER) {
-            printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->type);
+        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->ast_type);
             exit(-1);
         }
         root->channel_identifier = identifier;
@@ -149,38 +236,28 @@ AST* parseChannel(Parser* parser) {
     return root;
 }
 
-// FUNC_DECL → IDENTIFIER IDENTIFIER'('( IDENTIFIER IDENTIFIER CHANNEL? ( "," IDENTIFIER IDENTIFIER CHANNEL? )*')' BLOCK
+// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER CHANNEL? ( "," TYPE IDENTIFIER CHANNEL? )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser) {
     AST* root = initAST(AST::ASTType::FUNCTION_DECLARATION);
 
-    BuildInType return_type = getTypeFromString(parser->current_token->value);
-
-    root->func_dec_return_type = return_type;
-
-    parserReadToken(parser, Token::TokenType::IDENTIFIER);
-
+    root->func_dec_return_type_identifier = parseType(parser);
     root->func_dec_identifier = parsePrimary(parser);
+
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
 
     if(parser->current_token->token_type != Token::TokenType::CLOSE_PARENTESIS) {
         // IDENTIFIER IDEDNTIFIER
         AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
-
-        BuildInType type = getTypeFromString(parser->current_token->value);
-        argument->func_argument_type = type;
-
-        parserReadToken(parser, Token::TokenType::IDENTIFIER);
-        AST* identifier = parsePrimary(parser);        
-        if(identifier->type != AST::ASTType::IDENTIFIER) {
-            printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", identifier->type);
+        argument->func_argument_type_identifier = parseType(parser);
+        argument->func_argument_id = parsePrimary(parser);       
+     
+        if(argument->func_argument_id->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", argument->func_argument_id->ast_type);
             exit(-1);
         }
     
-        argument->func_argument_id = identifier;
         argument->func_argument_channel = parseChannel(parser);
         addFuncDecArgument(root, argument);
-
-    
 
         // (','IDENTIFIER IDEDNTIFIER)*
         while(parser->current_token->token_type == Token::TokenType::COMMA) {
@@ -188,21 +265,14 @@ AST* parseFunctionDeclaration(Parser* parser) {
         
             AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
         
-            BuildInType type = getTypeFromString(parser->current_token->value);
-        
-            argument->func_argument_type = type;
-        
-            parserReadToken(parser, Token::TokenType::IDENTIFIER);
-    
-            AST* identifier = parsePrimary(parser);
+            argument->func_argument_type_identifier = parseType(parser);
+            argument->func_argument_id = parsePrimary(parser);
             
-            if(identifier->type != AST::ASTType::IDENTIFIER) {
-                printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", identifier->type);
+            if(argument->func_argument_id->ast_type != AST::ASTType::IDENTIFIER) {
+                printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", argument->func_argument_id->ast_type);
                 exit(-1);
 
             }
-            argument->func_argument_id = identifier;
-        
             argument->func_argument_channel = parseChannel(parser);
             addFuncDecArgument(root, argument);
         }
@@ -210,31 +280,7 @@ AST* parseFunctionDeclaration(Parser* parser) {
 
     parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
     root->func_dec_body = parseBlock(parser);
-    
-    int returnStatementIndex = 0;
-    bool returnStatementFound = false;
-    
-    for(int i=0; i<root->func_dec_body->block_statements->statements_list_count; i++) {
 
-        if(root->func_dec_body->block_statements->statements_list[i]->type == AST::ASTType::RETURN) {
-            returnStatementFound = true;
-            returnStatementIndex = i;
-            break;
-        }
-    }
-    if(return_type != BuildInType::TYPE_VOID) {
-        if(returnStatementFound) {
-            if(returnStatementIndex < root->func_dec_body->block_statements->statements_list_count - 1) {
-                printf("\033[33mWARNING: Return Statement reached bedore end of function %s!\033[0m\n", root->func_dec_identifier->identifier);
-            }
-        } else {
-            printf("\033[33mWARNING: Return Statement not found for function %s!\033[0m\n", root->func_dec_identifier->identifier);
-        }
-    } else {
-        if(returnStatementFound && root->func_dec_body->block_statements->statements_list[returnStatementIndex]->return_value->type != AST::ASTType::UNDEFINED) {
-            printf("\033[33mWARNING: Return Statement returning value in void function %s!\033[0m\n", root->func_dec_identifier->identifier);
-        }
-    }
     // TODO check return statement
     return root;
 }
@@ -278,12 +324,35 @@ AST* parseStatement(Parser* parser) {
         return parseFor(parser);
     }
 
-    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isTokenType(parser->current_token)) {
+    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER) {
         AST* var_decl = parseVariableDeclaration(parser);
         parserReadToken(parser, Token::TokenType::SEMICOLON);
         return var_decl;
     }
 
+    if(
+        parser->current_token->token_type == Token::TokenType::INT
+        || parser->current_token->token_type == Token::TokenType::UINT
+        || parser->current_token->token_type == Token::TokenType::FLOAT
+        || parser->current_token->token_type == Token::TokenType::BOOL
+        || parser->current_token->token_type == Token::TokenType::MAT2
+        || parser->current_token->token_type == Token::TokenType::MAT2X2
+        || parser->current_token->token_type == Token::TokenType::MAT2X3
+        || parser->current_token->token_type == Token::TokenType::MAT2X4
+        || parser->current_token->token_type == Token::TokenType::MAT3
+        || parser->current_token->token_type == Token::TokenType::MAT3X2
+        || parser->current_token->token_type == Token::TokenType::MAT3X3
+        || parser->current_token->token_type == Token::TokenType::MAT3X4
+        || parser->current_token->token_type == Token::TokenType::MAT4
+        || parser->current_token->token_type == Token::TokenType::MAT4X2
+        || parser->current_token->token_type == Token::TokenType::MAT4X3
+        || parser->current_token->token_type == Token::TokenType::MAT4X4
+        || parser->current_token->token_type == Token::TokenType::IDENTIFIER
+    ) {
+        AST* var_decl = parseVariableDeclaration(parser);
+        parserReadToken(parser, Token::TokenType::SEMICOLON);
+        return var_decl;
+    }
 
     AST* exp_sttmnt = parseExpression(parser);
     parserReadToken(parser, Token::TokenType::SEMICOLON);
@@ -369,7 +438,25 @@ AST* parseFor(Parser* parser) {
 
     AST* statement1 = nullptr;
     
-    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && isTokenType(parser->current_token)) {
+    if(
+        parser->current_token->token_type == Token::TokenType::INT
+        || parser->current_token->token_type == Token::TokenType::UINT
+        || parser->current_token->token_type == Token::TokenType::FLOAT
+        || parser->current_token->token_type == Token::TokenType::BOOL
+        || parser->current_token->token_type == Token::TokenType::MAT2
+        || parser->current_token->token_type == Token::TokenType::MAT2X2
+        || parser->current_token->token_type == Token::TokenType::MAT2X3
+        || parser->current_token->token_type == Token::TokenType::MAT2X4
+        || parser->current_token->token_type == Token::TokenType::MAT3
+        || parser->current_token->token_type == Token::TokenType::MAT3X2
+        || parser->current_token->token_type == Token::TokenType::MAT3X3
+        || parser->current_token->token_type == Token::TokenType::MAT3X4
+        || parser->current_token->token_type == Token::TokenType::MAT4
+        || parser->current_token->token_type == Token::TokenType::MAT4X2
+        || parser->current_token->token_type == Token::TokenType::MAT4X3
+        || parser->current_token->token_type == Token::TokenType::MAT4X4
+        || parser->current_token->token_type == Token::TokenType::IDENTIFIER
+    ) {
         statement1 = parseVariableDeclaration(parser);
     } else statement1 = parseExpression(parser);
 
@@ -453,16 +540,14 @@ AST* parseBlock(Parser* parser) {
     return block;
 }
 
-// VAR_DECL → IDENTIFIER IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
+// VAR_DECL → TYPE IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
 AST* parseVariableDeclaration(Parser* parser) {
     AST* variables_definitions = initAST(AST::ASTType::VARIABLES_DECLARATIONS);
+    AST* type = parseType(parser);
 
-    char* type_string = copyString(parser->current_token->value);
-    parserReadToken(parser, Token::TokenType::IDENTIFIER);
     AST* identifier = parsePrimary(parser);
-
-    if(identifier->type != AST::ASTType::IDENTIFIER) {
-        printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->type);
+    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
         exit(-1);
 
     }
@@ -470,7 +555,7 @@ AST* parseVariableDeclaration(Parser* parser) {
     AST* var = initAST(AST::ASTType::VARIABLE_DECLARATION);
     var->var_def_identifier = identifier;
     var->var_def_channel = parseChannel(parser);
-    var->var_def_type = getTypeFromString(type_string);
+    var->var_def_type_identifier = type;
 
     if(parser->current_token->token_type == Token::TokenType::EQUALS) {
         parserReadToken(parser, Token::TokenType::EQUALS);
@@ -486,8 +571,8 @@ AST* parseVariableDeclaration(Parser* parser) {
 
         AST* identifier = parsePrimary(parser);
 
-        if(identifier->type != AST::ASTType::IDENTIFIER) {
-            printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->type);
+        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
             exit(-1);
 
         }
@@ -495,7 +580,7 @@ AST* parseVariableDeclaration(Parser* parser) {
         AST* var = initAST(AST::ASTType::VARIABLE_DECLARATION);
         var->var_def_identifier = identifier;
         var->var_def_channel = parseChannel(parser);
-        var->var_def_type = getTypeFromString(type_string);
+        var->var_def_type_identifier = type;
 
         if(parser->current_token->token_type == Token::TokenType::EQUALS) {
             parserReadToken(parser, Token::TokenType::EQUALS);
@@ -539,7 +624,7 @@ AST* parseExpression(Parser* parser) {
         parserReadToken(parser, Token::TokenType::EQUALS);
         AST* left = root;
 
-        if(root->type != AST::ASTType::IDENTIFIER) {
+        if(root->ast_type != AST::ASTType::IDENTIFIER) {
             printf("\033[33mWARNING: First operand of assignment isn't a identifier!\033[0m\n");
         }
 
@@ -664,7 +749,7 @@ AST* parseTerm(Parser* parser) {
 AST* parseCall(Parser* parser) {
     AST* root = parsePrimary(parser);
 
-    if(root->type == AST::ASTType::IDENTIFIER) {
+    if(root->ast_type == AST::ASTType::IDENTIFIER) {
         // Function call
         // TODO: Maybe this is a good spot to check if the function is
         // making a call to a defined function
@@ -803,7 +888,30 @@ AST* parseUnary(Parser* parser) {
 
 // PRIMARY → INTEGER | FLOAT | IDENTIFIER | 'true' | 'false' | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser) {
-    if(parser->current_token->token_type == Token::TokenType::IDENTIFIER && !isTokenType(parser->current_token)) {
+
+    if(
+        parser->current_token->token_type == Token::TokenType::INT
+        || parser->current_token->token_type == Token::TokenType::UINT
+        || parser->current_token->token_type == Token::TokenType::FLOAT
+        || parser->current_token->token_type == Token::TokenType::BOOL
+        || parser->current_token->token_type == Token::TokenType::MAT2
+        || parser->current_token->token_type == Token::TokenType::MAT2X2
+        || parser->current_token->token_type == Token::TokenType::MAT2X3
+        || parser->current_token->token_type == Token::TokenType::MAT2X4
+        || parser->current_token->token_type == Token::TokenType::MAT3
+        || parser->current_token->token_type == Token::TokenType::MAT3X2
+        || parser->current_token->token_type == Token::TokenType::MAT3X3
+        || parser->current_token->token_type == Token::TokenType::MAT3X4
+        || parser->current_token->token_type == Token::TokenType::MAT4
+        || parser->current_token->token_type == Token::TokenType::MAT4X2
+        || parser->current_token->token_type == Token::TokenType::MAT4X3
+        || parser->current_token->token_type == Token::TokenType::MAT4X4
+    ) {
+        printf("\033[31mUnsuported primary \033[0m'%s'\n", parser->current_token->value);
+        exit(-1);
+    }
+
+    if( parser->current_token->token_type == Token::TokenType::IDENTIFIER) {
         AST* root = initAST(AST::ASTType::IDENTIFIER);
         root->identifier = parser->current_token->value;
         parserReadToken(parser, Token::TokenType::IDENTIFIER);
@@ -837,13 +945,6 @@ AST* parsePrimary(Parser* parser) {
         return root;
     }
 
-
-    if(parser->current_token->token_type == Token::TokenType::FLOATING) {
-        AST* root = initAST(AST::ASTType::INTEGER);
-        root->integer_value = atoi(parser->current_token->value);
-        parserReadToken(parser, Token::TokenType::INTEGER);
-        return root;
-    }
 
     if(parser->current_token->token_type == Token::TokenType::OPEN_PARENTESIS) {
         parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
