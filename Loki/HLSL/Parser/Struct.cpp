@@ -16,14 +16,13 @@ ASTStruct* parseStruct(Parser* parser) {
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
         StructMember* member = new StructMember();
         member->member_interpolation_modifier = parseInterpolationModifier(parser);
-        member->member_base_type = parseBaseType(parser);
+        member->member_base_type = parseDeclarationBaseType(parser);
         member->member_name = parser->currentToken()->value;
         parser->readToken(Token::TOKEN_IDENTIFIER);
         strct->struct_members.push_back(member);
     }
 
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
-    parser->readToken(Token::TOKEN_SEMICOLON);
 
 
 }

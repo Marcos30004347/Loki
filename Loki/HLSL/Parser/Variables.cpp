@@ -71,7 +71,7 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     var_decl->var_decl_type_modifier = parseTypeModifier(parser);
 
     // Variable type
-    var_decl->var_decl_type = parseBaseType(parser);
+    var_decl->var_decl_type = parseDeclarationBaseType(parser);
 
     // Variable name
     var_decl->var_decl_name = parser->currentToken()->value;
@@ -111,11 +111,11 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
         while(parser->currentToken()->type != Token::Type::TOKEN_LESS) {
             parser->readToken(Token::Type::TOKEN_GREATER);
             Annotation* annotation = new Annotation();
-            annotation->annotation_type = parseBaseType(parser);
+            annotation->annotation_type = parseDeclarationBaseType(parser);
             annotation->annotation_name = parser->currentToken()->value;
             parser->readToken(Token::Type::TOKEN_IDENTIFIER);
         
-            annotation->annotation_value = parseLiteral(parser, var_decl->var_decl_type);
+            annotation->annotation_value = parseLiteral(parser);
             
             parser->readToken(parser->currentToken()->type);
             
@@ -129,16 +129,18 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::Type::TOKEN_EQUAL);
+        var_decl->var_decl_default_value = (ASTLiteral**)malloc(sizeof(ASTLiteral*)*var_decl->var_decl_array_size);
+        var_decl->var_decl_default_value[0] = parseLiteral(parser);
 
-        if(var_decl->var_decl_is_array) {
-            var_decl->var_decl_default_value = parseLiteralList(
-                parser,
-                var_decl->var_decl_type,
-                var_decl->var_decl_array_size
+        ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value[0]);
+        if(!value->is_initialization_list) {
+            if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type))
+            printf(
+                "Warning: variable array '%s' declared with invalid initializer!\n",
+                var_decl->var_decl_name
             );
         } else {
-            var_decl->var_decl_default_value = (Literal**)malloc(sizeof(Literal*)*var_decl->var_decl_array_size);
-            var_decl->var_decl_default_value[0] = parseLiteral(parser, var_decl->var_decl_type);
+            printf("Warning: Using value constructor for variable '%s'!\n", var_decl->var_decl_name);
         }
     }
 

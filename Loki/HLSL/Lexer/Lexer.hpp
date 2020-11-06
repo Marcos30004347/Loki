@@ -11,6 +11,7 @@ private:
     unsigned int head;
     char character;
     unsigned int line;
+    unsigned int source_size;
     std::vector<Token*> tokens;
 
     void skipWhiteSpaces();

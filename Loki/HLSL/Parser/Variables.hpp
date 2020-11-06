@@ -42,7 +42,7 @@ enum TypeModifier {
 // ANNOTATIONS -> '<'(TYPE IDENTIFIER '=' LITERAL';')*'>'
 struct Annotation {
     BaseType* annotation_type;
-    Literal* annotation_value;
+    ASTLiteral* annotation_value;
     char* annotation_name;
 };
 
@@ -66,8 +66,9 @@ struct ASTVarDecl: AST {
 
     std::vector<Annotation*> annotations;
 
-    Literal** var_decl_default_value; // array of literals
+    ASTLiteral** var_decl_default_value; // array of literals
 };
+
 
 // VARIABLE_DECLARATION ->  STORAGE_CLASS? TYPE_MODIFIER? TYPE IDENTIFIER('['INDEX']')? (':' SEMANTIC)? (':' PACK_OFFSET)? (':' REGISTER)?';' (ANNOTATIONS)? ('=' LITERAL)? ';'
 ASTVarDecl* parseVarDecl(Parser* parser);

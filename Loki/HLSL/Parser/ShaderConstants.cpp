@@ -40,7 +40,6 @@ ASTBuffer* parseBuffer(Parser* parser) {
     }
     
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
-    parser->readToken(Token::TOKEN_SEMICOLON);
     return buff;
 }
 

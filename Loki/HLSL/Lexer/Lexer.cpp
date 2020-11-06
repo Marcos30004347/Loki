@@ -11,22 +11,108 @@ Lexer::Lexer(const char* source) {
     this->tokens = std::vector<Token*>(0);
 
     unsigned int eof = strlen(source);
-
+    this->source_size = eof;
+    
     while(this->character != '\0' || this->head < eof) {
         this->skipWhiteSpaces();
         this->skipComments();
 
-    
+
         if(isdigit(this->character)) this->collectNumberLiteral();
         if(isalnum(this->character) || this->character == '_') this->collectIdentifier();
-
-
+    
+        if(this->character == '?') {
+            this->tokens.push_back(new Token(Token::TOKEN_INTERROGATION, "?", this->line));
+            this->advance();
+        } else
+        if(this->character == '~') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_TIL_EQUAL, "~=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_TIL, "~", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '%') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_PERCENT_EQUAL, "%=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_PERCENT, "%", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '&') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_AMPERSAND_EQUAL, "&=", this->line));
+                this->advance();
+            } else
+            if(this->head + 1 < eof && this->source[this->head + 1] == '&') {
+                this->tokens.push_back(new Token(Token::TOKEN_APERSAND_AMPERSAND, "&&", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_AMPERSAND, "&", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '|') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_PIPE_EQUAL, "|=", this->line));
+                this->advance();
+            } else
+            if(this->head + 1 < eof && this->source[this->head + 1] == '|') {
+                this->tokens.push_back(new Token(Token::TOKEN_PIPE_PIPE, "||", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_PIPE, "|", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '*') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_TIMES_EQUAL, "*=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_ASTERISK, "*", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '^') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_HAT_EQUAL, "^=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_HAT, "^", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '/') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_DIVIDE_EQUAL, "/=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_SLASH, "/", this->line));
+            }
+            this->advance();
+        } else
+        if(this->character == '!') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
+                this->tokens.push_back(new Token(Token::TOKEN_NOT_EQUAL, "!=", this->line));
+                this->advance();
+            } else {
+                this->tokens.push_back(new Token(Token::TOKEN_EXCLAMATION, "!", this->line));
+            }
+            this->advance();
+        } else
         if(this->character == '-') {
             if(this->head + 1 < eof && this->source[this->head + 1] == '-') {
                 this->tokens.push_back(new Token(Token::TOKEN_MINUS_MINUS, "--", this->line));
+                this->advance();
             } else 
             if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_MINUS_EQUAL, "-=", this->line));
+                this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_MINUS, "-", this->line));
             }
@@ -35,9 +121,11 @@ Lexer::Lexer(const char* source) {
         if(this->character == '+') {
             if(this->head + 1 < eof && this->source[this->head + 1] == '+') {
                 this->tokens.push_back(new Token(Token::TOKEN_PLUS_PLUS, "++", this->line));
+                this->advance();
             } else 
             if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_PLUS_EQUAL, "+=", this->line));
+                this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_PLUS, "+", this->line));
             }
@@ -46,6 +134,7 @@ Lexer::Lexer(const char* source) {
         if(this->character == '=') {
             if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_EQUAL_EQUAL, "==", this->line));
+                this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_EQUAL, "=", this->line));
             }
@@ -92,16 +181,36 @@ Lexer::Lexer(const char* source) {
             this->advance();
         } else 
         if(this->character == '>') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '>', this->line) {
+                if(this->head + 2 < eof && this->source[this->head + 2] == '=', this->line) {
+                    this->tokens.push_back(new Token(Token::TOKEN_GREATER_GREATER_EQUAL, ">>=", this->line));
+                    this->advance();
+                }else {
+                    this->tokens.push_back(new Token(Token::TOKEN_GREATER_GREATER, ">>", this->line));
+                }
+                this->advance();
+            } else
             if(this->head + 1 < eof && this->source[this->head + 1] == '=', this->line) {
                 this->tokens.push_back(new Token(Token::TOKEN_GREATER_OR_EQUAL, ">=", this->line));
+                this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_GREATER, ">", this->line));
             }
             this->advance();
         } else 
         if(this->character == '<') {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '<', this->line) {
+                if(this->head + 2 < eof && this->source[this->head + 2] == '=', this->line) {
+                    this->tokens.push_back(new Token(Token::TOKEN_LESS_LESS_EQUAL, "<<=", this->line));
+                    this->advance();
+                }else {
+                    this->tokens.push_back(new Token(Token::TOKEN_LESS_LESS, "<<", this->line));
+                }
+                this->advance();
+            } else
             if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_LESS_OR_EQUAL, "<=", this->line));
+                this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_LESS, "<", this->line));
             }
@@ -159,6 +268,9 @@ void Lexer::collectIdentifier() {
     }
 
     // Reserved keywords
+    if(strcmp(value, "default") == 0) return this->tokens.push_back(new Token(Token::TOKEN_DEFAULT, value, this->line));
+    if(strcmp(value, "case") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CASE, value, this->line));
+    if(strcmp(value, "switch") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SWITCH, value, this->line));
     if(strcmp(value, "register") == 0) return this->tokens.push_back(new Token(Token::TOKEN_REGISTER, value, this->line));
     if(strcmp(value, "static") == 0) return this->tokens.push_back(new Token(Token::TOKEN_STATIC, value, this->line));
     if(strcmp(value, "extern") == 0) return this->tokens.push_back(new Token(Token::TOKEN_EXTERN, value, this->line));
@@ -198,45 +310,132 @@ void Lexer::collectIdentifier() {
     // TYPES
     if(strcmp(value, "string") == 0) return this->tokens.push_back(new Token(Token::TOKEN_STRING, value, this->line));
     if(strcmp(value, "void") == 0) return this->tokens.push_back(new Token(Token::TOKEN_VOID, value, this->line));
+
+    if(strcmp(value, "half1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
+    if(strcmp(value, "half") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
+    if(strcmp(value, "half2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2, value, this->line));
+    if(strcmp(value, "half3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3, value, this->line));
+    if(strcmp(value, "half4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4, value, this->line));
+    if(strcmp(value, "half1x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF1x1, value, this->line));
+    if(strcmp(value, "half1x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF1x2, value, this->line));
+    if(strcmp(value, "half1x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF1x3, value, this->line));
+    if(strcmp(value, "half1x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF1x4, value, this->line));
+    if(strcmp(value, "half2x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2x1, value, this->line));
+    if(strcmp(value, "half2x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2x2, value, this->line));
+    if(strcmp(value, "half2x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2x3, value, this->line));
+    if(strcmp(value, "half2x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2x4, value, this->line));
+    if(strcmp(value, "half3x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3x1, value, this->line));
+    if(strcmp(value, "half3x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3x2, value, this->line));
+    if(strcmp(value, "half3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3x3, value, this->line));
+    if(strcmp(value, "half3x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3x4, value, this->line));
+    if(strcmp(value, "half4x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4x1, value, this->line));
+    if(strcmp(value, "half4x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4x2, value, this->line));
+    if(strcmp(value, "half4x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4x3, value, this->line));
+    if(strcmp(value, "half4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4x4, value, this->line));
+
+
+    if(strcmp(value, "bool") == 0) return this->tokens.push_back(new Token(Token::TOKEN_BOOL, value, this->line));
+    if(strcmp(value, "bool1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_BOOL, value, this->line));
+    if(strcmp(value, "int") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT, value, this->line));
+
     if(strcmp(value, "float1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "float") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "float") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "float2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2, value, this->line));
     if(strcmp(value, "float3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3, value, this->line));
     if(strcmp(value, "float4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4, value, this->line));
+    if(strcmp(value, "float1x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x1, value, this->line));
+    if(strcmp(value, "float1x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x2, value, this->line));
+    if(strcmp(value, "float1x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x3, value, this->line));
+    if(strcmp(value, "float1x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x4, value, this->line));
+    if(strcmp(value, "float2x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x1, value, this->line));
+    if(strcmp(value, "float2x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x2, value, this->line));
+    if(strcmp(value, "float2x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x3, value, this->line));
+    if(strcmp(value, "float2x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x4, value, this->line));
+    if(strcmp(value, "float3x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x1, value, this->line));
+    if(strcmp(value, "float3x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x2, value, this->line));
     if(strcmp(value, "float3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x3, value, this->line));
+    if(strcmp(value, "float3x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x4, value, this->line));
+    if(strcmp(value, "float4x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x1, value, this->line));
+    if(strcmp(value, "float4x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x2, value, this->line));
+    if(strcmp(value, "float4x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x3, value, this->line));
     if(strcmp(value, "float4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x4, value, this->line));
+
+
+
+
+    if(strcmp(value, "int1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT, value, this->line));
+    if(strcmp(value, "int2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2, value, this->line));
+    if(strcmp(value, "int3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3, value, this->line));
+    if(strcmp(value, "int4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4, value, this->line));
+    if(strcmp(value, "int1x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT1x1, value, this->line));
+    if(strcmp(value, "int1x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT1x2, value, this->line));
+    if(strcmp(value, "int1x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT1x3, value, this->line));
+    if(strcmp(value, "int1x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT1x4, value, this->line));
+    if(strcmp(value, "int2x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2x1, value, this->line));
+    if(strcmp(value, "int2x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2x2, value, this->line));
+    if(strcmp(value, "int2x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2x3, value, this->line));
+    if(strcmp(value, "int2x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2x4, value, this->line));
+    if(strcmp(value, "int3x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3x1, value, this->line));
+    if(strcmp(value, "int3x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3x2, value, this->line));
+    if(strcmp(value, "int3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3x3, value, this->line));
+    if(strcmp(value, "int3x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3x4, value, this->line));
+    if(strcmp(value, "int4x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4x1, value, this->line));
+    if(strcmp(value, "int4x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4x2, value, this->line));
+    if(strcmp(value, "int4x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4x3, value, this->line));
+    if(strcmp(value, "int4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4x4, value, this->line));
+
+
+
+
     if(strcmp(value, "double1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "double") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "double") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
     if(strcmp(value, "double2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2, value, this->line));
     if(strcmp(value, "double3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3, value, this->line));
     if(strcmp(value, "double4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4, value, this->line));
+    if(strcmp(value, "double1x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x1, value, this->line));
+    if(strcmp(value, "double1x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x2, value, this->line));
+    if(strcmp(value, "double1x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x3, value, this->line));
+    if(strcmp(value, "double1x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT1x4, value, this->line));
+    if(strcmp(value, "double2x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x1, value, this->line));
+    if(strcmp(value, "double2x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x2, value, this->line));
+    if(strcmp(value, "double2x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x3, value, this->line));
+    if(strcmp(value, "double2x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2x4, value, this->line));
+    if(strcmp(value, "double3x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x1, value, this->line));
+    if(strcmp(value, "double3x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x2, value, this->line));
     if(strcmp(value, "double3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x3, value, this->line));
+    if(strcmp(value, "double3x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x4, value, this->line));
+    if(strcmp(value, "double4x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x1, value, this->line));
+    if(strcmp(value, "double4x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x2, value, this->line));
+    if(strcmp(value, "double4x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x3, value, this->line));
     if(strcmp(value, "double4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x4, value, this->line));
-    if(strcmp(value, "half1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
-    if(strcmp(value, "half") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
-    if(strcmp(value, "half2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2, value, this->line));
-    if(strcmp(value, "half3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3, value, this->line));
-    if(strcmp(value, "half4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4, value, this->line));
-    if(strcmp(value, "half3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF3x3, value, this->line));
-    if(strcmp(value, "half4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF4x4, value, this->line));
-    if(strcmp(value, "bool") == 0) return this->tokens.push_back(new Token(Token::TOKEN_BOOL, value, this->line));
-    if(strcmp(value, "bool1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_BOOL, value, this->line));
-    if(strcmp(value, "int") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT, value, this->line));
-    if(strcmp(value, "int1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT, value, this->line));
-    if(strcmp(value, "int2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT2, value, this->line));
-    if(strcmp(value, "int3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3, value, this->line));
-    if(strcmp(value, "int4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4, value, this->line));
-    if(strcmp(value, "int3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT3X3, value, this->line));
-    if(strcmp(value, "int4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INT4X4, value, this->line));
+
+
+
     if(strcmp(value, "uint1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT, value, this->line));
     if(strcmp(value, "uint") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT, value, this->line));
     if(strcmp(value, "uint2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT2, value, this->line));
     if(strcmp(value, "uint3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3, value, this->line));
     if(strcmp(value, "uint4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4, value, this->line));
-    if(strcmp(value, "uint3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3X3, value, this->line));
-    if(strcmp(value, "uint4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4X4, value, this->line));
+    if(strcmp(value, "uint1x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT1x1, value, this->line));
+    if(strcmp(value, "uint1x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT1x2, value, this->line));
+    if(strcmp(value, "uint1x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT1x3, value, this->line));
+    if(strcmp(value, "uint1x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT1x4, value, this->line));
+    if(strcmp(value, "uint2x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT2x1, value, this->line));
+    if(strcmp(value, "uint2x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT2x2, value, this->line));
+    if(strcmp(value, "uint2x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT2x3, value, this->line));
+    if(strcmp(value, "uint2x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT2x4, value, this->line));
+    if(strcmp(value, "uint3x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3x1, value, this->line));
+    if(strcmp(value, "uint3x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3x2, value, this->line));
+    if(strcmp(value, "uint3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3x3, value, this->line));
+    if(strcmp(value, "uint3x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3x4, value, this->line));
+    if(strcmp(value, "uint4x1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4x1, value, this->line));
+    if(strcmp(value, "uint4x2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4x2, value, this->line));
+    if(strcmp(value, "uint4x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4x3, value, this->line));
+    if(strcmp(value, "uint4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4x4, value, this->line));
+
+
     if(strcmp(value, "dword") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT, value, this->line));
     if(strcmp(value, "matrix") == 0) return this->tokens.push_back(new Token(Token::TOKEN_MATRIX, value, this->line));
     if(strcmp(value, "vector") == 0) return this->tokens.push_back(new Token(Token::TOKEN_VECTOR, value, this->line));
@@ -279,11 +478,11 @@ void Lexer::advance() {
 }
 
 void Lexer::skipComments() {
-    if(this->character == '/') {
+    if(this->character == '/' ) {
 
-        this->advance();
-
-        if(this->character == '/') {
+        if(this->head < this->source_size - 1 && this->source[this->head + 1] == '/') {
+            this->advance();
+            this->advance();
             // Single line comment
             while(this->character != 10) {
                 this->advance();

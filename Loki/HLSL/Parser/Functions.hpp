@@ -1,4 +1,7 @@
 // https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-function-syntax
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
 #include "AST.hpp"
 #include "BaseType.hpp"
 #include "Semantics.hpp"
@@ -32,7 +35,7 @@ struct FunctionArgument {
     char* argument_name;
     Semantic* argument_semantic;
     InterpolationModifier argument_interpolation_modifier;
-    Literal* argument_initializer;
+    ASTLiteral* argument_initializer;
 };
 
 // CLIP_PLANES -> clipplanes((NUMBER)+6)
@@ -53,7 +56,10 @@ struct ASTFunctionDeclaration: AST {
     ASTBlock* func_decl_body;
 };
 
+
 // FUNC_STORAGE_CLASS CLIP_PLANES? ('precise')? TYPE INTENTIFIER '(' ARGUMENT_LIST ')' (':' SEMANTIC)? BLOCK
 ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser);
 
 }
+
+#endif

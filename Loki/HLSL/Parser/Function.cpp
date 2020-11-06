@@ -5,13 +5,7 @@
 
 namespace HLSL {
 
-enum Modifier {
-    MODIFIER_NONE,
-    MODIFIER_IN,
-    MODIFIER_INOUT,
-    MODIFIER_OUT,
-    MODIFIER_UNIFORM,
-};
+
 Modifier parseModifier(Parser* parser) {
     Modifier modifier = Modifier::MODIFIER_NONE;
     switch (parser->currentToken()->type) {
@@ -40,7 +34,7 @@ Modifier parseModifier(Parser* parser) {
 FunctionArgument* parseArgument(Parser* parser) {
     FunctionArgument* argument = new FunctionArgument();
     argument->argument_modifier = parseModifier(parser);
-    argument->argument_type = parseBaseType(parser);
+    argument->argument_type = parseDeclarationBaseType(parser);
     argument->argument_name = parser->currentToken()->value;
     parser->readToken(Token::TOKEN_IDENTIFIER);
     if(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
@@ -58,7 +52,7 @@ FunctionArgument* parseArgument(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::TOKEN_EQUAL);
-        argument->argument_initializer = parseLiteral(parser, argument->argument_type);
+        argument->argument_initializer = parseLiteral(parser);
     }
 
     return argument;
@@ -100,7 +94,7 @@ ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     printf("Warning: precise func decl inst being parsed!\n");
 
     func_decl->precise = false;
-    func_decl->func_decl_return_type = parseBaseType(parser);
+    func_decl->func_decl_return_type = parseDeclarationBaseType(parser);
     func_decl->func_decl_name = parser->currentToken()->value;
 
     parser->readToken(Token::TOKEN_IDENTIFIER);
