@@ -166,6 +166,7 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "tbuffer") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TBUFFER, value, this->line));
     if(strcmp(value, "in") == 0) return this->tokens.push_back(new Token(Token::TOKEN_IN, value, this->line));
     if(strcmp(value, "inout") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INOUT, value, this->line));
+    if(strcmp(value, "out") == 0) return this->tokens.push_back(new Token(Token::TOKEN_OUT, value, this->line));
     if(strcmp(value, "false") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FALSE, value, this->line));
     if(strcmp(value, "true") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TRUE, value, this->line));
     if(strcmp(value, "if") == 0) return this->tokens.push_back(new Token(Token::TOKEN_IF, value, this->line));
@@ -177,6 +178,9 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "discard") == 0) return this->tokens.push_back(new Token(Token::TOKEN_DISCARD, value, this->line));
     if(strcmp(value, "struct") == 0) return this->tokens.push_back(new Token(Token::TOKEN_STRUCT, value, this->line));
     if(strcmp(value, "return") == 0) return this->tokens.push_back(new Token(Token::TOKEN_RETURN, value, this->line));
+    if(strcmp(value, "inline") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INLINE, value, this->line));
+    if(strcmp(value, "packoffset") == 0) return this->tokens.push_back(new Token(Token::TOKEN_PACKOFFSET, value, this->line));
+    if(strcmp(value, "clipplanes") == 0) return this->tokens.push_back(new Token(Token::TOKEN_PACKOFFSET, value, this->line));
 
     // STORAGE_CLASS
     if(strcmp(value, "uniform") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UNIFORM, value, this->line));
@@ -187,6 +191,9 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "groupshared") == 0) return this->tokens.push_back(new Token(Token::TOKEN_GROUPSHARED, value, this->line));
     if(strcmp(value, "volatile") == 0) return this->tokens.push_back(new Token(Token::TOKEN_VOLATILE, value, this->line));
     if(strcmp(value, "static") == 0) return this->tokens.push_back(new Token(Token::TOKEN_STATIC, value, this->line));
+    if(strcmp(value, "linear") == 0) return this->tokens.push_back(new Token(Token::TOKEN_LINEAR, value, this->line));
+    if(strcmp(value, "centroid") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CENTROID, value, this->line));
+    if(strcmp(value, "sample") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SAMPLE, value, this->line));
 
     // TYPES
     if(strcmp(value, "string") == 0) return this->tokens.push_back(new Token(Token::TOKEN_STRING, value, this->line));
@@ -199,6 +206,14 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "float4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4, value, this->line));
     if(strcmp(value, "float3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x3, value, this->line));
     if(strcmp(value, "float4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x4, value, this->line));
+    if(strcmp(value, "double1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
+    if(strcmp(value, "double") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
+    if(strcmp(value, "double") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT, value, this->line));
+    if(strcmp(value, "double2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT2, value, this->line));
+    if(strcmp(value, "double3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3, value, this->line));
+    if(strcmp(value, "double4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4, value, this->line));
+    if(strcmp(value, "double3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT3x3, value, this->line));
+    if(strcmp(value, "double4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_FLOAT4x4, value, this->line));
     if(strcmp(value, "half1") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
     if(strcmp(value, "half") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF, value, this->line));
     if(strcmp(value, "half2") == 0) return this->tokens.push_back(new Token(Token::TOKEN_HALF2, value, this->line));
@@ -222,10 +237,9 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "uint4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4, value, this->line));
     if(strcmp(value, "uint3x3") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT3X3, value, this->line));
     if(strcmp(value, "uint4x4") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT4X4, value, this->line));
-    if(strcmp(value, "texture") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE, value, this->line));
-    if(strcmp(value, "sampler2d") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SAMPLER2D, value, this->line));
-    if(strcmp(value, "samplerCUBE") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SAMPLERCUBE, value, this->line));
-
+    if(strcmp(value, "dword") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UINT, value, this->line));
+    if(strcmp(value, "matrix") == 0) return this->tokens.push_back(new Token(Token::TOKEN_MATRIX, value, this->line));
+    if(strcmp(value, "vector") == 0) return this->tokens.push_back(new Token(Token::TOKEN_VECTOR, value, this->line));
 
     // Type modifier
     if(strcmp(value, "row_major") == 0) return this->tokens.push_back(new Token(Token::TOKEN_ROW_MAJOR, value, this->line));

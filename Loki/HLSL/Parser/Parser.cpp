@@ -9,6 +9,11 @@ Parser::Parser(Lexer* lexer) {
     this->current_token_index = 0;
 }
 
+bool Parser::isNumeric() {
+    return this->currentToken()->type == Token::TOKEN_FLOAT_LITERAL || this->currentToken()->type == Token::TOKEN_INT_LITERAL;
+}
+
+
 void Parser::readNumeric() {
     if(
         this->currentToken()->type != Token::TOKEN_FLOAT_LITERAL

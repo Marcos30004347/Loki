@@ -14,6 +14,7 @@ struct Register {
 
     bool register_has_subcomponent;
     int register_subcomponent;
+    int register_number;
 };
 
 // REGISTER -> 'register' '(' PROFILE, ('b' | 't' | 'c' | 's' | 'u' )('['INTEGER_LITERAL']')? ')'

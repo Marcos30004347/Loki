@@ -49,7 +49,7 @@ struct Annotation {
 
 
 struct ASTVarDecl: AST {
-    ASTVarDecl(NodeType type);
+    ASTVarDecl();
 
     StorageClass var_decl_storage_class;
     TypeModifier var_decl_type_modifier;
@@ -69,7 +69,7 @@ struct ASTVarDecl: AST {
     Literal** var_decl_default_value; // array of literals
 };
 
-// VARIABLE ->  STORAGE_CLASS? TYPE_MODIFIER? TYPE IDENTIFIER('['INDEX']')? (':' SEMANTIC)? (':' PACK_OFFSET)? (':' REGISTER)?';' (ANNOTATIONS)? ('=' LITERAL)? ';'
+// VARIABLE_DECLARATION ->  STORAGE_CLASS? TYPE_MODIFIER? TYPE IDENTIFIER('['INDEX']')? (':' SEMANTIC)? (':' PACK_OFFSET)? (':' REGISTER)?';' (ANNOTATIONS)? ('=' LITERAL)? ';'
 ASTVarDecl* parseVarDecl(Parser* parser);
 
 }

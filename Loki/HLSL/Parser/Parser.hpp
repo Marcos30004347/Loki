@@ -14,6 +14,7 @@ public:
 
     void readToken(Token::Type tokenType);
     void readNumeric();
+    bool isNumeric();
 
     Token* currentToken();
     Token* previousToken();

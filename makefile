@@ -12,6 +12,7 @@ all:
 	Loki/HLSL/Parser/Register.cpp \
 	Loki/HLSL/Parser/Semantics.cpp \
 	Loki/HLSL/Parser/Variables.cpp \
+	Loki/HLSL/Parser/Buffer.cpp \
 	-o loki
 
 clean:

@@ -37,10 +37,9 @@ public:
         TOKEN_UINT4,
         TOKEN_UINT3X3,
         TOKEN_UINT4X4,
-        TOKEN_TEXTURE,
-        TOKEN_SAMPLER2D,
-        TOKEN_SAMPLERCUBE,
-
+        TOKEN_MATRIX,
+        TOKEN_VECTOR,
+        
         // FLOW CONTROL
         TOKEN_IF,
         TOKEN_ELSE,
@@ -61,6 +60,7 @@ public:
         TOKEN_IN,
         TOKEN_INOUT,
         TOKEN_TWO_POINTS,
+        TOKEN_OUT,
     
         // OPERATORS
         TOKEN_LESS,
@@ -106,7 +106,11 @@ public:
         TOKEN_GROUPSHARED,
         TOKEN_VOLATILE,
         TOKEN_UNIFORM,
-        
+        TOKEN_LINEAR,
+        TOKEN_CENTROID,
+        TOKEN_SAMPLE,
+        TOKEN_INLINE,
+    
         // TYPE_MODIFIER
         TOKEN_CONST,
         TOKEN_ROW_MAJOR,
@@ -114,6 +118,8 @@ public:
 
         // PACK_OFFSET
         TOKEN_PACKOFFSET,
+
+        TOKEN_CLIPPLANES,
 
         TOKEN_EOF,
     };

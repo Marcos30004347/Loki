@@ -5,7 +5,7 @@
 
 namespace HLSL {
 
-ASTVarDecl::ASTVarDecl(NodeType type): AST{type} {}
+ASTVarDecl::ASTVarDecl(): AST{NodeType::NODE_TYPE_VARIABLE_DECLARATION} {}
 
 StorageClass parseStorageClass(Parser* parser) {
     switch(parser->currentToken()->type) {
@@ -57,7 +57,7 @@ TypeModifier parseTypeModifier(Parser* parser) {
 
 
 ASTVarDecl* parseVarDecl(Parser* parser) {
-    ASTVarDecl* var_decl = new ASTVarDecl(NodeType::NODE_TYPE_VARIABLE_DECLARATION);
+    ASTVarDecl* var_decl = new ASTVarDecl();
     var_decl->annotations = std::vector<Annotation*>(0);
     var_decl->var_decl_pack_offset = nullptr;
     var_decl->var_decl_register = nullptr;
@@ -92,6 +92,7 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     // Variable PackOffset/Register/Semantic
     while(parser->currentToken()->type == Token::Type::TOKEN_TWO_POINTS) {
+
         parser->readToken(Token::Type::TOKEN_TWO_POINTS);
         switch (parser->currentToken()->type) {
         case Token::Type::TOKEN_PACKOFFSET:

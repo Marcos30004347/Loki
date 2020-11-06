@@ -1,0 +1,7 @@
+add HLSL pre processor
+add Texture objects (https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-to-type)
+add HLSL remaining floatixj types
+add HLSL remaining intixj types
+add HLSL remaining uintixj types
+add HLSL remaining halfixj types
+add HLSL remaining doubleixj types

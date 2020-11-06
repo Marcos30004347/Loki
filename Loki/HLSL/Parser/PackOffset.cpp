@@ -9,15 +9,14 @@ PackOffset* parsePackOffset(Parser* parser) {
     parser->readToken(Token::TOKEN_PACKOFFSET);
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
 
+
     if(parser->currentToken()->value[0] != 'c') {
         printf("Unknow Packing '%s' at line '%i'\n", parser->currentToken()->value, parser->currentToken()->line);
         exit(-1);
     }
-
+    offset->pack_offset_sumcomponent = atoi(&parser->currentToken()->value[1]);
     parser->readToken(Token::TOKEN_IDENTIFIER);
-    offset->pack_offset_sumcomponent = atoi(parser->currentToken()->value);
-    parser->readToken(Token::TOKEN_INT_LITERAL);
-    parser->readToken(Token::TOKEN_INT_LITERAL);
+
     if(parser->currentToken()->type == Token::TOKEN_POINT) {
         parser->readToken(Token::TOKEN_POINT);
         switch (parser->currentToken()->value[0]) {

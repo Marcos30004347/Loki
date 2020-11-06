@@ -1,4 +1,7 @@
 #include "BaseType.hpp"
+#include <cstdlib>
+#include <cctype>
+
 namespace HLSL {
 
 BaseType* parseBaseType(Parser* parser) {
@@ -6,6 +9,26 @@ BaseType* parseBaseType(Parser* parser) {
     type->name = parser->currentToken()->value;
 
     switch(parser->currentToken()->type) {
+        case Token::Type::TOKEN_MATRIX:
+            type->is_matrix = true;
+            parser->readToken(Token::TOKEN_MATRIX);
+            if(parser->currentToken()->type == Token::TOKEN_LESS) {
+                parser->readToken(Token::TOKEN_LESS);
+                BaseType* t = parseBaseType(parser);
+                type->type = t->type;
+                delete t;
+                parser->readToken(Token::TOKEN_COMMA);
+                type->rows = atoi(parser->currentToken()->value);
+                parser->readToken(Token::TOKEN_COMMA);
+                type->rows = atoi(parser->currentToken()->value);
+                parser->readToken(Token::TOKEN_GREATER);
+            } else {
+                type->type = BaseType::BASE_TYPE_FLOAT;
+                type->rows = 4;
+                type->cols = 4;
+            }
+            break;
+            
         case Token::Type::TOKEN_VOID:    
             parser->readToken(Token::Type::TOKEN_VOID);
             type->type = BaseType::BASE_TYPE_VOID;
@@ -109,18 +132,6 @@ BaseType* parseBaseType(Parser* parser) {
         case Token::Type::TOKEN_BOOL:    
             parser->readToken(Token::Type::TOKEN_BOOL);
             type->type = BaseType::BASE_TYPE_BOOL;
-            break;
-        case Token::Type::TOKEN_TEXTURE:    
-            parser->readToken(Token::Type::TOKEN_TEXTURE);
-            type->type = BaseType::BASE_TYPE_TEXTURE;
-            break;
-        case Token::Type::TOKEN_SAMPLER2D:    
-            parser->readToken(Token::Type::TOKEN_SAMPLER2D);
-            type->type = BaseType::BASE_TYPE_SAMPLER2D;
-            break;
-        case Token::Type::TOKEN_SAMPLERCUBE:    
-            parser->readToken(Token::Type::TOKEN_SAMPLERCUBE);
-            type->type = BaseType::BASE_TYPE_SAMPLER_CUBE;
             break;
         case Token::Type::TOKEN_STRING:    
             parser->readToken(Token::Type::TOKEN_STRING);

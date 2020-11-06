@@ -1,6 +1,6 @@
 #include "Loki/HLSL/Lexer/Lexer.hpp"
 #include "Loki/HLSL/Parser/Parser.hpp"
-#include "Loki/HLSL/Parser/Variables.hpp"
+#include "Loki/HLSL/Parser/Buffer.hpp"
 
 #include <fstream>
 #include <string>
@@ -8,7 +8,14 @@
 
 
 int main(int argc, char *argv[]) {
-    HLSL::Lexer* lexer = new HLSL::Lexer("float4x4 variable : SV_POSITION = {float(1),2,3,4,1,2,3,4,1,2,float(3),4,1,2,3,4};");
+    HLSL::Lexer* lexer = new HLSL::Lexer(
+        "cbuffer MyBuffer : register(b3)"
+        "{"
+        "float4 Element1 : packoffset(c0);"
+        "float1 Element2 : packoffset(c1);"
+        "float1 Element3 : packoffset(c1.y);"
+        "};"
+    );
 
     // for(int i=0; i<lexer->getTokensCount(); i++) {
     //     HLSL::Token* token = lexer->getToken(i);
@@ -17,16 +24,7 @@ int main(int argc, char *argv[]) {
     // }
 
     HLSL::Parser* parser = new HLSL::Parser(lexer);
-    HLSL::ASTVarDecl* var_decl = parseVarDecl(parser);
-
-    printf("%i\n", var_decl->var_decl_storage_class);
-    printf("%s\n", var_decl->var_decl_type->name);
-    printf("%s\n", var_decl->var_decl_name);
-    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[0]);
-    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[1]);
-    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[3]);
-    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[4]);
-    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[5]);
+    HLSL::ASTBuffer* buffer = HLSL::parseBuffer(parser);
 
     return 0;
 }

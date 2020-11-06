@@ -10,31 +10,34 @@ struct BaseType {
     enum Type {
         BASE_TYPE_UNKNOWN,
         BASE_TYPE_VOID,   
-     
+    
+        // SCALARS
         BASE_TYPE_FLOAT,
+        BASE_TYPE_HALF,
+        BASE_TYPE_INT,
+        BASE_TYPE_UINT,
+        BASE_TYPE_BOOL,
+    
         BASE_TYPE_FLOAT2,
         BASE_TYPE_FLOAT3,
         BASE_TYPE_FLOAT4,
+    
         BASE_TYPE_FLOAT3x3,
         BASE_TYPE_FLOAT4x4,
     
-        BASE_TYPE_HALF,
         BASE_TYPE_HALF2,
         BASE_TYPE_HALF3,
         BASE_TYPE_HALF4,
         BASE_TYPE_HALF3x3,
         BASE_TYPE_HALF4X4,
     
-        BASE_TYPE_INT,
         BASE_TYPE_INT2,
         BASE_TYPE_INT3,
         BASE_TYPE_INT4,
         BASE_TYPE_INT3X3,
         BASE_TYPE_INT4X4,
 
-        BASE_TYPE_BOOL,
         
-        BASE_TYPE_UINT,
         BASE_TYPE_UINT2,
         BASE_TYPE_UINT3,
         BASE_TYPE_UINT4,
@@ -52,6 +55,13 @@ struct BaseType {
 
     char* name;
     Type type;
+
+    bool is_matrix;
+    bool is_vector;
+
+    unsigned int rows;
+    unsigned int cols;
+    
 };
 
 BaseType* parseBaseType(Parser* parser);
