@@ -1,0 +1,12 @@
+
+uniform int teste;
+
+ctx vertex {
+    void main() {}
+};
+
+export {
+    context: vertex,
+    type: vertex,
+    main: main
+};

@@ -39,4 +39,5 @@ void addSwitchCase(AST* swtch, AST* cs);
 char* copyString(const char* str);
 char* getIdentifierString(AST* node);
 char* append(char* a, const char* b);
+Type getTypeFromString(const char* type_id);
 #endif

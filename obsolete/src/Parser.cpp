@@ -18,13 +18,23 @@ Parser* initParser(Lexer* lexer) {
 }
 
 
-// DECLARATIONS → DECLARATION* EOF
+// DECLARATIONS → (DECLARATION | CONTEXT | EXPORT)* EOF
 AST* parseStart(Parser* parser) {
     AST* declarations = initAST(AST::ASTType::DECLARATIONS);
 
     while(parser->current_token->token_type != Token::TokenType::TOKEN_EOF) {
-        AST* declaration = parseDeclaration(parser);
-        addDeclaration(declarations, declaration);
+        switch (parser->current_token->token_type)
+        {
+        case Token::TokenType::CONTEXT:
+            addDeclaration(declarations, parseContext(parser));
+            break;
+        case Token::TokenType::EXPORT:
+            addDeclaration(declarations, parseExport(parser));
+            break;
+        default:
+            addDeclaration(declarations, parseDeclaration(parser));
+            break;
+        }
     }
 
     return declarations;
@@ -37,75 +47,75 @@ AST* parseType(Parser* parser) {
     switch(parser->current_token->token_type) {
         case Token::TokenType::VOID:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_VOID;
+            ast->type_type = Type::TYPE_VOID;
             break;
         case Token::TokenType::FLOAT:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_FLOAT;
+            ast->type_type = Type::TYPE_FLOAT;
             break;
         case Token::TokenType::INT:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_INT;
+            ast->type_type = Type::TYPE_INT;
             break;
         case Token::TokenType::UINT:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_UINT;
+            ast->type_type = Type::TYPE_UINT;
             break;
         case Token::TokenType::BOOL:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_BOOL;
+            ast->type_type = Type::TYPE_BOOL;
             break;
         case Token::TokenType::MAT2:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT2;
+            ast->type_type = Type::TYPE_MAT2;
             break;
         case Token::TokenType::MAT2X2:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT2X2;
+            ast->type_type = Type::TYPE_MAT2X2;
             break;
         case Token::TokenType::MAT2X3:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT2X3;
+            ast->type_type = Type::TYPE_MAT2X3;
             break;
         case Token::TokenType::MAT2X4:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT2X4;
+            ast->type_type = Type::TYPE_MAT2X4;
             break;
         case Token::TokenType::MAT3:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT3;
+            ast->type_type = Type::TYPE_MAT3;
             break;
         case Token::TokenType::MAT3X2:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT3X2;
+            ast->type_type = Type::TYPE_MAT3X2;
             break;
         case Token::TokenType::MAT3X3:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT3X3;
+            ast->type_type = Type::TYPE_MAT3X3;
             break;
         case Token::TokenType::MAT3X4:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT3X4;
+            ast->type_type = Type::TYPE_MAT3X4;
             break;
         case Token::TokenType::MAT4:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT4;
+            ast->type_type = Type::TYPE_MAT4;
             break;
         case Token::TokenType::MAT4X2:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT4X2;
+            ast->type_type = Type::TYPE_MAT4X2;
             break;
         case Token::TokenType::MAT4X3:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT4X3;
+            ast->type_type = Type::TYPE_MAT4X3;
             break;
         case Token::TokenType::MAT4X4:
             ast = initAST(AST::ASTType::TYPE);
-            ast->type_type = BuildInType::TYPE_MAT4X4;
+            ast->type_type = Type::TYPE_MAT4X4;
             break;
         case Token::TokenType::IDENTIFIER:
             ast = initAST(AST::ASTType::IDENTIFIER);
-            ast->type_type = BuildInType::TYPE_STRUCT;
+            ast->type_type = Type::TYPE_STRUCT;
             ast->type_struct_identifier = parsePrimary(parser);
             break;
         default: break;
@@ -152,19 +162,21 @@ AST* parseFuncVarDecl(Parser* parser) {
 }
 
 
-// DECLARATION → FUNC_DECL | VAR_DECL | STRUCT_DECL
+// DECLARATION → FUNC_VAR_DECL | STRUCT_DECL | UNIFORM
 AST* parseDeclaration(Parser* parser) {
-    if(parser->current_token->token_type == Token::TokenType::STRUCT) {
-        AST* struct_sttmnt = parseStruct(parser);
-        return struct_sttmnt;
+    switch (parser->current_token->token_type) {
+        case Token::TokenType::STRUCT:  return parseStruct(parser);
+        case Token::TokenType::UNIFORM: return parseUniform(parser);
+        default:                        return parseFuncVarDecl(parser);
     }
 
-    AST* decl = parseFuncVarDecl(parser);
-    return decl;
+    printf("\033[1mERROR: Unknow declaration at line %i!\033[0m\n", parser->lexer->line);
+    exit(-1);
+    return nullptr;
 }
 
 
-// STRUCT → 'struct' IDENTIFIER '{' DECLARATIONS '}'';'
+// STRUCT → 'struct' IDENTIFIER '{' VAR_DECL '}'';'
 AST* parseStruct(Parser* parser) {
     AST* root = initAST(AST::ASTType::STRUCT);
     parserReadToken(parser, Token::TokenType::STRUCT);
@@ -177,17 +189,17 @@ AST* parseStruct(Parser* parser) {
 
     root->struct_identifier = identifier;
 
-    parserReadToken(parser, Token::TokenType::OPEN_BRACKET);
+    parserReadToken(parser, Token::TokenType::OPEN_CURLY_BRACES);
     AST* declarations = initAST(AST::ASTType::DECLARATIONS);
 
-    while(parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET) {
-        AST* decl = parseFuncVarDecl(parser);
+    while(parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
+        AST* decl = parseVariableDeclaration(parser);
         addDeclaration(declarations, decl);
     }
 
     root->struct_declarations = declarations;
 
-    parserReadToken(parser, Token::TokenType::CLOSE_BRACKET);
+    parserReadToken(parser, Token::TokenType::CLOSE_CURLY_BRACES);
     parserReadToken(parser, Token::TokenType::SEMICOLON);
     return root;
 }
@@ -236,7 +248,7 @@ AST* parseChannel(Parser* parser) {
     return root;
 }
 
-// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER CHANNEL? ( "," TYPE IDENTIFIER CHANNEL? )*')' BLOCK
+// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER ( "," TYPE IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser) {
     AST* root = initAST(AST::ASTType::FUNCTION_DECLARATION);
 
@@ -256,7 +268,6 @@ AST* parseFunctionDeclaration(Parser* parser) {
             exit(-1);
         }
     
-        argument->func_argument_channel = parseChannel(parser);
         addFuncDecArgument(root, argument);
 
         // (','IDENTIFIER IDEDNTIFIER)*
@@ -273,7 +284,6 @@ AST* parseFunctionDeclaration(Parser* parser) {
                 exit(-1);
 
             }
-            argument->func_argument_channel = parseChannel(parser);
             addFuncDecArgument(root, argument);
         }
     }
@@ -304,7 +314,7 @@ AST* parseStatement(Parser* parser) {
         return parseReturn(parser);
     }
 
-    if(parser->current_token->token_type == Token::TokenType::OPEN_BRACKET) {
+    if(parser->current_token->token_type == Token::TokenType::OPEN_CURLY_BRACES) {
         return parseBlock(parser);
     }
 
@@ -484,16 +494,16 @@ AST* parseSwitch(Parser* parser) {
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
     root->switch_expression = parseExpression(parser);
     parserReadToken(parser, Token::TokenType::CLOSE_PARENTESIS);
-    parserReadToken(parser, Token::TokenType::OPEN_BRACKET);
+    parserReadToken(parser, Token::TokenType::OPEN_CURLY_BRACES);
 
-    while(parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET) {
+    while(parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
         if(parser->current_token->token_type == Token::TokenType::DEFAULT) {
             AST* cs = initAST(AST::ASTType::CASE);
             parserReadToken(parser, Token::TokenType::DEFAULT);
             cs->case_expression = initAST(AST::ASTType::UNDEFINED);
             parserReadToken(parser, Token::TokenType::TWO_POINTS);
             AST* statements = initAST(AST::ASTType::STATEMETNS);
-            while (parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
+            while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
                 addStatement(statements, parseStatement(parser));
             }
             cs->case_statement = statements;
@@ -505,7 +515,7 @@ AST* parseSwitch(Parser* parser) {
             AST* statements = initAST(AST::ASTType::STATEMETNS);
             parserReadToken(parser, Token::TokenType::TWO_POINTS);
 
-            while (parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
+            while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
                 addStatement(statements, parseStatement(parser));
             }
 
@@ -513,7 +523,7 @@ AST* parseSwitch(Parser* parser) {
             addSwitchCase(root, cs);
         }
     }
-    parserReadToken(parser, Token::TokenType::CLOSE_BRACKET);
+    parserReadToken(parser, Token::TokenType::CLOSE_CURLY_BRACES);
     if(!root->switch_default_case) {
         printf("\033[33mWARNING: Switch operator dont have a default case!\033[0m\n");
         root->switch_default_case = initAST(AST::ASTType::UNDEFINED);
@@ -528,15 +538,15 @@ AST* parseSwitch(Parser* parser) {
 AST* parseBlock(Parser* parser) {
     AST* block = initAST(AST::ASTType::BLOCK);
 
-    parserReadToken(parser, Token::TokenType::OPEN_BRACKET);
+    parserReadToken(parser, Token::TokenType::OPEN_CURLY_BRACES);
     AST* statements = initAST(AST::ASTType::STATEMETNS);
 
-    while (parser->current_token->token_type != Token::TokenType::CLOSE_BRACKET) {
+    while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
         addStatement(statements, parseStatement(parser));
     }
 
     block->block_statements = statements;
-    parserReadToken(parser, Token::TokenType::CLOSE_BRACKET);
+    parserReadToken(parser, Token::TokenType::CLOSE_CURLY_BRACES);
     return block;
 }
 
@@ -957,3 +967,123 @@ AST* parsePrimary(Parser* parser) {
     exit(-1);
     return nullptr;
 }
+
+// CONTEXT → 'context' IDENTIFIER '{' DECLARATION* '}'';'
+AST* parseContext(Parser* parser) {
+    AST* root = initAST(AST::ASTType::CONTEXT);
+    AST* declarations = initAST(AST::ASTType::DECLARATIONS);
+    parserReadToken(parser,Token::TokenType::CONTEXT);
+    AST* identifier = parsePrimary(parser);
+    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[33mERROR: Identifier of export isn't a identifier!\033[0m\n");
+        exit(-1);
+    }
+
+    parserReadToken(parser,Token::TokenType::OPEN_CURLY_BRACES);
+    while(parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
+        if(parser->current_token->token_type == Token::TokenType::OPEN_CURLY_BRACES) {
+            printf("\033[31mERROR: Blocks can be defined inside contexts! \033[0m'%s'\n", parser->current_token->value);
+            exit(-1);
+        }
+        addDeclaration(declarations, parseDeclaration(parser));
+    }
+
+    parserReadToken(parser,Token::TokenType::CLOSE_CURLY_BRACES);
+    parserReadToken(parser,Token::TokenType::SEMICOLON);
+    root->context_declarations = declarations;
+    root->context_identifier = identifier;
+    return root;
+}
+
+// EXPORT → 'export' '{'IDENTIFIER: IDENTIFIER (',' IDENTIFIER: IDENTIFIER)+'}'';'
+AST* parseExport(Parser* parser) {
+    AST* root = initAST(AST::ASTType::EXPORT);
+    parserReadToken(parser,Token::TokenType::EXPORT);
+    parserReadToken(parser,Token::TokenType::OPEN_CURLY_BRACES);
+
+    AST* key = parsePrimary(parser);
+    parserReadToken(parser, Token::TokenType::TWO_POINTS);
+    AST* value = parsePrimary(parser);
+    if(key->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
+        exit(-1);
+    }
+    if(value->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[33mERROR: Value of export isn't a identifier!\033[0m\n");
+        exit(-1);
+    }
+
+    root->export_pairs_count += 1;
+    root->export_keys_identifiers = (AST**)realloc(
+        root->export_keys_identifiers,
+        root->export_pairs_count
+    );
+
+    root->export_values_identifiers = (AST**)realloc(
+        root->export_values_identifiers,
+        root->export_pairs_count
+    );
+
+    root->export_keys_identifiers[root->export_pairs_count - 1] = key;
+    root->export_values_identifiers[root->export_pairs_count - 1] = value;
+
+    while(parser->current_token->token_type == Token::TokenType::COMMA) {
+        parserReadToken(parser, Token::TokenType::COMMA);
+
+        AST* key = parsePrimary(parser);
+        parserReadToken(parser, Token::TokenType::TWO_POINTS);
+        AST* value = parsePrimary(parser);
+
+        if(key->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
+            exit(-1);
+        }
+        if(value->ast_type != AST::ASTType::IDENTIFIER) {
+            printf("\033[33mERROR: Value of export isn't a identifier!\033[0m\n");
+            exit(-1);
+        }
+
+        root->export_pairs_count += 1;
+        root->export_keys_identifiers = (AST**)realloc(
+            root->export_keys_identifiers,
+            root->export_pairs_count
+        );
+
+        root->export_values_identifiers = (AST**)realloc(
+            root->export_values_identifiers,
+            root->export_pairs_count
+        );
+
+        root->export_keys_identifiers[root->export_pairs_count - 1] = key;
+        root->export_values_identifiers[root->export_pairs_count - 1] = value;
+    }
+
+    parserReadToken(parser, Token::TokenType::CLOSE_CURLY_BRACES);
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+
+    return root;
+}
+
+// UNIFORM → 'uniform' TYPE IDENTIFIER ';'
+AST* parseUniform(Parser* parser) {
+    AST* root = initAST(AST::ASTType::UNIFORM);
+    parserReadToken(parser, Token::TokenType::UNIFORM);
+
+    AST* type = parseType(parser);
+
+    AST* id = parsePrimary(parser);
+
+    if(id->ast_type != AST::ASTType::IDENTIFIER) {
+        printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
+        exit(-1);
+    }
+
+    parserReadToken(parser, Token::TokenType::SEMICOLON);
+
+    root->uniform_type = type;
+    root->uniform_identifier = id;
+    return root;
+}
+
+
+

@@ -1,40 +1,32 @@
-#include "src/Lexer.hpp"
-#include "src/Parser.hpp"
-#include "src/Visitor.hpp"
+#include "Loki/HLSL/Lexer/Lexer.hpp"
+#include "Loki/HLSL/Parser/Parser.hpp"
+#include "Loki/HLSL/Parser/Variables.hpp"
 
 #include <fstream>
 #include <string>
+#include <stdlib.h>
 
 
 int main(int argc, char *argv[]) {
-    if(argc < 2) { printf("No code given!\n"); exit(-1); }
+    HLSL::Lexer* lexer = new HLSL::Lexer("float4x4 variable : SV_POSITION = {float(1),2,3,4,1,2,3,4,1,2,float(3),4,1,2,3,4};");
 
-    std::ifstream ifs(argv[1]);
-    if(!ifs.is_open()) { printf("File %s not found!\n", argv[1]); exit(-1); }
-    std::string code = std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+    // for(int i=0; i<lexer->getTokensCount(); i++) {
+    //     HLSL::Token* token = lexer->getToken(i);
+    //     printf("%i\n", token->type);
+    //     printf("%s\n", token->value);
+    // }
 
-    Lexer* lexer = initLexer((char*)code.c_str());
+    HLSL::Parser* parser = new HLSL::Parser(lexer);
+    HLSL::ASTVarDecl* var_decl = parseVarDecl(parser);
 
-    Parser* parser = initParser(lexer);
-    AST* root = parseStart(parser);
+    printf("%i\n", var_decl->var_decl_storage_class);
+    printf("%s\n", var_decl->var_decl_type->name);
+    printf("%s\n", var_decl->var_decl_name);
+    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[0]);
+    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[1]);
+    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[3]);
+    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[4]);
+    printf("%f\n", var_decl->var_decl_default_value[0]->float4x4_value[5]);
 
-    Visitor* visitor = initVisitor();
-
-    printAST(root);
-
-    visitDeclarations(visitor, root);
-
-    for(int i=0; i<visitor->gles_vertex_shader->program->gles_funcs_defs_count; i++) {
-        printf("%s\n", visitor->gles_vertex_shader->program->gles_funcs_defs[i]);
-    }
-    for(int i=0; i<visitor->gles_vertex_shader->program->gles_attributes_count; i++) {
-        printf("%s\n", visitor->gles_vertex_shader->program->gles_attributes[i]);
-    }
-    for(int i=0; i<visitor->gles_vertex_shader->program->gles_inputs_count; i++) {
-        printf("%s\n", visitor->gles_vertex_shader->program->gles_inputs[i]);
-    }
-    for(int i=0; i<visitor->gles_vertex_shader->program->gles_outputs_count; i++) {
-        printf("%s\n", visitor->gles_vertex_shader->program->gles_outputs[i]);
-    }
     return 0;
 }

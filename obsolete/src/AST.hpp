@@ -1,11 +1,77 @@
-
 #ifndef ABSTRACT_SYNTAX_TREE
 #define ABSTRACT_SYNTAX_TREE
 
-#include "Types.hpp"
-#include "Channels.hpp"
-#include "Operators.hpp"
-#include "Assignments.hpp"
+
+enum ChannelType {
+    CHANNEL_NONE,
+    CHANNEL_OUT,
+    CHANNEL_IN,
+};
+
+enum AssingmentType {
+    ASSIGN_NONE,
+    ASSIGN_ASSIGN,
+    ASSIGN_PIPE_ASSIGN,
+    ASSIGN_AMPERSAND_ASSIGN,
+    ASSIGN_MULTIPLY_ASSIGN,
+    ASSIGN_DIVIDE_ASSIGN,
+};
+
+enum Type {
+    TYPE_VOID = 0,
+    TYPE_STRUCT,
+    TYPE_INT,
+    TYPE_UINT,
+    TYPE_FLOAT,
+    TYPE_BOOL,
+    TYPE_VEC2,
+    TYPE_VEC3,
+    TYPE_VEC4,
+    TYPE_MAT2,
+    TYPE_MAT2X2,
+    TYPE_MAT2X3,
+    TYPE_MAT2X4,
+    TYPE_MAT3,
+    TYPE_MAT3X2,
+    TYPE_MAT3X3,
+    TYPE_MAT3X4,
+    TYPE_MAT4,
+    TYPE_MAT4X2,
+    TYPE_MAT4X3,
+    TYPE_MAT4X4,
+    TYPE_SAMPLER,
+    TYPE_SAMPLER3D,
+};
+
+
+enum BinaryOperation {
+    BINARY_NONE,
+    BINARY_ADDITION,
+    BINARY_SUBTRACTION,
+    BINARY_DIVISION,
+    BINARY_MULTIPLICATION,
+    BINARY_DIFFERENT,
+    BINARY_EQUALS_EQUALS,
+    BINARY_GREATER,
+    BINARY_LESS,
+    BINARY_GREATER_OR_EQUAL,
+    BINARY_LESS_OR_EQUAL,
+    BINARY_BINARY_OR,
+    BINARY_BINARY_AND,
+    BINARY_OR,
+    BINARY_AND
+};
+
+enum UnaryOperation {
+    UNARY_NONE,
+    UNARY_EXCLAMATION,
+    UNARY_PRE_ADD_ADD,
+    UNARY_AFTER_ADD_ADD,
+    UNARY_PRE_MINUS_MINUS,
+    UNARY_AFTER_MINUS_MINUS,
+    UNARY_MINUS,
+};
+
 
 struct AST {
     enum ASTType {
@@ -36,6 +102,10 @@ struct AST {
         FLOAT,
         BOOL,
         TYPE,
+        CONTEXT,
+        EXPORT,
+        UNIFORM,
+        BUFFER,
     };
 
     //AST data:
@@ -115,7 +185,6 @@ struct AST {
     //FUNCTION_ARGUMENT
     AST* func_argument_type_identifier;
     AST* func_argument_id;
-    AST* func_argument_channel;
 
     // RETURN
     AST* return_value;
@@ -146,8 +215,25 @@ struct AST {
     bool bool_value;
 
     // TYPE
-    BuildInType type_type;
+    Type type_type;
     AST* type_struct_identifier;
+
+    // CONTEXT
+    AST* context_declarations;
+    AST* context_identifier;
+
+    // EXPORT
+    AST** export_keys_identifiers;
+    AST** export_values_identifiers;
+    unsigned int export_pairs_count;
+
+    // UNIFORM
+    AST* uniform_type;
+    AST* uniform_identifier;
+
+    // BUFFER
+    AST* buffer_declarations;
+    AST* buffer_identifier;
 };
 
 AST* initAST(AST::ASTType type);

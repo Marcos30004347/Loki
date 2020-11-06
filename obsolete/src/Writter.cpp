@@ -1,4 +1,4 @@
-#include "GLSLWritter.hpp"
+#include "Writter.hpp"
 #include "Utils.hpp"
 
 char* writeGLSLAttribute(char* type, char* location, char* id) {
@@ -66,8 +66,8 @@ char* writeGLSLOutput(char* type, char* id) {
     return argument;
 }
 
-char* getGLSLTypeString(BuildInType type) {
-    const char* BuildInTypesNames[] = {
+char* getGLSLTypeString(Type type) {
+    const char* TypesNames[] = {
         "void",
         "struct",
         "int",
@@ -93,5 +93,5 @@ char* getGLSLTypeString(BuildInType type) {
         "sampler3d"
     };
 
-    return copyString(BuildInTypesNames[type]);
+    return copyString(TypesNames[type]);
 }

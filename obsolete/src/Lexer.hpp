@@ -20,8 +20,10 @@ struct Token {
         SEMICOLON,
         OPEN_PARENTESIS,
         CLOSE_PARENTESIS,
-        OPEN_BRACKET,
-        CLOSE_BRACKET,
+        OPEN_CURLY_BRACES,
+        OPEN_SQUARE_BRAKETS,
+        CLOSE_CURLY_BRACES,
+        CLOSE_SQUARE_BRACKES,
         COMMA,
         PERIOD,
         INTEGER,
@@ -89,6 +91,10 @@ struct Token {
         MAT4X4,
         SAMPLER,
         SAMPLER3D,
+        CONTEXT,
+        UNIFORM,
+        LAYOUT,
+        PACKED,
     };
 
     TokenType token_type;

@@ -1,14 +1,17 @@
 all:
 	g++ main.cpp \
-	src/Utils.cpp \
-	src/GLSLWritter.cpp \
-	src/Parser.cpp \
-	src/Lexer.cpp \
-	src/AST.cpp \
-	src/Types.cpp \
-	src/Shader.cpp \
-	src/Visitor.cpp \
-	src/Scope.cpp \
+	-I./Loki \
+	Loki/Lib/String.cpp \
+	Loki/HLSL/Lexer/Lexer.cpp \
+	Loki/HLSL/Lexer/Token.cpp \
+	Loki/HLSL/Parser/BaseType.cpp \
+	Loki/HLSL/Parser/Literals.cpp \
+	Loki/HLSL/Parser/PackOffset.cpp \
+	Loki/HLSL/Parser/Parser.cpp \
+	Loki/HLSL/Parser/Profiles.cpp \
+	Loki/HLSL/Parser/Register.cpp \
+	Loki/HLSL/Parser/Semantics.cpp \
+	Loki/HLSL/Parser/Variables.cpp \
 	-o loki
 
 clean:

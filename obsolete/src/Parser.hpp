@@ -7,8 +7,11 @@
 
 struct Parser {
     Lexer* lexer;
+
+    //State
     Token* current_token;
     Token* previous_token;
+    bool is_parsing_loop;
 };
 
 Parser* initParser(Lexer* lexer);
@@ -18,22 +21,31 @@ void parserReadToken(Parser* parser, Token::TokenType type);
 // TYPE → TYPEID | IDENTIFIER
 AST* parseType(Parser* parser);
 
-// START → DECLARATIONS* EOF
+// DECLARATIONS → (DECLARATION | CONTEXT | EXPORT)* EOF
 AST* parseStart(Parser* parser);
 
 // FUNC_VAR_DECL → FUNC_DECL | VAR_DECL
 AST* parseFuncVarDecl(Parser* parser);
 
-// DECLARATION → FUNC_VAR_DECL | STRUCT_DECL
+// CONTEXT → 'context' IDENTIFIER '{' DECLARATION* '}'';'
+AST* parseContext(Parser* parser);
+
+// EXPORT → 'export' '{'IDENTIFIER: IDENTIFIER (',' IDENTIFIER: IDENTIFIER)+'}'';'
+AST* parseExport(Parser* parser);
+
+// UNIFORM → 'uniform' TYPE IDENTIFIER ';'
+AST* parseUniform(Parser* parser);
+
+// DECLARATION → FUNC_VAR_DECL | STRUCT_DECL | UNIFORM
 AST* parseDeclaration(Parser* parser);
 
-// STRUCT_DECL → 'struct' IDENTIFIER '{' FUNC_VAR_DECL '}'';'
+// STRUCT_DECL → 'struct' IDENTIFIER '{' VAR_DECL '}'';'
 AST* parseStruct(Parser* parser);
 
 // RETURN → 'return' EXPRESSION? ';'
 AST* parseReturn(Parser* parser);
 
-// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER CHANNEL? ( "," TYPE IDENTIFIER CHANNEL? )*')' BLOCK
+// FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER ( "," TYPE IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser);
 
 //CHANNEL → ('<-' | '->') IDENTIFIER
@@ -84,10 +96,8 @@ AST* parseUnary(Parser* parser);
 // CALL → PRIMARY('('ARGUMENTS?')')?
 AST* parseCall(Parser* parser);
 
-// ARGUMENTS → EXPRESSION (','EXPRESSION)*
-AST* parseArguments(Parser* parser);
-
 // PRIMARY → INTEGER | FLOAT | 'true' | 'false' | IDENTIFIER | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser);
+
 
 #endif

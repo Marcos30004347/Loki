@@ -92,6 +92,7 @@ Token* lexerCollectId(Lexer* lex) {
     if(strcmp(value, "export") == 0)    return initToken(Token::TokenType::EXPORT, value);
     if(strcmp(value, "true") == 0)      return initToken(Token::TokenType::TRUE, value);
     if(strcmp(value, "false") == 0)     return initToken(Token::TokenType::FALSE, value);
+
     if(strcmp(value, "void") == 0)      return initToken(Token::TokenType::VOID, value); 
     if(strcmp(value, "int") == 0)       return initToken(Token::TokenType::INT, value);
     if(strcmp(value, "uint") == 0)      return initToken(Token::TokenType::UINT, value); 
@@ -112,6 +113,12 @@ Token* lexerCollectId(Lexer* lex) {
     if(strcmp(value, "mat4x2") == 0)    return initToken(Token::TokenType::MAT4X2, value);
     if(strcmp(value, "mat4x3") == 0)    return initToken(Token::TokenType::MAT4X3, value);
     if(strcmp(value, "mat4x4") == 0)    return initToken(Token::TokenType::MAT4X4, value);
+
+    if(strcmp(value, "ctx") == 0)   return initToken(Token::TokenType::CONTEXT, value);
+    if(strcmp(value, "uniform") == 0)   return initToken(Token::TokenType::UNIFORM, value);
+    if(strcmp(value, "buffer") == 0)    return initToken(Token::TokenType::MAT4X4, value);
+    if(strcmp(value, "layout") == 0)    return initToken(Token::TokenType::LAYOUT, value);
+    if(strcmp(value, "packed") == 0)    return initToken(Token::TokenType::PACKED, value);
 
     return initToken(Token::TokenType::IDENTIFIER, value);
 }
@@ -176,8 +183,10 @@ Token* lexerGetNextToken(Lexer* lex) {
                 else return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EXCLAMATION, lexerGetCurrentCharAsString(lex)));
             case ')': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_PARENTESIS, lexerGetCurrentCharAsString(lex)));
             case ';': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SEMICOLON, lexerGetCurrentCharAsString(lex)));
-            case '{': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_BRACKET, lexerGetCurrentCharAsString(lex)));
-            case '}': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_BRACKET, lexerGetCurrentCharAsString(lex)));
+            case '{': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_CURLY_BRACES, lexerGetCurrentCharAsString(lex)));
+            case '}': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_CURLY_BRACES, lexerGetCurrentCharAsString(lex)));
+            case '[': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_SQUARE_BRAKETS, lexerGetCurrentCharAsString(lex)));
+            case ']': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_SQUARE_BRACKES, lexerGetCurrentCharAsString(lex)));
             case ',': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::COMMA, lexerGetCurrentCharAsString(lex)));
             case '.': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PERIOD, lexerGetCurrentCharAsString(lex)));
             case '*':

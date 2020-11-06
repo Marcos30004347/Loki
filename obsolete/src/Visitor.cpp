@@ -1,6 +1,6 @@
 #include "Visitor.hpp"
 #include "Utils.hpp"
-#include "GLSLWritter.hpp"
+#include "Writter.hpp"
 
 #include <string.h>
 #include <malloc.h>
@@ -54,29 +54,14 @@ void visitFunctionDeclaration(Visitor* visitor, AST* node) {
     unsigned int gles_global_outputs_count = 0;
 
     for(int i=0; i<node->func_dec_arguments_count; i++) {
-        switch (node->func_dec_arguments[i]->func_argument_channel->channel_type) {
-        case ChannelType::CHANNEL_IN:
-            printf("ERROR: Function Channels are not being translated yet\n");
-            exit(-1);
+        char* gles_argument_str = writeGLSLFunctionArgument(
+            getGLSLTypeString(node->func_dec_arguments[i]->func_argument_type_identifier->type_type),
+            getIdentifierString(node->func_dec_arguments[i]->func_argument_id)
+        );
 
-            break;
-        case ChannelType::CHANNEL_OUT:
-            printf("ERROR: Function Channels are not being translated yet\n");
-            exit(-1);
-
-            break;
-        case ChannelType::CHANNEL_NONE:
-            // Add gles argument
-            char* gles_argument_str = writeGLSLFunctionArgument(
-                getGLSLTypeString(node->func_dec_arguments[i]->func_argument_type_identifier->type_type),
-                getIdentifierString(node->func_dec_arguments[i]->func_argument_id)
-            );
-
-            gles_function_arguments_count += 1;
-            gles_function_arguments = (char**)realloc(gles_function_arguments, gles_function_arguments_count * sizeof(char*));
-            gles_function_arguments[gles_function_arguments_count - 1] = gles_argument_str;
-            break;
-        }
+        gles_function_arguments_count += 1;
+        gles_function_arguments = (char**)realloc(gles_function_arguments, gles_function_arguments_count * sizeof(char*));
+        gles_function_arguments[gles_function_arguments_count - 1] = gles_argument_str;
     }
 
     char* gles_func = nullptr;

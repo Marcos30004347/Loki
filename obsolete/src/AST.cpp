@@ -6,9 +6,6 @@
 #include <ctype.h>
 #include <vector>
 
-
-#include "Operators.hpp"
-
 const char* BinaryOperationNames[] = {
     "None",
     "+",
@@ -44,7 +41,7 @@ const char* ChannelTypeName[] = {
     "Input",
 };
 
-const char* BuildInTypesNames[] = {
+const char* TypesNames[] = {
     "void",
     "struct",
     "int",
@@ -143,11 +140,9 @@ AST* initAST(AST::ASTType type) {
     ast->func_dec_arguments_count = 0;
     ast->func_dec_body = nullptr;
 
-
     //FUNCTION_ARGUMENT
     ast->func_argument_type_identifier = nullptr;
     ast->func_argument_id = nullptr;
-    ast->func_argument_channel = nullptr;
 
     //RETURN
     ast->return_value = nullptr;
@@ -179,6 +174,23 @@ AST* initAST(AST::ASTType type) {
 
     //BOOL
     ast->bool_value = false;
+
+    // CONTEXT
+    ast->context_declarations = nullptr;
+    ast->context_identifier = nullptr;
+
+    // EXPORT
+    ast->export_keys_identifiers = nullptr;
+    ast->export_values_identifiers = nullptr;
+    ast->export_pairs_count = 0;
+
+    // UNIFORM
+    ast->uniform_type = nullptr;
+    ast->uniform_identifier = nullptr;
+
+    // BUFFER
+    ast->buffer_declarations = nullptr;
+    ast->buffer_identifier = nullptr;
 }
 
 void printAST(AST* root, int tabs) {
@@ -227,8 +239,6 @@ void printAST(AST* root, int tabs) {
 
         printf("%*cFUNCTION INDENTIFIER:\n", tabs, ' ');
         printAST(root->func_argument_id, tabs + 3);
-        printf("%*cFUNCTION CHANNEL:\n", tabs, ' ');
-        printAST(root->func_argument_channel, tabs + 3);
     }
 
     if(root->ast_type == AST::ASTType::IF) {
@@ -374,10 +384,36 @@ void printAST(AST* root, int tabs) {
     }
 
     if(root->ast_type == AST::ASTType::TYPE) {
-        printf("%*cTYPE: %s\n", tabs, ' ', BuildInTypesNames[root->type_type]);
-        if(root->type_type == BuildInType::TYPE_STRUCT) {
+        printf("%*cTYPE: %s\n", tabs, ' ', TypesNames[root->type_type]);
+        if(root->type_type == Type::TYPE_STRUCT) {
             printf("%*cSTRUCT IDENTIFIER:\n", tabs, ' ');
             printAST(root->type_struct_identifier, tabs+3);
+        }
+    }
+
+    if(root->ast_type == AST::ASTType::CONTEXT) {
+        printf("%*cCONTEXT:\n", tabs, ' ');
+        printf("%*cIDENTIFIER:\n", tabs, ' ');
+        printAST(root->context_identifier, tabs+3);
+        printf("%*cDECLARATIONS:\n", tabs, ' ');
+        printAST(root->context_declarations, tabs+3);
+    }
+
+    if(root->ast_type == AST::ASTType::UNIFORM) {
+        printf("%*cUNIFORM:\n", tabs, ' ');
+        printf("%*cTYPE:\n", tabs, ' ');
+        printAST(root->uniform_type, tabs+3);
+        printf("%*cIDENTIFIER:\n", tabs, ' ');
+        printAST(root->uniform_identifier, tabs+3);
+    }
+
+    if(root->ast_type == AST::ASTType::EXPORT) {
+        printf("%*cEXPORT:\n", tabs, ' ');
+        for(int i=0; i<root->export_pairs_count; i++) {
+            printf("%*cKEY[%i]:\n", tabs, ' ', i);
+            printAST(root->export_keys_identifiers[i], tabs+3);
+            printf("%*cVALUE[%i]:\n", tabs, ' ', i);
+            printAST(root->export_values_identifiers[i], tabs+3);
         }
     }
 }
