@@ -1,4 +1,4 @@
-#include "ShaderConstants.hpp"
+#include "Buffer.hpp"
 
 namespace HLSL {
 

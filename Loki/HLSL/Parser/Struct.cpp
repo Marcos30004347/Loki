@@ -24,7 +24,7 @@ ASTStruct* parseStruct(Parser* parser) {
 
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
 
-
+    return strct;
 }
 
 }

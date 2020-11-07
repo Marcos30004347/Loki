@@ -6,6 +6,11 @@
 
 namespace HLSL {
 
+struct ASTReturn: AST {
+    explicit ASTReturn();
+    AST* return_expression;
+};
+
 AST* parseStatement(Parser* parser);
 
 }

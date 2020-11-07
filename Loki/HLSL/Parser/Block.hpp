@@ -1,3 +1,6 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include "AST.hpp"
 #include "Parser.hpp"
 
@@ -13,3 +16,5 @@ struct ASTBlock: AST {
 ASTBlock* parseBlock(Parser* parser);
 
 }
+
+#endif

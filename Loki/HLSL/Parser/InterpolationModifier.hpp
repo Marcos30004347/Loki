@@ -1,5 +1,7 @@
-#include "Parser.hpp"
+#ifndef INTERPOLATION_MODIFIER 
+#define INTERPOLATION_MODIFIER 
 
+#include "Parser.hpp"
 namespace HLSL {
 
 // INTERPOLATION_MODIFIER -> 'linear' | 'centroid' | 'nointerpolation' | 'sample'
@@ -14,3 +16,5 @@ enum InterpolationModifier {
 InterpolationModifier parseInterpolationModifier(Parser* parser);
 
 }
+
+#endif

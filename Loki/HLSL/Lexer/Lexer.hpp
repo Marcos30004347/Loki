@@ -14,8 +14,8 @@ private:
     unsigned int source_size;
     std::vector<Token*> tokens;
 
-    void skipWhiteSpaces();
-    void skipComments();
+    bool skipWhiteSpaces();
+    bool skipComments();
     void advance();
 
     void collectIdentifier();

@@ -16,7 +16,6 @@ ASTTernary::ASTTernary(): AST{ NodeType::NODE_TYPE_TERNARY } {}
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY | EXPRESSION ? EXPRESSION : EXPRESSION
 AST* parseExpression(Parser* parser, bool constant) {
     printf("EXPRESSION %s\n", parser->currentToken()->value);
-    if(isDeclaration(parser)) return parseVarDecl(parser);
 
     AST* root = parseEquality(parser, constant);
     if(

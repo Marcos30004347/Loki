@@ -1,27 +1,24 @@
 #include "Lexer.hpp"
 #include "Lib/String.hpp"
-
+#include <cstdio>
 namespace HLSL {
 
 Lexer::Lexer(const char* source) {
+    printf("Lexing...\n");
     this->source = source;
     this->head = 0;
-    this->line = 0;
+    this->line = 1;
     this->character = source[this->head];
     this->tokens = std::vector<Token*>(0);
 
     unsigned int eof = strlen(source);
     this->source_size = eof;
-    
     while(this->character != '\0' || this->head < eof) {
-        this->skipWhiteSpaces();
-        this->skipComments();
-
+        while(this->skipWhiteSpaces() || this->skipComments()) {}
 
         if(isdigit(this->character)) this->collectNumberLiteral();
         if(isalnum(this->character) || this->character == '_') this->collectIdentifier();
-    
-        if(this->character == '?') {
+        else if(this->character == '?') {
             this->tokens.push_back(new Token(Token::TOKEN_INTERROGATION, "?", this->line));
             this->advance();
         } else
@@ -269,6 +266,7 @@ void Lexer::collectIdentifier() {
 
     // Reserved keywords
     if(strcmp(value, "default") == 0) return this->tokens.push_back(new Token(Token::TOKEN_DEFAULT, value, this->line));
+    if(strcmp(value, "const") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CONST, value, this->line));
     if(strcmp(value, "case") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CASE, value, this->line));
     if(strcmp(value, "switch") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SWITCH, value, this->line));
     if(strcmp(value, "register") == 0) return this->tokens.push_back(new Token(Token::TOKEN_REGISTER, value, this->line));
@@ -464,12 +462,14 @@ void Lexer::collectStringLiteral() {
 }
 
 
-void Lexer::skipWhiteSpaces() {
+bool Lexer::skipWhiteSpaces() {
+    bool result = false;
     while(this->character == ' ' || this->character == 10) {
         if(this->character == 10) this->line++;
-    
+        result = true;
         this->advance();
     }
+    return result;
 }
 
 void Lexer::advance() {
@@ -477,32 +477,31 @@ void Lexer::advance() {
     this->character = this->source[this->head];
 }
 
-void Lexer::skipComments() {
-    if(this->character == '/' ) {
+bool Lexer::skipComments() {
 
+    bool result = false;
+    if(this->character == '/' ) {
         if(this->head < this->source_size - 1 && this->source[this->head + 1] == '/') {
-            this->advance();
-            this->advance();
+            result = true;
             // Single line comment
             while(this->character != 10) {
                 this->advance();
             }
-            if(this->character == 10) {
-                this->line ++;
-            }
-
+            this->line ++;
             this->advance();
-    
-        } else if(this->character == '*') {
+
+        } else if(this->head < this->source_size - 1 && this->source[this->head + 1] == '*') {
+            result = true;
             // Multi line comment
-            while(this->character != '*' && this->source[this->head+1] != '/') {
-                this->advance();
+            while(!(this->character == '*' && (this->head < this->source_size - 1 && this->source[this->head + 1] == '/'))) {
                 if(this->character == 10) {
                     this->line ++;
                 }
+                this->advance();
             }
         }
     }
+    return result;
 }
 
 unsigned int Lexer::getTokensCount() {

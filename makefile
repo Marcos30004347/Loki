@@ -12,11 +12,14 @@ all:
 	Loki/HLSL/Parser/Register.cpp \
 	Loki/HLSL/Parser/Semantics.cpp \
 	Loki/HLSL/Parser/Variables.cpp \
-	Loki/HLSL/Parser/ShaderConstants.cpp \
 	Loki/HLSL/Parser/InterpolationModifier.cpp \
 	Loki/HLSL/Parser/Expression.cpp \
 	Loki/HLSL/Parser/Function.cpp \
 	Loki/HLSL/Parser/Block.cpp \
+	Loki/HLSL/Parser/Buffer.cpp \
+	Loki/HLSL/Parser/Struct.cpp \
+	Loki/HLSL/Parser/Statement.cpp \
+	Loki/HLSL/Parser/FlowControl.cpp \
 	-o loki
 
 clean:

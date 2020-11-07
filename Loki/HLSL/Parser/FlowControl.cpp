@@ -13,7 +13,6 @@ ASTDiscard::ASTDiscard(): AST{NodeType::NODE_TYPE_DISCARD_STATEMENT} {}
 ASTCase::ASTCase(): AST{NodeType::NODE_TYPE_CASE_STATEMENT} {}
 ASTSwitch::ASTSwitch(): AST{NodeType::NODE_TYPE_SWITCH_STATEMENT} {}
 ASTFor::ASTFor(): AST{NodeType::NODE_TYPE_FOR_STATEMENT} {}
-ASTFor::ASTFor(): AST{NodeType::NODE_TYPE_FOR_STATEMENT} {}
 ASTDefault::ASTDefault(): AST{NodeType::NODE_TYPE_DEFAULT_STATEMENT} {}
 
 ASTIf* parseIf(Parser* parser) {
@@ -78,11 +77,13 @@ ASTFor* parseFor(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON)
-        for_ast->for_init_statement = parseExpression(parser);
+        if(isDeclaration(parser)) for_ast->for_init_statement = parseVarDecl(parser);
+        else for_ast->for_init_statement = parseExpression(parser);
     parser->readToken(Token::TOKEN_SEMICOLON);
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON)
-        for_ast->for_cond_expression = parseExpression(parser);
+        if(isDeclaration(parser)) for_ast->for_cond_expression = parseVarDecl(parser);
+        else for_ast->for_cond_expression = parseExpression(parser);
     parser->readToken(Token::TOKEN_SEMICOLON);
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) 
@@ -127,6 +128,7 @@ ASTCase* parseCase(Parser* parser) {
     } else {
         printf("No Break statement found for case statement in line '%u'!\n", line);
     }
+    return case_ast;
 }
 
 
@@ -157,6 +159,7 @@ ASTDefault* parseDefault(Parser* parser) {
     } else {
         printf("No Break statement found for default statement in line '%u'!\n", line);
     }
+    return default_ast;
 }
 
 ASTSwitch* parseSwitch(Parser* parser) {
@@ -184,6 +187,7 @@ ASTSwitch* parseSwitch(Parser* parser) {
     }
 
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
+    return switch_ast;
 }
 
 }

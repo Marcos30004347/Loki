@@ -12,6 +12,7 @@ ASTBlock* parseBlock(Parser* parser) {
         block->block_statements.push_back(parseStatement(parser));
     }
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
+    return block;
 }
 
 }

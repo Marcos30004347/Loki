@@ -56,6 +56,23 @@ TypeModifier parseTypeModifier(Parser* parser) {
 
 
 
+bool isVariableDeclaration(Parser* parser) {
+    unsigned int index = parser->getTokenIndex();
+
+    parseStorageClass(parser);
+    parseTypeModifier(parser);
+    parseDeclarationBaseType(parser);
+    parser->readToken(Token::Type::TOKEN_IDENTIFIER);
+
+    bool result = true;
+    if(
+        parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS
+    ) result = false;
+
+    parser->setTokenIndex(index);
+    return result;
+}
+
 ASTVarDecl* parseVarDecl(Parser* parser) {
     ASTVarDecl* var_decl = new ASTVarDecl();
     var_decl->annotations = std::vector<Annotation*>(0);
@@ -76,7 +93,6 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     // Variable name
     var_decl->var_decl_name = parser->currentToken()->value;
     parser->readToken(Token::Type::TOKEN_IDENTIFIER);
-
     // Variable array
     if(parser->currentToken()->type == Token::Type::TOKEN_OPEN_SQUARE_BRACKETS) {
         parser->readToken(Token::Type::TOKEN_OPEN_SQUARE_BRACKETS);
@@ -129,24 +145,26 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::Type::TOKEN_EQUAL);
-        var_decl->var_decl_default_value = (ASTLiteral**)malloc(sizeof(ASTLiteral*)*var_decl->var_decl_array_size);
-        var_decl->var_decl_default_value[0] = parseLiteral(parser);
+        var_decl->var_decl_default_value = (ASTLiteral*)malloc(sizeof(ASTLiteral)*var_decl->var_decl_array_size);
+        var_decl->var_decl_default_value = parseLiteral(parser);
 
-        ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value[0]);
+        ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value);
         if(!value->is_initialization_list) {
-            if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type))
-            printf(
-                "Warning: variable array '%s' declared with invalid initializer!\n",
-                var_decl->var_decl_name
-            );
+            if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type)) {
+                printf(
+                    "Warning: variable array '%s' declared with invalid initializer!\n",
+                    var_decl->var_decl_name
+                );
+            }
         } else {
-            printf("Warning: Using value constructor for variable '%s'!\n", var_decl->var_decl_name);
+            if(!isValidInitializationListForType(value, var_decl->var_decl_type->type, var_decl->var_decl_is_array, var_decl->var_decl_array_size)) {
+                printf("Error: Invalid initialization list for variable '%s' in line '%i'\n", var_decl->var_decl_name, parser->currentToken()->line);
+            }
         }
     }
 
     // Variable Semicolon
     parser->readToken(Token::Type::TOKEN_SEMICOLON);
-
     return var_decl;
 }
 

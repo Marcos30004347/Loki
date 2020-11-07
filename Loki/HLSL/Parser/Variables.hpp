@@ -66,10 +66,10 @@ struct ASTVarDecl: AST {
 
     std::vector<Annotation*> annotations;
 
-    ASTLiteral** var_decl_default_value; // array of literals
+    ASTLiteral* var_decl_default_value; // array of literals
 };
 
-
+bool isVariableDeclaration(Parser* parser);
 // VARIABLE_DECLARATION ->  STORAGE_CLASS? TYPE_MODIFIER? TYPE IDENTIFIER('['INDEX']')? (':' SEMANTIC)? (':' PACK_OFFSET)? (':' REGISTER)?';' (ANNOTATIONS)? ('=' LITERAL)? ';'
 ASTVarDecl* parseVarDecl(Parser* parser);
 
