@@ -103,7 +103,20 @@ public:
     
         TOKEN_MATRIX,
         TOKEN_VECTOR,
-        TOKEN_TYPES_END = TOKEN_VECTOR,
+    
+        // Texture Objects
+        TOKEN_BUFFER,
+        TOKEN_TEXTURE1D,
+        TOKEN_TEXTURE1D_ARRAY,
+        TOKEN_TEXTURE2D,
+        TOKEN_TEXTURE2D_ARRAY,
+        TOKEN_TEXTURE3D,
+        TOKEN_TEXTURECUBE,
+        TOKEN_TEXTURECUBE_ARRAY,
+        TOKEN_SAMPLER,
+        TOKEN_TEXTURE2DMS,
+        TOKEN_TEXTURE2DMS_ARRAY,
+        TOKEN_TYPES_END = TOKEN_TEXTURE2DMS_ARRAY,
         
         // FLOW CONTROL
         TOKEN_IF,
@@ -206,8 +219,6 @@ public:
 
         // PACK_OFFSET
         TOKEN_PACKOFFSET,
-
-        TOKEN_CLIPPLANES,
 
         TOKEN_EOF,
     };

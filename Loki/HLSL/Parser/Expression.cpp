@@ -4,14 +4,14 @@
 #include <stdio.h>
 namespace HLSL {
 
-ASTSymbol::ASTSymbol(): AST{NodeType::NODE_TYPE_SYMBOL} {}
-ASTBinaryExpression::ASTBinaryExpression(): AST{NodeType::NODE_TYPE_EXPRESSION_BINARY} {}
-ASTUnaryExpression::ASTUnaryExpression(): AST{NodeType::NODE_TYPE_EXPRESSION_UNARY} {}
-ASTFunctionCall::ASTFunctionCall(): AST{NodeType::NODE_TYPE_FUNCTION_CALL} {}
-ASTAssignment::ASTAssignment(): AST{NodeType::NODE_TYPE_ASSIGNMENT} {}
-ASTMemberAccess::ASTMemberAccess(): AST{ NodeType::NODE_TYPE_MEMBER_ACCESS } {}
-ASTArrayAccess::ASTArrayAccess(): AST{ NodeType::NODE_TYPE_ARRAY_ACCESS } {}
-ASTTernary::ASTTernary(): AST{ NodeType::NODE_TYPE_TERNARY } {}
+ASTSymbol::ASTSymbol(): AST{NodeType::AST_SYMBOL} {}
+ASTBinaryExpression::ASTBinaryExpression(): AST{NodeType::AST_EXPRESSION_BINARY} {}
+ASTUnaryExpression::ASTUnaryExpression(): AST{NodeType::AST_EXPRESSION_UNARY} {}
+ASTFunctionCall::ASTFunctionCall(): AST{NodeType::AST_FUNCTION_CALL} {}
+ASTAssignment::ASTAssignment(): AST{NodeType::AST_ASSIGNMENT} {}
+ASTMemberAccess::ASTMemberAccess(): AST{ NodeType::AST_MEMBER_ACCESS } {}
+ASTArrayAccess::ASTArrayAccess(): AST{ NodeType::AST_ARRAY_ACCESS } {}
+ASTTernary::ASTTernary(): AST{ NodeType::AST_TERNARY } {}
 
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY | EXPRESSION ? EXPRESSION : EXPRESSION
 AST* parseExpression(Parser* parser, bool constant) {
@@ -385,42 +385,6 @@ AST* parseMemberAccess(Parser* parser, bool constant) {
 
 constexpr int func() {
     return 4;
-}
-// CALL → PRIMARY('('ARGUMENTS?')')?
-AST* parseCall(Parser* parser, bool constant) {
-    printf("CALL %s\n", parser->currentToken()->value);
-
-    AST* root = parsePrimary(parser, constant);
-
-
-    if(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS) {
-        if(root->ast_type != NodeType::NODE_TYPE_SYMBOL) {
-            printf("Unexpected function name at line %i\n", parser->currentToken()->line);
-        }
-
-
-        ASTFunctionCall* func_call = new ASTFunctionCall();
-        func_call->func_call_symbol = root;
-        func_call->constexp = constant;
-    
-        parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
-        if(parser->currentToken() && parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
-            func_call->func_call_arguments.push_back(parseExpression(parser, constant));
-            while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_COMMA) {
-                parser->readToken(Token::TOKEN_COMMA);
-                func_call->func_call_arguments.push_back(parseExpression(parser, constant));
-            }
-        }
-        parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
-        root = func_call;
-    } else {
-        if(root->ast_type == NodeType::NODE_TYPE_SYMBOL && constant) {
-            printf("Cant use variables in constant expression at line '%i'!\n", parser->currentToken()->line);
-        }
-    }
-    printf("~CALL\n");
-
-    return root;
 }
 
 // PRIMARY → LITERAL | SYMBOL | '('EXPRESSION')'

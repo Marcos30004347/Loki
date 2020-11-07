@@ -3,6 +3,7 @@
 #include "AST.hpp"
 #include "Parser.hpp"
 #include "BaseType.hpp"
+#include "Variables.hpp"
 #include "InterpolationModifier.hpp"
 #include <vector>
 namespace HLSL {
@@ -10,8 +11,7 @@ namespace HLSL {
 
 struct StructMember {
     InterpolationModifier member_interpolation_modifier;
-    BaseType* member_base_type;
-    char* member_name;
+    ASTVarDecl* struct_member_variable;
 };
 
 struct ASTStruct : AST {

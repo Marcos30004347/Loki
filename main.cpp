@@ -1,3 +1,6 @@
+// https://github.com/microsoft/DirectXShaderCompiler
+// http://shader-playground.timjones.io/
+
 #include "Loki/HLSL/Lexer/Lexer.hpp"
 #include "Loki/HLSL/Parser/Parser.hpp"
 #include "Loki/HLSL/Parser/Expressions.hpp"

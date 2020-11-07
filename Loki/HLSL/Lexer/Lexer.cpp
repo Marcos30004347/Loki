@@ -290,7 +290,17 @@ void Lexer::collectIdentifier() {
     if(strcmp(value, "return") == 0) return this->tokens.push_back(new Token(Token::TOKEN_RETURN, value, this->line));
     if(strcmp(value, "inline") == 0) return this->tokens.push_back(new Token(Token::TOKEN_INLINE, value, this->line));
     if(strcmp(value, "packoffset") == 0) return this->tokens.push_back(new Token(Token::TOKEN_PACKOFFSET, value, this->line));
-    if(strcmp(value, "clipplanes") == 0) return this->tokens.push_back(new Token(Token::TOKEN_PACKOFFSET, value, this->line));
+    if(strcmp(value, "sampler") == 0) return this->tokens.push_back(new Token(Token::TOKEN_SAMPLER, value, this->line));
+    if(strcmp(value, "Buffer") == 0) return this->tokens.push_back(new Token(Token::TOKEN_BUFFER, value, this->line));
+    if(strcmp(value, "Texture1D") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE1D, value, this->line));
+    if(strcmp(value, "Texture2D") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE2D, value, this->line));
+    if(strcmp(value, "Texture3D") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE3D, value, this->line));
+    if(strcmp(value, "TextureCUBE") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURECUBE, value, this->line));
+    if(strcmp(value, "TextureCUBEArray") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURECUBE_ARRAY, value, this->line));
+    if(strcmp(value, "Texture1DArray") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE1D_ARRAY, value, this->line));
+    if(strcmp(value, "Texture2DArray") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE2D_ARRAY, value, this->line));
+    if(strcmp(value, "Texture2DMS") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE2D_ARRAY, value, this->line));
+    if(strcmp(value, "Texture2DMS_ARRAY") == 0) return this->tokens.push_back(new Token(Token::TOKEN_TEXTURE2D_ARRAY, value, this->line));
 
     // STORAGE_CLASS
     if(strcmp(value, "uniform") == 0) return this->tokens.push_back(new Token(Token::TOKEN_UNIFORM, value, this->line));

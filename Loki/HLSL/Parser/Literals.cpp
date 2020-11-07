@@ -4,7 +4,7 @@
 #include <vector>
 namespace HLSL {
 
-ASTLiteral::ASTLiteral(): AST{NodeType::NODE_TYPE_LITERAL} {}
+ASTLiteral::ASTLiteral(): AST{NodeType::AST_LITERAL} {}
 
 bool isValidInitializationListForType(ASTLiteral* literal, BaseType::Type type, bool is_array, unsigned int array_size) {
     if(is_array) {

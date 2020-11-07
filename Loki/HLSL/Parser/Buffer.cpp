@@ -1,8 +1,9 @@
 #include "Buffer.hpp"
+#include "Struct.hpp"
 
 namespace HLSL {
 
-ASTBuffer::ASTBuffer(ASTBuffer::Type type): AST{NodeType::NODE_TYPE_BUFFER_DECLARATION} {
+ASTBuffer::ASTBuffer(ASTBuffer::Type type): AST{NodeType::AST_BUFFER_DECLARATION} {
     this->buffer_type = type;
 }
 
@@ -36,7 +37,10 @@ ASTBuffer* parseBuffer(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS);
 
     while (parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
-        buff->buffer_fields.push_back(parseVarDecl(parser));
+        if(parser->currentToken()->type == Token::TOKEN_STRUCT) 
+        buff->buffer_fields.push_back(parseStruct(parser));
+        else buff->buffer_fields.push_back(parseVarDecl(parser));
+        
     }
     
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);

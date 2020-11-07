@@ -5,7 +5,7 @@
 
 namespace HLSL {
 
-ASTVarDecl::ASTVarDecl(): AST{NodeType::NODE_TYPE_VARIABLE_DECLARATION} {}
+ASTVarDecl::ASTVarDecl(): AST{NodeType::AST_VARIABLE_DECLARATION} {}
 
 StorageClass parseStorageClass(Parser* parser) {
     switch(parser->currentToken()->type) {
@@ -57,8 +57,11 @@ TypeModifier parseTypeModifier(Parser* parser) {
 
 
 bool isVariableDeclaration(Parser* parser) {
-    unsigned int index = parser->getTokenIndex();
+    if(parser->currentToken()->type == Token::Type::TOKEN_OPEN_SQUARE_BRACKETS) {
+        return false;
+    }
 
+    unsigned int index = parser->getTokenIndex();
     parseStorageClass(parser);
     parseTypeModifier(parser);
     parseDeclarationBaseType(parser);

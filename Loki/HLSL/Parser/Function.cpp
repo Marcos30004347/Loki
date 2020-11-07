@@ -37,17 +37,14 @@ FunctionArgument* parseArgument(Parser* parser) {
     argument->argument_type = parseDeclarationBaseType(parser);
     argument->argument_name = parser->currentToken()->value;
     parser->readToken(Token::TOKEN_IDENTIFIER);
-    if(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
+
+    while(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
         parser->readToken(Token::TOKEN_TWO_POINTS);
-        // Maybe Buggy
-        while(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
-            parser->readToken(Token::TOKEN_TWO_POINTS);
-            InterpolationModifier modifier = parseInterpolationModifier(parser);
-            if(modifier == InterpolationModifier::INTERPMOD_NONE) {
-                argument->argument_semantic = parseSemantic(parser);
-            }
-            argument->argument_interpolation_modifier = modifier;
+        InterpolationModifier modifier = parseInterpolationModifier(parser);
+        if(modifier == InterpolationModifier::INTERPMOD_NONE) {
+            argument->argument_semantic = parseSemantic(parser);
         }
+        argument->argument_interpolation_modifier = modifier;
     }
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
@@ -58,40 +55,33 @@ FunctionArgument* parseArgument(Parser* parser) {
     return argument;
 }
 
-ASTFunctionDeclaration::ASTFunctionDeclaration() : AST{NodeType::NODE_TYPE_FUNCTION_DECLARATION} {}
+ASTFunctionDeclaration::ASTFunctionDeclaration() : AST{NodeType::AST_FUNCTION_DECLARATION} {}
 
 ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     ASTFunctionDeclaration* func_decl = new ASTFunctionDeclaration();
-
     FuncStorageClass storage_class = FuncStorageClass::FUNCSTORAGECLASS_NONE;
     if(parser->currentToken()->type == Token::TOKEN_INLINE) {
         storage_class = FuncStorageClass::FUNCSTORAGECLASS_INLINE;
     }
 
     func_decl->func_decl_storage_class = storage_class;
-
-    if(parser->currentToken()->type == Token::TOKEN_CLIPPLANES) {
-        ClipPlanes* clip_planes = new ClipPlanes();
-        parser->readToken(Token::TOKEN_CLIPPLANES);
-        
+    if(parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
+        parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
+        FuncAttribute* att = new FuncAttribute();
+        att->name = parser->currentToken()->value;
+        parser->readToken(Token::TOKEN_IDENTIFIER);
         parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
-        int i=0;
-        if(parser->isNumeric()) {
-            clip_planes->planes[i] = atof(parser->currentToken()->value);
-            parser->readNumeric();
-            i++;
+        if(parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
+            att->paramenters.push_back(parseLiteral(parser));
             while(parser->currentToken()->type == Token::TOKEN_COMMA) {
                 parser->readToken(Token::TOKEN_COMMA);
-                clip_planes->planes[i] = atof(parser->currentToken()->value);
-                parser->readNumeric();
-                i++;
+                att->paramenters.push_back(parseLiteral(parser));
             }
         }
         parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
-        func_decl->func_decl_clip_planes = clip_planes;
+        parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
+        func_decl->func_decl_attributes.push_back(att);
     }
-
-    printf("Warning: precise func decl inst being parsed!\n");
 
     func_decl->precise = false;
     func_decl->func_decl_return_type = parseDeclarationBaseType(parser);
@@ -103,6 +93,7 @@ ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     if(parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
         func_decl->func_decl_arguments.push_back(parseArgument(parser));
         while(parser->currentToken()->type == Token::TOKEN_COMMA) {
+            parser->readToken(Token::TOKEN_COMMA);
             func_decl->func_decl_arguments.push_back(parseArgument(parser));
         }
     }

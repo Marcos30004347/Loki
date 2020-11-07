@@ -1,4 +1,0 @@
-add HLSL pre processor
-handle initialization list better
-add Texture objects (https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-to-type)
-add typedeff

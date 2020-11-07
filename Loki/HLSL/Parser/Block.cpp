@@ -3,7 +3,7 @@
 
 namespace HLSL {
     
-ASTBlock::ASTBlock(): AST{NodeType::NODE_TYPE_BLOCK} {}
+ASTBlock::ASTBlock(): AST{NodeType::AST_BLOCK} {}
 
 ASTBlock* parseBlock(Parser* parser) {
     ASTBlock* block = new ASTBlock();

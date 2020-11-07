@@ -4,6 +4,109 @@
 
 namespace HLSL {
 
+void parseTexture(BaseType* type, Parser* parser) {
+    switch(parser->currentToken()->type) {
+        case Token::Type::TOKEN_BUFFER:    
+            parser->readToken(Token::Type::TOKEN_BUFFER);
+            type->type = BaseType::BASE_TYPE_BUFFER;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURE1D:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE1D);
+            type->type = BaseType::BASE_TYPE_TEXTURE1D;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+
+        case Token::Type::TOKEN_TEXTURE1D_ARRAY:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE1D_ARRAY);
+            type->type = BaseType::BASE_TYPE_TEXTURE1D_ARRAY;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+
+        case Token::Type::TOKEN_TEXTURE2D:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE2D);
+            type->type = BaseType::BASE_TYPE_TEXTURE2D;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURE2D_ARRAY:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE2D_ARRAY);
+            type->type = BaseType::BASE_TYPE_TEXTURE2D_ARRAY;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURE3D:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE3D);
+            type->type = BaseType::BASE_TYPE_TEXTURE3D;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURECUBE:    
+            parser->readToken(Token::Type::TOKEN_TEXTURECUBE);
+            type->type = BaseType::BASE_TYPE_TEXTURECUBE;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURECUBE_ARRAY:    
+            parser->readToken(Token::Type::TOKEN_TEXTURECUBE_ARRAY);
+            type->type = BaseType::BASE_TYPE_TEXTURECUBE_ARRAY;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURE2DMS:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE2DMS);
+            type->type = BaseType::BASE_TYPE_TEXTURE2DMS;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_COMMA);
+                type->texture_samples = atoi(parser->currentToken()->value);
+                parser->readToken(Token::TOKEN_INT_LITERAL);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+        case Token::Type::TOKEN_TEXTURE2DMS_ARRAY:    
+            parser->readToken(Token::Type::TOKEN_TEXTURE2DMS_ARRAY);
+            type->type = BaseType::BASE_TYPE_TEXTURE2DMS_ARRAY;
+            if(parser->currentToken()->type == Token::TOKEN_GREATER) {
+                parser->readToken(Token::TOKEN_GREATER);
+                type->texture_sample_type = parseDeclarationBaseType(parser);
+                parser->readToken(Token::TOKEN_COMMA);
+                type->texture_samples = atoi(parser->currentToken()->value);
+                parser->readToken(Token::TOKEN_INT_LITERAL);
+                parser->readToken(Token::TOKEN_LESS);
+            }
+            break;
+    }
+}
+
 BaseType* parseDeclarationBaseType(Parser* parser) {
     BaseType* type = new BaseType();
     type->name = parser->currentToken()->value;
@@ -389,6 +492,20 @@ BaseType* parseDeclarationBaseType(Parser* parser) {
             parser->readToken(Token::Type::TOKEN_STRING);
             type->type = BaseType::BASE_TYPE_STRING;
             break;
+
+
+        // Texture Buffer Objects
+        case Token::Type::TOKEN_BUFFER:    
+        case Token::Type::TOKEN_TEXTURE1D:    
+        case Token::Type::TOKEN_TEXTURE1D_ARRAY:    
+        case Token::Type::TOKEN_TEXTURE2D:    
+        case Token::Type::TOKEN_TEXTURE3D:    
+        case Token::Type::TOKEN_TEXTURECUBE:    
+        case Token::Type::TOKEN_TEXTURECUBE_ARRAY:    
+        case Token::Type::TOKEN_TEXTURE2DMS:    
+        case Token::Type::TOKEN_TEXTURE2DMS_ARRAY:  
+            parseTexture(type, parser);  
+            break;
         default:
             parser->readToken(Token::Type::TOKEN_IDENTIFIER);
             type->type = BaseType::BASE_TYPE_USER_DEFINED;
@@ -399,8 +516,9 @@ BaseType* parseDeclarationBaseType(Parser* parser) {
 }
 
 bool isDeclaration(Parser* parser) {
-    return parser->currentToken()->type >= Token::TOKEN_TYPES_START
-        && parser->currentToken()->type <= Token::TOKEN_TYPES_END;
+    return parser->currentToken()->type == Token::TOKEN_IDENTIFIER || 
+    (parser->currentToken()->type >= Token::TOKEN_TYPES_START
+        && parser->currentToken()->type <= Token::TOKEN_TYPES_END);
 }
 
 }

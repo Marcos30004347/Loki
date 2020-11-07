@@ -170,10 +170,23 @@ struct BaseType {
 
         BASE_TYPE_STRING,
 
+        BASE_TYPE_BUFFER,
+        BASE_TYPE_TEXTURE_OBJECTS_START = BASE_TYPE_BUFFER,
+        BASE_TYPE_TEXTURE1D,
+        BASE_TYPE_TEXTURE1D_ARRAY,
+        BASE_TYPE_TEXTURE2D,
+        BASE_TYPE_TEXTURE2D_ARRAY,
+        BASE_TYPE_TEXTURE3D,
+        BASE_TYPE_TEXTURECUBE,
+        BASE_TYPE_TEXTURECUBE_ARRAY,
+        BASE_TYPE_TEXTURE2DMS,
+        BASE_TYPE_TEXTURE2DMS_ARRAY,
+        BASE_TYPE_TEXTURE_OBJECTS_END = BASE_TYPE_TEXTURE2DMS_ARRAY,
+
         BASE_TYPE_USER_DEFINED,       // struct
     };
 
-    char* name;
+    char* name; // User defined types
     Type type;
 
     bool is_matrix;
@@ -182,6 +195,8 @@ struct BaseType {
     unsigned int rows;
     unsigned int cols;
     
+    unsigned int texture_samples;
+    BaseType* texture_sample_type;
 };
 
 BaseType* parseDeclarationBaseType(Parser* parser);

@@ -22,7 +22,7 @@ struct ASTBuffer : AST {
     Type buffer_type;
     char* buffer_name;
     Register* buffer_register;
-    std::vector<ASTVarDecl*> buffer_fields;
+    std::vector<AST*> buffer_fields;
 };
 
 // BUFFER -> BufferType IDENTIFIER? (':' REGISTER)? '{' VARIABLE_DECLARATION* '}'';'

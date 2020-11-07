@@ -38,16 +38,16 @@ struct FunctionArgument {
     ASTLiteral* argument_initializer;
 };
 
-// CLIP_PLANES -> clipplanes((NUMBER)+6)
-struct ClipPlanes {
-    float planes[6];
+struct FuncAttribute {
+    std::vector<AST*> paramenters;
+    const char* name;
 };
 
 struct ASTFunctionDeclaration: AST {
     explicit ASTFunctionDeclaration();
 
     FuncStorageClass func_decl_storage_class;
-    ClipPlanes* func_decl_clip_planes;
+    std::vector<FuncAttribute*> func_decl_attributes;
     BaseType* func_decl_return_type;
     bool precise;
     char* func_decl_name;

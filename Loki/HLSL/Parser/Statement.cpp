@@ -5,19 +5,23 @@
 
 namespace HLSL {
 
-ASTReturn::ASTReturn(): AST{NodeType::NODE_TYPE_RETURN_STATEMENT} {}
+ASTReturn::ASTReturn(): AST{NodeType::AST_RETURN_STATEMENT} {}
 
 ASTReturn* parseReturn(Parser* parser) {
     ASTReturn* return_ast = new ASTReturn();
+    parser->readToken(Token::TOKEN_RETURN);
+
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
         return_ast->return_expression = parseExpression(parser);
     }
+
     return return_ast;
 }
 
 AST* parseStatement(Parser* parser) {
     AST* statement = nullptr;
-
+    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_SEMICOLON) parser->readToken(Token::TOKEN_SEMICOLON);
+    
     // Variable Declaration
     if(isDeclaration(parser)) statement = parseVarDecl(parser);
     else switch (parser->currentToken()->type) {
@@ -40,7 +44,7 @@ AST* parseStatement(Parser* parser) {
             parser->readToken(Token::TOKEN_SEMICOLON);
             break;
         case Token::TOKEN_RETURN:
-            statement = parseReturn(parser); break;
+            statement = parseReturn(parser);
             parser->readToken(Token::TOKEN_SEMICOLON);
             break;
 

@@ -12,7 +12,7 @@
 
 namespace HLSL {
 
-ASTProgram::ASTProgram(): AST{NodeType::NODE_TYPE_PROGRAM} {}
+ASTProgram::ASTProgram(): AST{NodeType::AST_PROGRAM} {}
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
@@ -69,6 +69,7 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     program->program_declarations = std::vector<AST*>(0);
 
     while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
+
         switch (this->currentToken()->type) {
     
         case Token::TOKEN_STRUCT:
@@ -77,7 +78,7 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     
         case Token::TOKEN_CBUFFER:
         case Token::TOKEN_TBUFFER:
-            program->program_declarations.push_back(parseStruct(this)); break;
+            program->program_declarations.push_back(parseBuffer(this)); break;
             break;
         
         default:
@@ -89,6 +90,7 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
             } 
             break;
         }
+        while(this->currentToken() && this->currentToken()->type == Token::TOKEN_SEMICOLON) this->readToken(Token::TOKEN_SEMICOLON);
     }
     return program;
 }

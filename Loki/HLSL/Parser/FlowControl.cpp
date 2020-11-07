@@ -4,16 +4,16 @@
 
 namespace HLSL {
 
-ASTIf::ASTIf(): AST{NodeType::NODE_TYPE_IF_STATEMENT} {}
-ASTWhile::ASTWhile(): AST{NodeType::NODE_TYPE_WHILE_STATEMENT} {}
-ASTDoWhile::ASTDoWhile(): AST{NodeType::NODE_TYPE_DO_WHILE_STATEMENT} {}
-ASTBreak::ASTBreak(): AST{NodeType::NODE_TYPE_BREAK_STATEMENT} {}
-ASTContinue::ASTContinue(): AST{NodeType::NODE_TYPE_CONTINUE_STATEMENT} {}
-ASTDiscard::ASTDiscard(): AST{NodeType::NODE_TYPE_DISCARD_STATEMENT} {}
-ASTCase::ASTCase(): AST{NodeType::NODE_TYPE_CASE_STATEMENT} {}
-ASTSwitch::ASTSwitch(): AST{NodeType::NODE_TYPE_SWITCH_STATEMENT} {}
-ASTFor::ASTFor(): AST{NodeType::NODE_TYPE_FOR_STATEMENT} {}
-ASTDefault::ASTDefault(): AST{NodeType::NODE_TYPE_DEFAULT_STATEMENT} {}
+ASTIf::ASTIf(): AST{NodeType::AST_IF_STATEMENT} {}
+ASTWhile::ASTWhile(): AST{NodeType::AST_WHILE_STATEMENT} {}
+ASTDoWhile::ASTDoWhile(): AST{NodeType::AST_DO_WHILE_STATEMENT} {}
+ASTBreak::ASTBreak(): AST{NodeType::AST_BREAK_STATEMENT} {}
+ASTContinue::ASTContinue(): AST{NodeType::AST_CONTINUE_STATEMENT} {}
+ASTDiscard::ASTDiscard(): AST{NodeType::AST_DISCARD_STATEMENT} {}
+ASTCase::ASTCase(): AST{NodeType::AST_CASE_STATEMENT} {}
+ASTSwitch::ASTSwitch(): AST{NodeType::AST_SWITCH_STATEMENT} {}
+ASTFor::ASTFor(): AST{NodeType::AST_FOR_STATEMENT} {}
+ASTDefault::ASTDefault(): AST{NodeType::AST_DEFAULT_STATEMENT} {}
 
 ASTIf* parseIf(Parser* parser) {
     ASTIf* if_ast = new ASTIf();

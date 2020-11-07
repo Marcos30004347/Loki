@@ -9,6 +9,7 @@
 #include "BaseType.hpp"
 #include "Literals.hpp"
 #include "Variables.hpp"
+#include "FunctionCall.hpp"
 
 namespace HLSL {
 
@@ -91,13 +92,6 @@ struct ASTSymbol: AST {
     char* symbol_name;
 };
 
-struct ASTFunctionCall: AST {
-    explicit ASTFunctionCall();
-    bool constexp;
-    AST* func_call_symbol;
-    std::vector<AST*> func_call_arguments;
-};
-
 
 struct ASTMemberAccess: AST {
     explicit ASTMemberAccess();
@@ -130,7 +124,6 @@ AST* parseFactor(Parser* parser, bool constant = false);
 AST* parseUnary(Parser* parser, bool constant = false);
 AST* parseArrayAccess(Parser* parser, bool constant = false);
 AST* parseMemberAccess(Parser* parser, bool constant = false);
-AST* parseCall(Parser* parser, bool constant = false);
 AST* parsePrimary(Parser* parser, bool constant = false);
 
 }
