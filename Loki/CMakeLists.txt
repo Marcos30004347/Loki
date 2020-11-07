@@ -9,6 +9,7 @@ add_library(
     Lib/String.cpp
 	HLSL/Lexer/Lexer.cpp
 	HLSL/Lexer/Token.cpp
+	HLSL/Parser/AST.cpp
 	HLSL/Parser/BaseType.cpp
 	HLSL/Parser/Literals.cpp
 	HLSL/Parser/PackOffset.cpp

@@ -4,25 +4,17 @@
 namespace HLSL {
 
 enum NodeType {
-    AST_ROOT,
-    AST_DATATYPE,
     AST_PROGRAM,
     AST_LITERAL,
     AST_VARIABLE_DECLARATION,
     AST_FUNCTION_DECLARATION,
     AST_BUFFER_DECLARATION,
     AST_STRUCT_DECLARATION,
-    AST_STRUCT_FIELD,
 
     AST_BLOCK,
 
     AST_EXPRESSION_BINARY,
-
-    AST_EXPRESSION_EQUALITY,
-    AST_EXPRESSION_COMPARISON,
-    AST_EXPRESSION_TERM,
     AST_EXPRESSION_UNARY,
-    AST_EXPRESSION_FACTOR,
 
     AST_FUNCTION_CALL,
     AST_SYMBOL, // defined variables, ...
@@ -52,6 +44,7 @@ enum NodeType {
 struct AST {
     NodeType ast_type;
     explicit AST(NodeType type): ast_type{type} {}
+    void print(int tabs = 0);
 };
 
 

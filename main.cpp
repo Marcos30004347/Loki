@@ -28,7 +28,8 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     HLSL::Parser* parser = new HLSL::Parser(lexer);
-    parser->parseProgram(HLSL::ProgramType::PROGRAM_VERTEX_SHADER, "main");
+    HLSL::AST* root = parser->parseProgram(HLSL::ProgramType::PROGRAM_VERTEX_SHADER, "main");
+    root->print();
 
     return 0;
 }
