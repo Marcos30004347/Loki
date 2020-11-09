@@ -17,6 +17,7 @@ struct StructMember {
 struct ASTStruct : AST {
     explicit ASTStruct();
     char* struct_identifier;
+    char* struct_declarator;
     std::vector<StructMember*> struct_members;
     void assertInitializationList(ASTLiteral* literal);
 };

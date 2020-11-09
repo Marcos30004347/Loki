@@ -1,5 +1,6 @@
 #include "Variables.hpp"
 #include "Struct.hpp"
+#include "Expressions.hpp"
 #include <stdio.h>
 #include <cstdlib>
 #include <cctype>
@@ -110,13 +111,13 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     if(parser->currentToken()->type == Token::Type::TOKEN_OPEN_SQUARE_BRACKETS) {
         parser->readToken(Token::Type::TOKEN_OPEN_SQUARE_BRACKETS);
         var_decl->var_decl_is_array = true;
-        var_decl->var_decl_array_size = atoi(parser->currentToken()->value);
+        var_decl->var_decl_array_size = parseExpression(parser, true);
         parser->readToken(Token::Type::TOKEN_INT_LITERAL);
         parser->readToken(Token::Type::TOKEN_CLOSE_SQUARE_BRACKETS);
 
     } else {
         var_decl->var_decl_is_array = false;
-        var_decl->var_decl_array_size = 1;
+        var_decl->var_decl_array_size = nullptr;
     }
 
     // Variable PackOffset/Register/Semantic
@@ -158,26 +159,29 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::Type::TOKEN_EQUAL);
-        var_decl->var_decl_default_value = (ASTLiteral*)malloc(sizeof(ASTLiteral)*var_decl->var_decl_array_size);
-        var_decl->var_decl_default_value = parseLiteral(parser);
+        printf("WARNING: Const expressions are not being evaluated yet!\n");
 
-        ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value);
+        var_decl->var_decl_default_value = parseExpression(parser, true);
+        if(var_decl->var_decl_default_value->ast_type == AST_LITERAL) {
+            ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value);
 
-        if(var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED) {
-            static_cast<ASTStruct*>(parser->scope->getStructDefinition(var_decl->var_decl_type->name))->assertInitializationList(value);
-        } else
-        if(!value->is_initialization_list) {
-            if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type)) {
-                printf(
-                    "Warning: variable array '%s' declared with invalid initializer!\n",
-                    var_decl->var_decl_name
-                );
-            }
-        } else {
-            if(!isValidInitializationListForType(value, var_decl->var_decl_type->type, var_decl->var_decl_is_array, var_decl->var_decl_array_size)) {
-                printf("Error: Invalid initialization list for variable '%s' in line '%i'\n", var_decl->var_decl_name, parser->currentToken()->line);
+            if(var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED) {
+                static_cast<ASTStruct*>(parser->scope->getStructDefinition(var_decl->var_decl_type->name))->assertInitializationList(value);
+            } else
+            if(!value->is_initialization_list) {
+                if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type)) {
+                    printf(
+                        "Warning: variable array '%s' declared with invalid initializer!\n",
+                        var_decl->var_decl_name
+                    );
+                }
+            } else {
+                if(!isValidInitializationListForType(value, var_decl->var_decl_type->type, var_decl->var_decl_is_array, var_decl->var_decl_array_size)) {
+                    printf("Error: Invalid initialization list for variable '%s' in line '%i'\n", var_decl->var_decl_name, parser->currentToken()->line);
+                }
             }
         }
+        
     }
 
     // Variable Semicolon

@@ -113,7 +113,7 @@ ASTLiteral* parseLiteral(Parser* parser);
 
 ASTLiteral** parseLiteralList(Parser* parser, unsigned int size);
 bool isLiteralCastableTo(Literal* literal, BaseType::Type type);
-bool isValidInitializationListForType(ASTLiteral* literal, BaseType::Type type, bool is_array, unsigned int array_size);
+bool isValidInitializationListForType(ASTLiteral* literal, BaseType::Type type, bool is_array, AST* array_size);
 
 }
 

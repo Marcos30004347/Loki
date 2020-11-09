@@ -58,7 +58,7 @@ struct ASTVarDecl: AST {
     char* var_decl_name;
 
     bool var_decl_is_array;
-    unsigned int var_decl_array_size;
+    AST* var_decl_array_size;
 
     Semantic* var_decl_semantic;
     PackOffset* var_decl_pack_offset;
@@ -66,7 +66,7 @@ struct ASTVarDecl: AST {
 
     std::vector<Annotation*> annotations;
 
-    ASTLiteral* var_decl_default_value; // array of literals
+    AST* var_decl_default_value; // array of literals
 };
 
 bool isVariableDeclaration(Parser* parser);

@@ -552,8 +552,11 @@ BaseType* parseDeclarationBaseType(Parser* parser) {
 }
 
 bool isDeclaration(Parser* parser) {
-    return parser->currentToken()->type == Token::TOKEN_IDENTIFIER || 
-    (parser->currentToken()->type >= Token::TOKEN_TYPES_START
+    if(parser->currentToken()->type == Token::TOKEN_IDENTIFIER) {
+        return parser->scope->getStructDefinition(parser->currentToken()->value) != nullptr;
+    }
+
+    return (parser->currentToken()->type >= Token::TOKEN_TYPES_START
         && parser->currentToken()->type <= Token::TOKEN_TYPES_END);
 }
 

@@ -1,6 +1,7 @@
 #include "Lib/String.hpp"
 #include "FunctionCall.hpp"
 #include "Expressions.hpp"
+#include "Functions.hpp"
 #include <stdio.h>
 namespace HLSL {
 
@@ -167,10 +168,28 @@ AST* parseCall(Parser* parser, bool constant) {
             }
         }
         parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
+
+        // ASTFunctionDeclaration* decl = static_cast<ASTFunctionDeclaration*>(parser->scope->getFunctionDefinition(static_cast<ASTSymbol*>(root)->symbol_name));
+        // // Verify if var is constant
+        // if(!decl) {
+        //     printf("Undefined function '%s' at line '%i'!\n", static_cast<ASTSymbol*>(root)->symbol_name, parser->currentToken()->line);
+        //     exit(-1);
+        // }
+
+        if(constant) {
+            printf("Cant use function '%s' for constant expresiion at line '%i'!\n", static_cast<ASTSymbol*>(root)->symbol_name, parser->currentToken()->line);
+            exit(-1);
+        }
+
         root = func_call;
     } else {
         if(root->ast_type == NodeType::AST_SYMBOL && constant) {
-            printf("Cant use variables in constant expression at line '%i'!\n", parser->currentToken()->line);
+            ASTVarDecl* var = static_cast<ASTVarDecl*>(parser->scope->getVariableDefinition(static_cast<ASTSymbol*>(root)->symbol_name));
+            // Verify if var is constant
+            if(!var || !var->var_decl_type == TypeModifier::TYPEMODIFIER_CONST) {
+                printf("Cant use variables in constant expression at line '%i'!\n", parser->currentToken()->line);
+                exit(-1);
+            }
         }
     }
 

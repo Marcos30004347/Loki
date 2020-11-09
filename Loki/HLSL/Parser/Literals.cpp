@@ -6,9 +6,11 @@ namespace HLSL {
 
 ASTLiteral::ASTLiteral(): AST{NodeType::AST_LITERAL} {}
 
-bool isValidInitializationListForType(ASTLiteral* literal, BaseType::Type type, bool is_array, unsigned int array_size) {
+bool isValidInitializationListForType(ASTLiteral* literal, BaseType::Type type, bool is_array, AST* array_size) {
     if(is_array) {
-        return literal->initialization_list_values.size() == array_size;
+        printf("WARNING: Not verifying array size!\n");
+        return true;
+     //   return literal->initialization_list_values.size() == 0;
     }
     switch(type) {
         case BaseType::Type::BASE_TYPE_FLOAT:

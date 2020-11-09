@@ -74,6 +74,7 @@ AST* Scope::getVariableDefinition(const char* identifier) {
         }
     }
 
+
     if(this->parent) return this->getVariableDefinition(identifier);
     
     return nullptr;
