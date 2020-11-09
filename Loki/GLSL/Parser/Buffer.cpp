@@ -13,10 +13,14 @@ ASTBuffer* parseBuffer(Parser* parser) {
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
         buffer->members.push_back(parseVariableDeclaration(parser));
     }
+
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS); 
+
     buffer->extern_name = parser->currentToken()->value;
+
     parser->readToken(Token::TOKEN_IDENTIFIER); 
     parser->readToken(Token::TOKEN_SEMICOLON); 
+
     return buffer;
 }
 }

@@ -56,6 +56,7 @@ ASTStruct* parseStruct(Parser* parser) {
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
 
     if(post_naming) {
+        // Fix post initialization
         strct->struct_declarator = parser->currentToken()->value;
         if(!strct->struct_identifier) {
             strct->struct_identifier = strct->struct_declarator;
