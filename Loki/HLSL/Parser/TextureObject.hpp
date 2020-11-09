@@ -22,6 +22,7 @@ enum TextureObjectType {
 
 struct ASTTextureObject: AST {
     explicit ASTTextureObject();
+    bool texture_object_is_multisampled;
 };
 
 // Object2 [<Type, Samples>] Name;

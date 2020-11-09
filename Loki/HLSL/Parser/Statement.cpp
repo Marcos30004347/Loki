@@ -15,6 +15,7 @@ ASTReturn* parseReturn(Parser* parser) {
         return_ast->return_expression = parseExpression(parser);
     }
 
+    parser->readToken(Token::TOKEN_SEMICOLON);
     return return_ast;
 }
 
@@ -26,6 +27,9 @@ AST* parseStatement(Parser* parser) {
     if(isDeclaration(parser)) statement = parseVarDecl(parser);
     else switch (parser->currentToken()->type) {
         // FLow Controll
+        case Token::TOKEN_OPEN_CURLY_BRACKETS:
+            statement = parseBlock(parser); break;
+            break;
         case Token::TOKEN_IF: statement = parseIf(parser); break;
         case Token::TOKEN_FOR: statement = parseFor(parser); break;
         case Token::TOKEN_WHILE: statement = parseWhile(parser); break;
@@ -33,21 +37,17 @@ AST* parseStatement(Parser* parser) {
         case Token::TOKEN_SWITCH: statement = parseSwitch(parser); break;
         case Token::TOKEN_BREAK:
             statement = parseBreak(parser); break;
-            parser->readToken(Token::TOKEN_SEMICOLON);
             break;
         case Token::TOKEN_CONTINUE:
             statement = parseContinue(parser);
-            parser->readToken(Token::TOKEN_SEMICOLON);
             break;
         case Token::TOKEN_DISCARD:
             statement = parseDiscard(parser);
-            parser->readToken(Token::TOKEN_SEMICOLON);
             break;
         case Token::TOKEN_RETURN:
             statement = parseReturn(parser);
-            parser->readToken(Token::TOKEN_SEMICOLON);
             break;
-
+        
         // Expresssion
         default:
             statement = parseExpression(parser); 

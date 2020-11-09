@@ -106,6 +106,10 @@ ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     }
 
     func_decl->func_decl_body = parseBlock(parser);
+    
+    // add func decl to scope
+    parser->scope->addFunctionDefinition(func_decl);
+    
     return func_decl;
 }
 

@@ -1,4 +1,5 @@
 #include "Variables.hpp"
+#include "Struct.hpp"
 #include <stdio.h>
 #include <cstdlib>
 #include <cctype>
@@ -93,6 +94,15 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     // Variable type
     var_decl->var_decl_type = parseDeclarationBaseType(parser);
 
+    // Check if type is defined in current scope
+    if(
+        var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED
+        && !parser->scope->getStructDefinition(var_decl->var_decl_type->name)
+    ) {
+        printf("Undefined type '%s' at line '%i'!\n", var_decl->var_decl_type->name, parser->currentToken()->line);
+        exit(-1);
+    }
+
     // Variable name
     var_decl->var_decl_name = parser->currentToken()->value;
     parser->readToken(Token::Type::TOKEN_IDENTIFIER);
@@ -152,6 +162,10 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
         var_decl->var_decl_default_value = parseLiteral(parser);
 
         ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value);
+
+        if(var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED) {
+            static_cast<ASTStruct*>(parser->scope->getStructDefinition(var_decl->var_decl_type->name))->assertInitializationList(value);
+        } else
         if(!value->is_initialization_list) {
             if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type)) {
                 printf(
@@ -168,6 +182,10 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     // Variable Semicolon
     parser->readToken(Token::Type::TOKEN_SEMICOLON);
+
+    // Add var decl to scope
+    parser->scope->addVariableDefinition(var_decl);
+
     return var_decl;
 }
 

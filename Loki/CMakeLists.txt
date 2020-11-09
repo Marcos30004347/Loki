@@ -20,7 +20,8 @@ add_library(
 	HLSL/Parser/Variables.cpp
 	HLSL/Parser/InterpolationModifier.cpp
 	HLSL/Parser/Expression.cpp
-	HLSL/Parser/Function.cpp
+	HLSL/Parser/Functions.cpp
+	HLSL/Parser/Scope.cpp
 	HLSL/Parser/Block.cpp
 	HLSL/Parser/Buffer.cpp
 	HLSL/Parser/Struct.cpp

@@ -1,4 +1,7 @@
 #include "Expressions.hpp"
+#include "Struct.hpp"
+#include "Functions.hpp"
+
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,8 +18,6 @@ ASTTernary::ASTTernary(): AST{ NodeType::AST_TERNARY } {}
 
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY | EXPRESSION ? EXPRESSION : EXPRESSION
 AST* parseExpression(Parser* parser, bool constant) {
-    printf("EXPRESSION %s\n", parser->currentToken()->value);
-
     AST* root = parseEquality(parser, constant);
     if(
         parser->currentToken() &&
@@ -32,6 +33,7 @@ AST* parseExpression(Parser* parser, bool constant) {
         || parser->currentToken()->type == Token::TOKEN_GREATER_GREATER_EQUAL
         || parser->currentToken()->type == Token::TOKEN_LESS_LESS_EQUAL)
     ) {
+        printf("asdasdasdasdas\n  %s\n", parser->currentToken()->value);
         AST* assignment = new ASTAssignment();
         static_cast<ASTAssignment*>(assignment)->assignment_left_operand = root;
         switch(parser->currentToken()->type) {
@@ -64,15 +66,12 @@ AST* parseExpression(Parser* parser, bool constant) {
         ternary->ternary_right = parseExpression(parser);
         root = ternary;
     }
-    printf("~EXPRESSION\n");
 
     return root;
 }
 
 // EQUALITY → COMPARISON (('!=' | '==') EQUALITY)*
 AST* parseEquality(Parser* parser, bool constant) {
-    printf("EQ %s\n", parser->currentToken()->value);
-
     AST* root = parseBooleans(parser, constant);
     if(
         parser->currentToken() &&
@@ -91,16 +90,12 @@ AST* parseEquality(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseEquality(parser);
         root = bn;
     }
-    printf("~EQ\n");
-
     return root;
 }
 
 
 // BOOL → TERM (( '&&' | '||') BOOL)*
 AST* parseBooleans(Parser* parser, bool constant) {
-    printf("BOOL %s\n", parser->currentToken()->value);
-
     AST* root = parseBitwise(parser, constant);
 
     if(
@@ -119,15 +114,11 @@ AST* parseBooleans(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseBooleans(parser, constant);
         root = bn;
     }
-    printf("~BOOL\n");
-
     return root;
 }
 
 // BITWISE → BOOL (( '&' | '|' | '^'  ) BITWISE)*
 AST* parseBitwise(Parser* parser, bool constant) {
-    printf("BITWISE %s\n", parser->currentToken()->value);
-
     AST* root = parseComparison(parser, constant);
 
     if(
@@ -148,15 +139,11 @@ AST* parseBitwise(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseBooleans(parser, constant);
         root = bn;
     }
-    printf("~BITWISE\n");
-
     return root;
 }
 
 // COMPARISON → SHIFT (( '>' | '>=' | '<' | '<='  ) COMPARISON)*
 AST* parseComparison(Parser* parser, bool constant) {
-    printf("COMPARISON %s\n", parser->currentToken()->value);
-
     AST* root = parseBitwiseShift(parser, constant);
 
     if(
@@ -179,15 +166,11 @@ AST* parseComparison(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseComparison(parser, constant);
         root = bn;
     }
-    printf("~COMPARISON\n");
-
     return root;
 }
 
 // SHIFT → TERM (( '>>' | '<<'  ) COMPARISON)*
 AST* parseBitwiseShift(Parser* parser, bool constant) {
-    printf("SHIFT %s\n", parser->currentToken()->value);
-
     AST* root = parseTerm(parser, constant);
 
     if(
@@ -206,7 +189,6 @@ AST* parseBitwiseShift(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseBitwiseShift(parser, constant);
         root = bn;
     }
-    printf("~SHIFT\n");
 
     return root;
 }
@@ -214,7 +196,6 @@ AST* parseBitwiseShift(Parser* parser, bool constant) {
 
 // TERM → FACTOR (('+' | '-') TERM)*
 AST* parseTerm(Parser* parser, bool constant) {
-    printf("TERM %s\n", parser->currentToken()->value);
 
     AST* root = parseFactor(parser, constant);
 
@@ -234,14 +215,12 @@ AST* parseTerm(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseTerm(parser, constant);
         root = bn;
     }
-    printf("~TERM\n");
 
     return root;
 }
 
 // FACTOR → UNARY (('/' | '*' | '%' ) FACTOR)*
 AST* parseFactor(Parser* parser, bool constant) {
-    printf("FACTOR %s\n", parser->currentToken()->value);
 
     AST* root = parseUnary(parser, constant);
 
@@ -264,18 +243,14 @@ AST* parseFactor(Parser* parser, bool constant) {
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseFactor(parser, constant);
         root = bn;
     }
-    printf("~FACTOR\n");
 
     return root;
 }
 
 // UNARY → ('!' | '-' | '+' | '++' | '--' | '~' )UNARY | UNARY('++' | '--') | CALL
 AST* parseUnary(Parser* parser, bool constant) {
-    printf("UNARY %s\n", parser->currentToken()->value);
-
-    int a;
     AST* root = nullptr;
-    while(
+    if(
         parser->currentToken() &&
         (parser->currentToken()->type == Token::TOKEN_EXCLAMATION
         || parser->currentToken()->type == Token::TOKEN_MINUS
@@ -289,71 +264,89 @@ AST* parseUnary(Parser* parser, bool constant) {
             parser->readToken(Token::TOKEN_EXCLAMATION);
             root = new ASTUnaryExpression();
             static_cast<ASTUnaryExpression*>(root)->un_exp_operator = UnaryOp::UNARY_OP_NOT;
+            static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
+            
             break;
         case Token::TOKEN_PLUS: parser->readToken(Token::TOKEN_PLUS); break; // does nothing
         case Token::TOKEN_MINUS:
             parser->readToken(Token::TOKEN_MINUS);
             root = new ASTUnaryExpression();
             static_cast<ASTUnaryExpression*>(root)->un_exp_operator = UnaryOp::UNARY_OP_NEGATIVE;
+            static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
             break;
         case Token::TOKEN_PLUS_PLUS:
             parser->readToken(Token::TOKEN_PLUS_PLUS);
             root = new ASTUnaryExpression();
             static_cast<ASTUnaryExpression*>(root)->un_exp_operator = UnaryOp::UNARY_OP_PRE_INCREMENT;
+            static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
             break;
         case Token::TOKEN_MINUS_MINUS:
             parser->readToken(Token::TOKEN_MINUS_MINUS);
             root = new ASTUnaryExpression();
             static_cast<ASTUnaryExpression*>(root)->un_exp_operator = UnaryOp::UNARY_OP_PRE_DECREMENT;
+            static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
             break;
         case Token::TOKEN_TIL:
             parser->readToken(Token::TOKEN_TIL);
             root = new ASTUnaryExpression();
             static_cast<ASTUnaryExpression*>(root)->un_exp_operator = UnaryOp::UNARY_OP_LOGICAL_NOT;
+            static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
+            break;
+        }
+
+        return root;
+    }
+
+    root = parseMemberAccess(parser, constant);
+
+    int a;
+
+    AST* un = nullptr;
+    
+    if(
+        parser->currentToken() &&
+        (parser->currentToken()->type == Token::TOKEN_PLUS_PLUS
+        || parser->currentToken()->type == Token::TOKEN_MINUS_MINUS)
+    ) {
+        switch (parser->currentToken()->type) {
+        case Token::TOKEN_PLUS_PLUS:
+            parser->readToken(Token::TOKEN_PLUS_PLUS);
+            un = new ASTUnaryExpression();
+            static_cast<ASTUnaryExpression*>(un)->un_exp_operator = UnaryOp::UNARY_OP_POST_INCREMENT;
+            static_cast<ASTUnaryExpression*>(un)->un_exp_operand = root;
+            root = un;
+            break;
+        case Token::TOKEN_MINUS_MINUS:
+            parser->readToken(Token::TOKEN_MINUS_MINUS);
+            un = new ASTUnaryExpression();
+            static_cast<ASTUnaryExpression*>(un)->un_exp_operator = UnaryOp::UNARY_OP_POST_DECREMENT;
+            static_cast<ASTUnaryExpression*>(un)->un_exp_operand = root;
+            root = un;
             break;
         }
     }
 
-    if(root) {
-        static_cast<ASTUnaryExpression*>(root)->un_exp_operand = parseUnary(parser, constant);
-        AST* un = nullptr;
-        while(
-            parser->currentToken() &&
-            (parser->currentToken()->type == Token::TOKEN_PLUS_PLUS
-            || parser->currentToken()->type == Token::TOKEN_MINUS_MINUS)
-        ) {
-            switch (parser->currentToken()->type) {
-            case Token::TOKEN_PLUS_PLUS:
-                parser->readToken(Token::TOKEN_PLUS_PLUS);
-                un = new ASTUnaryExpression();
-                static_cast<ASTUnaryExpression*>(un)->un_exp_operator = UnaryOp::UNARY_OP_POST_INCREMENT;
-                static_cast<ASTUnaryExpression*>(un)->un_exp_operand = root;
-                root = un;
-                break;
-            case Token::TOKEN_MINUS_MINUS:
-                parser->readToken(Token::TOKEN_MINUS_MINUS);
-                un = new ASTUnaryExpression();
-                static_cast<ASTUnaryExpression*>(un)->un_exp_operator = UnaryOp::UNARY_OP_POST_DECREMENT;
-                static_cast<ASTUnaryExpression*>(un)->un_exp_operand = root;
-                root = un;
-                break;
-            }
-        }
-    } else {
-        root = parseArrayAccess(parser, constant);
-
-    }
-    printf("~UNARY\n");
-
     return root;
 }
 
-AST* parseArrayAccess(Parser* parser, bool constant) {
-    printf("ARRAY %s\n", parser->currentToken()->value);
 
-    AST* root = parseMemberAccess(parser, constant);
-
+AST* parseMemberAccess(Parser* parser, bool constant) {
+    AST* root = parseArrayAccess(parser, constant);
     while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_POINT) {
+        parser->readToken(Token::TOKEN_POINT);
+        ASTMemberAccess* access = new ASTMemberAccess();
+        access->member_left = root;
+        access->member_right = parseMemberAccess(parser, constant);
+
+        root = access;
+    }
+
+    return root;
+}
+AST* parseArrayAccess(Parser* parser, bool constant) {
+    AST* root = parseCall(parser, constant);
+    
+    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
         ASTArrayAccess* access = new ASTArrayAccess();
         parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
         access->member_left = root;
@@ -362,23 +355,6 @@ AST* parseArrayAccess(Parser* parser, bool constant) {
         parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
         root = access;
     }
-    printf("~ARRAY\n");
-
-    return root;
-}
-
-AST* parseMemberAccess(Parser* parser, bool constant) {
-    printf("MEMBER %s\n", parser->currentToken()->value);
-
-    AST* root = parseCall(parser, constant);
-    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_POINT) {
-        parser->readToken(Token::TOKEN_POINT);
-        ASTMemberAccess* access = new ASTMemberAccess();
-        access->member_left = root;
-        access->member_right = parseMemberAccess(parser, constant);
-        root = access;
-    }
-    printf("~ARRAY\n");
 
     return root;
 }
@@ -389,14 +365,11 @@ constexpr int func() {
 
 // PRIMARY → LITERAL | SYMBOL | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser, bool constant) {
-    printf("PRIMARY %s\n", parser->currentToken()->value);
-
     if(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS) {
         parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
         AST* expression = parseExpression(parser, constant);
         parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
 
-        printf("~PRIMARY\n");
         return expression;
     }
 
@@ -405,11 +378,9 @@ AST* parsePrimary(Parser* parser, bool constant) {
         parser->readToken(Token::TOKEN_IDENTIFIER);
         ASTSymbol* symbol = new ASTSymbol();
         symbol->symbol_name = identifier;
-        printf("~PRIMARY\n");
         return symbol;
     }
 
-    printf("~PRIMARY\n");
     return parseLiteral(parser);
 }
 

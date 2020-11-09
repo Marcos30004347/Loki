@@ -10,14 +10,14 @@
 #include "Buffer.hpp"
 #include "Struct.hpp"
 
-namespace HLSL {
+namespace GLSL {
 
 ASTProgram::ASTProgram(): AST{NodeType::AST_PROGRAM} {}
 
 Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
-    this->current_token_index = 0;
     this->scope = new Scope();
+    this->current_token_index = 0;
 }
 
 bool Parser::isNumeric() {
@@ -69,30 +69,7 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     program->program_main = copyStr(prorgamMain);
     program->program_declarations = std::vector<AST*>(0);
 
-    while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
 
-        switch (this->currentToken()->type) {
-    
-        case Token::TOKEN_STRUCT:
-            program->program_declarations.push_back(parseStruct(this));
-            break;
-    
-        case Token::TOKEN_CBUFFER:
-        case Token::TOKEN_TBUFFER:
-            program->program_declarations.push_back(parseBuffer(this)); break;
-            break;
-        
-        default:
-
-            if(isVariableDeclaration(this)) {
-                program->program_declarations.push_back(parseVarDecl(this));
-            } else {
-                program->program_declarations.push_back(parseFunctionDeclaration(this));
-            } 
-            break;
-        }
-        while(this->currentToken() && this->currentToken()->type == Token::TOKEN_SEMICOLON) this->readToken(Token::TOKEN_SEMICOLON);
-    }
     return program;
 }
 

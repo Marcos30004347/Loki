@@ -18,9 +18,11 @@ struct ASTStruct : AST {
     explicit ASTStruct();
     char* struct_identifier;
     std::vector<StructMember*> struct_members;
+    void assertInitializationList(ASTLiteral* literal);
 };
 
 // STRUCT -> 'struct' IDENTIFIER '{' (INTERPOLATION_MODIFIER? TYPE IDENTIFIER';')* };
 ASTStruct* parseStruct(Parser* parser);
+
 
 }

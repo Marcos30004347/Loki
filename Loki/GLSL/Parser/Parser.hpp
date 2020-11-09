@@ -5,7 +5,7 @@
 #include "AST.hpp"
 #include "Scope.hpp"
 
-namespace HLSL {
+namespace GLSL {
 
 enum ProgramType {
     PROGRAM_MESH_SHADER,
@@ -26,11 +26,9 @@ struct ASTProgram: AST {
 class Parser {
 private:
     Lexer* lexer;
-
     unsigned int current_token_index;
 public:
     Scope* scope;
-
     Parser(Lexer* lexer);
 
     void readToken(Token::Type tokenType);

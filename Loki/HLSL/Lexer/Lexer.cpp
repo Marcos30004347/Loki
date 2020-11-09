@@ -178,8 +178,8 @@ Lexer::Lexer(const char* source) {
             this->advance();
         } else 
         if(this->character == '>') {
-            if(this->head + 1 < eof && this->source[this->head + 1] == '>', this->line) {
-                if(this->head + 2 < eof && this->source[this->head + 2] == '=', this->line) {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '>') {
+                if(this->head + 2 < eof && this->source[this->head + 2] == '=') {
                     this->tokens.push_back(new Token(Token::TOKEN_GREATER_GREATER_EQUAL, ">>=", this->line));
                     this->advance();
                 }else {
@@ -187,7 +187,7 @@ Lexer::Lexer(const char* source) {
                 }
                 this->advance();
             } else
-            if(this->head + 1 < eof && this->source[this->head + 1] == '=', this->line) {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_GREATER_OR_EQUAL, ">=", this->line));
                 this->advance();
             } else {
@@ -196,8 +196,8 @@ Lexer::Lexer(const char* source) {
             this->advance();
         } else 
         if(this->character == '<') {
-            if(this->head + 1 < eof && this->source[this->head + 1] == '<', this->line) {
-                if(this->head + 2 < eof && this->source[this->head + 2] == '=', this->line) {
+            if(this->head + 1 < eof && this->source[this->head + 1] == '<') {
+                if(this->head + 2 < eof && this->source[this->head + 2] == '=') {
                     this->tokens.push_back(new Token(Token::TOKEN_LESS_LESS_EQUAL, "<<=", this->line));
                     this->advance();
                 }else {
@@ -265,6 +265,7 @@ void Lexer::collectIdentifier() {
     }
 
     // Reserved keywords
+    if(strcmp(value, "else") == 0) return this->tokens.push_back(new Token(Token::TOKEN_ELSE, value, this->line));
     if(strcmp(value, "default") == 0) return this->tokens.push_back(new Token(Token::TOKEN_DEFAULT, value, this->line));
     if(strcmp(value, "const") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CONST, value, this->line));
     if(strcmp(value, "case") == 0) return this->tokens.push_back(new Token(Token::TOKEN_CASE, value, this->line));

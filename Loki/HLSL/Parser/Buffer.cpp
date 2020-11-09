@@ -44,6 +44,8 @@ ASTBuffer* parseBuffer(Parser* parser) {
     }
     
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
+    parser->scope->addBufferDefinition(buff);
+
     return buff;
 }
 

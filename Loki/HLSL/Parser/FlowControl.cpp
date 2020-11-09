@@ -47,6 +47,7 @@ ASTDoWhile* parseDoWhile(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
     do_while_ast->do_while_expression = parseExpression(parser);
     parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
+    parser->readToken(Token::TOKEN_SEMICOLON);
     return do_while_ast;
 }
 
@@ -54,18 +55,21 @@ ASTDoWhile* parseDoWhile(Parser* parser) {
 ASTBreak* parseBreak(Parser* parser) {
     ASTBreak* break_ast = new ASTBreak();
     parser->readToken(Token::TOKEN_BREAK);
+    parser->readToken(Token::TOKEN_SEMICOLON);
     return break_ast;
 }
 
 ASTContinue* parseContinue(Parser* parser) {
     ASTContinue* continue_ast = new ASTContinue();
     parser->readToken(Token::TOKEN_CONTINUE);
+    parser->readToken(Token::TOKEN_SEMICOLON);
     return continue_ast;
 }
 
 ASTDiscard* parseDiscard(Parser* parser) {
     ASTDiscard* discard_ast = new ASTDiscard();
     parser->readToken(Token::TOKEN_DISCARD);
+    parser->readToken(Token::TOKEN_SEMICOLON);
     return discard_ast;
 }
 
@@ -76,23 +80,29 @@ ASTFor* parseFor(Parser* parser) {
     parser->readToken(Token::TOKEN_FOR);
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
 
-    if(parser->currentToken()->type != Token::TOKEN_SEMICOLON)
+    if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
         if(isDeclaration(parser)) for_ast->for_init_statement = parseVarDecl(parser);
-        else for_ast->for_init_statement = parseExpression(parser);
-    parser->readToken(Token::TOKEN_SEMICOLON);
+        else {
+            for_ast->for_init_statement = parseExpression(parser);
+            parser->readToken(Token::TOKEN_SEMICOLON);
+        }
+    }
 
-    if(parser->currentToken()->type != Token::TOKEN_SEMICOLON)
+    if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
         if(isDeclaration(parser)) for_ast->for_cond_expression = parseVarDecl(parser);
-        else for_ast->for_cond_expression = parseExpression(parser);
-    parser->readToken(Token::TOKEN_SEMICOLON);
+        else {
+            for_ast->for_cond_expression = parseExpression(parser);
+            parser->readToken(Token::TOKEN_SEMICOLON);
+        }
+    }
 
+    printf("asdasdasadsds\n");
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) 
         if(!isDeclaration(parser)) for_ast->for_loop_expression = parseExpression(parser);
         else {
             printf("Error: Type name is no allowed in line %i\n", parser->currentToken()->line);
             exit(-1);
         }
-    parser->readToken(Token::TOKEN_SEMICOLON);
 
     parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
 
@@ -101,65 +111,87 @@ ASTFor* parseFor(Parser* parser) {
     return for_ast;
 }
 
-ASTCase* parseCase(Parser* parser) {
-    unsigned int line = parser->currentToken()->line;
 
-    ASTCase* case_ast = new ASTCase();
-    parser->readToken(Token::TOKEN_CASE);
+void addSwitchCase(ASTSwitch* s, Parser* parser) {
+    std::vector<ASTCase*> cases;
+    
+    unsigned int last_case_line = 0;
+    while(parser->currentToken()->type == Token::TOKEN_CASE) {
+        last_case_line = parser->currentToken()->line;
+    
+        cases.push_back(new ASTCase());
+        parser->readToken(Token::TOKEN_CASE);
+        cases.back()->case_expression = parseExpression(parser);
+        parser->readToken(Token::TOKEN_TWO_POINTS);
+    }
 
-    case_ast->case_expression = parseExpression(parser, true);
-    parser->readToken(Token::TOKEN_TWO_POINTS);
-
-    while(
-        parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS
-        && parser->currentToken()->type != Token::TOKEN_BREAK
-    ) {
-        if(
-            parser->currentToken()->type == Token::TOKEN_CASE
-            || parser->currentToken()->type == Token::TOKEN_DEFAULT
-        ) {
-            printf("Case statement of line '%u' jumps to case statement of line '%u'!\n", line, parser->currentToken()->line);
+    std::vector<AST*> statements;
+    while(parser->currentToken()->type != Token::TOKEN_BREAK && parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
+        while(parser->currentToken()->type == Token::TOKEN_CASE) {
+            parser->readToken(Token::TOKEN_CASE);
+            AST* expression = parseExpression(parser);
+            delete expression;
+            parser->readToken(Token::TOKEN_TWO_POINTS);
+            printf("Warning: Case label in line %i jumps to line %i\n", last_case_line, parser->currentToken()->line);
         }
-        case_ast->case_statements.push_back(parseStatement(parser));
+    
+        while(parser->currentToken()->type == Token::TOKEN_DEFAULT) {
+            parser->readToken(Token::TOKEN_DEFAULT);
+            parser->readToken(Token::TOKEN_TWO_POINTS);
+            printf("Warning: Default label in line %i jumps to line %i\n", last_case_line, parser->currentToken()->line);
+        }
+    
+        statements.push_back(parseStatement(parser));
     }
 
     if(parser->currentToken()->type == Token::TOKEN_BREAK) {
-        parser->readToken(Token::TOKEN_BREAK);
-    } else {
-        printf("No Break statement found for case statement in line '%u'!\n", line);
+        statements.push_back(parseBreak(parser));
     }
-    return case_ast;
+
+    for(int i=0; i<cases.size(); i++) {
+        cases[i]->case_statements = statements;
+        s->switch_case_statements.push_back(cases[i]);
+    }
 }
 
+void addSwitchDefault(ASTSwitch* s, Parser* parser) {
+    std::vector<ASTDefault*> cases;
+    
+    unsigned int last_case_line = 0;
+    while(parser->currentToken()->type == Token::TOKEN_DEFAULT) {
+        last_case_line = parser->currentToken()->line;
+        cases.push_back(new ASTDefault());
+        parser->readToken(Token::TOKEN_DEFAULT);
+        parser->readToken(Token::TOKEN_TWO_POINTS);
+    }
 
-
-ASTDefault* parseDefault(Parser* parser) {
-    unsigned int line = parser->currentToken()->line;
-
-    ASTDefault* default_ast = new ASTDefault();
-    parser->readToken(Token::TOKEN_CASE);
-
-    parser->readToken(Token::TOKEN_TWO_POINTS);
-
-    while(
-        parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS
-        && parser->currentToken()->type != Token::TOKEN_BREAK
-    ) {
-        if(
-            parser->currentToken()->type == Token::TOKEN_CASE
-            || parser->currentToken()->type == Token::TOKEN_DEFAULT
-        ) {
-            printf("Case statement of line '%u' jumps to case statement of line '%u'!\n", line, parser->currentToken()->line);
+    std::vector<AST*> statements;
+    while(parser->currentToken()->type != Token::TOKEN_BREAK && parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
+        while(parser->currentToken()->type == Token::TOKEN_CASE) {
+            parser->readToken(Token::TOKEN_CASE);
+            AST* exp = parseExpression(parser);
+            delete exp;
+            parser->readToken(Token::TOKEN_TWO_POINTS);
+            printf("Warning: Default label in line %i jumps to line %i\n", last_case_line, parser->currentToken()->line);
         }
-        default_ast->default_statements.push_back(parseStatement(parser));
+
+        while(parser->currentToken()->type == Token::TOKEN_DEFAULT) {
+            parser->readToken(Token::TOKEN_DEFAULT);
+            parser->readToken(Token::TOKEN_TWO_POINTS);
+            printf("Warning: Default label in line %i jumps to line %i\n", last_case_line, parser->currentToken()->line);
+        }
+
+
+        statements.push_back(parseStatement(parser));
+    }
+    if(parser->currentToken()->type == Token::TOKEN_BREAK) {
+        statements.push_back(parseBreak(parser));
     }
 
-    if(parser->currentToken()->type == Token::TOKEN_BREAK) {
-        parser->readToken(Token::TOKEN_BREAK);
-    } else {
-        printf("No Break statement found for default statement in line '%u'!\n", line);
+    for(int i=0; i<cases.size(); i++) {
+        cases[i]->default_statements = statements;
+        s->swtich_default = cases[i];
     }
-    return default_ast;
 }
 
 ASTSwitch* parseSwitch(Parser* parser) {
@@ -170,18 +202,17 @@ ASTSwitch* parseSwitch(Parser* parser) {
     parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
     parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS);
 
-
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
         switch (parser->currentToken()->type) {
         case Token::TOKEN_CASE:
-            switch_ast->switch_case_statements.push_back(parseCase(parser));
+            addSwitchCase(switch_ast, parser);
             break;
         case Token::TOKEN_DEFAULT:
+            addSwitchDefault(switch_ast, parser);
             break;
-            switch_ast->swtich_default = parseDefault(parser);
         default:
-            printf("Invalid statement inside switch in line %i\n", parser->currentToken()->line);
-            parseStatement(parser);
+            printf("Invalid statement %s inside switch in line %i\n", parser->currentToken()->value, parser->currentToken()->line);
+            exit(-1);
             break;
         }
     }
@@ -189,5 +220,6 @@ ASTSwitch* parseSwitch(Parser* parser) {
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
     return switch_ast;
 }
+
 
 }

@@ -145,8 +145,6 @@ bool isFuncNameIntrinsic(char* func_name) {
 
 // CALL → PRIMARY('('ARGUMENTS?')')?
 AST* parseCall(Parser* parser, bool constant) {
-    printf("CALL %s\n", parser->currentToken()->value);
-
     AST* root = parsePrimary(parser, constant);
 
 
@@ -175,7 +173,6 @@ AST* parseCall(Parser* parser, bool constant) {
             printf("Cant use variables in constant expression at line '%i'!\n", parser->currentToken()->line);
         }
     }
-    printf("~CALL\n");
 
     return root;
 }

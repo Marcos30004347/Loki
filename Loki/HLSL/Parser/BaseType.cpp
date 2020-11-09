@@ -1,6 +1,8 @@
 #include "BaseType.hpp"
 #include <cstdlib>
 #include <cctype>
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace HLSL {
 
@@ -506,7 +508,9 @@ BaseType* parseDeclarationBaseType(Parser* parser) {
         case Token::Type::TOKEN_TEXTURE2DMS_ARRAY:  
             parseTexture(type, parser);  
             break;
-        default:
+
+        case Token::Type::TOKEN_IDENTIFIER:
+
             parser->readToken(Token::Type::TOKEN_IDENTIFIER);
             type->type = BaseType::BASE_TYPE_USER_DEFINED;
             break;
@@ -516,9 +520,11 @@ BaseType* parseDeclarationBaseType(Parser* parser) {
 }
 
 bool isDeclaration(Parser* parser) {
-    return parser->currentToken()->type == Token::TOKEN_IDENTIFIER || 
-    (parser->currentToken()->type >= Token::TOKEN_TYPES_START
-        && parser->currentToken()->type <= Token::TOKEN_TYPES_END);
+    if(parser->currentToken()->type == Token::TOKEN_IDENTIFIER) {
+        return parser->scope->getStructDefinition(parser->currentToken()->value) != nullptr;
+    }
+
+    return (parser->currentToken()->type >= Token::TOKEN_TYPES_START && parser->currentToken()->type <= Token::TOKEN_TYPES_END);
 }
 
 }
