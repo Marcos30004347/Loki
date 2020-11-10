@@ -1,4 +1,6 @@
 // GLSLangSpec.4.50.pdf 4.3
+#ifndef GLSL_STORAGE_QUALIFIERS
+#define GLSL_STORAGE_QUALIFIERS
 
 #include "AST.hpp"
 #include "Parser.hpp"
@@ -40,3 +42,5 @@ struct ASTStorageQualifiers : AST {
 ASTStorageQualifiers* parseStorageQualifier(Parser* parser);
 
 }
+
+#endif

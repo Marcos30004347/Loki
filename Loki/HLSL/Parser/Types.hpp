@@ -25,10 +25,13 @@ struct ASTLiteral: AST {
     bool bool_val;
     float float_val;
     char* string_val;
-    AST* expression_value;
-
     std::vector<AST*> list_values;
+    
+    bool is_template;
     bool is_initialization_list;
+    bool is_constructor;
+    
+    char* constructor_name;
 };
 
 struct ASTType;

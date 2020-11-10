@@ -41,6 +41,8 @@ PackOffset* parsePackOffset(Parser* parser) {
                 exit(-1);
                 break;
         }
+    } else {
+        offset->pack_ofsset_component = '\0';
     }
     parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
     return offset;

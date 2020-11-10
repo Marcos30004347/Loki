@@ -3,8 +3,8 @@
 #include "Expressions.hpp"
 #include "Functions.hpp"
 #include <stdio.h>
-namespace HLSL {
 
+namespace GLSL {
 // CALL → PRIMARY('('ARGUMENTS?')')?
 AST* parseCall(Parser* parser, bool constant) {
     AST* root = parsePostfixSuffixUnary(parser, constant);
@@ -16,7 +16,6 @@ AST* parseCall(Parser* parser, bool constant) {
         }
 
         ASTFunctionCall* func_call = new ASTFunctionCall();
-        // func_call->func_call_is_build_in = isFuncNameIntrinsic(static_cast<ASTSymbol*>(root)->symbol_name);
         func_call->func_call_symbol = root;
         func_call->constexp = constant;
     

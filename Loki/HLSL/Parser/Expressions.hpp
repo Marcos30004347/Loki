@@ -112,6 +112,7 @@ struct ASTTernary: AST {
 };
 
 AST* parseExpression(Parser* parser, bool constant = false);
+AST* parseTernary(Parser* parser, bool constant = false);
 AST* parseEquality(Parser* parser, bool constant = false);
 AST* parseBooleans(Parser* parser, bool constant = false);
 AST* parseBitwise(Parser* parser, bool constant = false);
@@ -122,6 +123,7 @@ AST* parseFactor(Parser* parser, bool constant = false);
 AST* parseUnary(Parser* parser, bool constant = false);
 AST* parseArrayAccess(Parser* parser, bool constant = false);
 AST* parseMemberAccess(Parser* parser, bool constant = false);
+AST* parsePostfixSuffixUnary(Parser* parser, bool constant = false);
 AST* parsePrimary(Parser* parser, bool constant = false);
 
 }

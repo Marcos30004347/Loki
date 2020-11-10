@@ -25,38 +25,48 @@ float4 PSPointSprite(PSSceneIn input) : SV_Target
     return g_txDiffuse.Sample( g_samLinear, input.tex ) * input.color;
 }
 
-// [numthreads(16,16,1)]
-// void CS(){
-//     if(3 > 4) {
-//         return 3;
-//     } else if(4 > 5) {
-//         return 4;
-//     } else {
-//         return 5;
-//     }
+[numthreads(16,16,1)]
+void CS(){
+    if(3 > 4) {
+        return 3;
+    } else if(4 > 5) {
+        return 4;
+    } else {
+        return 5;
+    }
 
-//     switch(4) {
-//         case 4:
-//             return 4;
-//             break;
-//         case 6:
-//             return 9;
-//             break;
-//         default:
-//             return 9;
-//     }
+    switch(4) {
+        case 4:
+            return 4;
+            break;
+        case 6:
+            return 9;
+            break;
+        default:
+            return 9;
+    }
 
-//     while(3) {
-//         break;
-//         return 4;
-//     }
+    while(3) {
+        break;
+        return 4;
+    }
 
-//     do {
-//         continue;
-//     } while(4);
+    do {
+        continue;
+    } while(4);
 
-//     for(int i=0; i<3; i++) {
-//         discard;
-//     }
+    for(int i=0; i<3; i++) {
+        discard;
+    }
 
-// }
+}
+
+void teste() {
+    3 + 4 == 4;
+    3 | 6 == 8 + 6;
+    3 | 6 == 8 && 6;
+    3 | 6 = 8 + 6;
+    3 + 4 == 4 + 4 | 4 && 6 = 4 + 8 - 5 >= 7;
+    int a;
+    a = 4 + 4;
+}

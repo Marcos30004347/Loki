@@ -8,18 +8,19 @@
 namespace HLSL {
 
 
-struct StructMember {
-    InterpolationModifier member_interpolation_modifier;
-    ASTVarDecl* struct_member_variable;
-};
+// struct StructMember {
+//     InterpolationModifier member_interpolation_modifier;
+//     ASTVarDecl* struct_member_variable;
+// };
 
 struct ASTStruct : AST {
     explicit ASTStruct();
 
     char* struct_identifier;
     char* struct_declarator;
+    // AST* struct_declarator;
 
-    std::vector<StructMember*> struct_members;
+    std::vector<ASTVarDecl*> struct_members;
 };
 
 // STRUCT -> 'struct' IDENTIFIER '{' (INTERPOLATION_MODIFIER? TYPE IDENTIFIER';')* };

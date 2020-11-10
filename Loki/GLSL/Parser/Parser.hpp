@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef GLSL_PARSER_H
+#define GLSL_PARSER_H
 
 #include "../Lexer/Lexer.hpp"
 #include "AST.hpp"

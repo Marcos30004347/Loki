@@ -44,8 +44,8 @@ ASTStruct* parseStruct(Parser* parser) {
     parser->readToken(Token::TOKEN_STRUCT);
 
 
-    if(!parser->currentToken()->type == Token::TOKEN_OPEN_CURLY_BRACKETS) {
-    
+    if(parser->currentToken()->type == Token::TOKEN_IDENTIFIER) {
+        
         strct->struct_identifier = parser->currentToken()->value;
         strct_type->type_name = parser->currentToken()->value;
         parser->readToken(Token::TOKEN_IDENTIFIER);
@@ -54,11 +54,11 @@ ASTStruct* parseStruct(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS);
     
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
-        StructMember* member = new StructMember();
-        member->member_interpolation_modifier = parseInterpolationModifier(parser);
-        member->struct_member_variable = parseVarDecl(parser);
-        strct_type->members.push_back(member->struct_member_variable->var_decl_type);
-        strct->struct_members.push_back(member);
+        // StructMember* member = new StructMember();
+        // member->member_interpolation_modifier = parseInterpolationModifier(parser);
+        // member->struct_member_variable = parseVarDecl(parser);
+        // strct_type->members.push_back(member->struct_member_variable->var_decl_type);
+        strct->struct_members.push_back(parseVarDecl(parser));
     }
 
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);

@@ -53,7 +53,11 @@ bool ASTType::acceptFunction(AST* func, Parser* parser) {
     if(strcmp(symbol->symbol_name, this->type_name) == 0) {
         return this->acceptConstructor(func, parser);
     }
-
+    // std::vector<ASTType*> arguments_types;
+    // ASTFunctionCall* call = static_cast<ASTFunctionCall*>(func);
+    // for(int i=0; i<call->func_call_arguments.size(); i++) {
+        // arguments_types.push_back(static_cast<AST>call->func_call_arguments[i]);
+    // }
     AST* tmp = parser->scope->getFunctionDefinition(symbol->symbol_name);
     ASTFunctionDeclaration* call = static_cast<ASTFunctionDeclaration*>(tmp);
     return this->isCastableTo(static_cast<ASTType*>(call->return_type));
@@ -210,24 +214,39 @@ ASTLiteral* _parseLiteral(Parser* parser) {
 ASTLiteral* parseLiteral(Parser* parser, ASTType* type) {
     ASTLiteral* literal = new ASTLiteral();
     literal->is_initialization_list = false;
+    literal->is_constructor = false;
+    literal->is_template = false;
+
     AST* ast = parser->scope->getTypeDefinition(parser->currentToken()->value);
-    
     if(ast) {
         // Type constructor
+        literal->constructor_name = static_cast<ASTType*>(ast)->type_name;
         parser->readToken(parser->currentToken()->type);
-        parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
-        literal->is_initialization_list = true;
+        
+        if(parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS)
+            parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
+        else 
+            parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS);
+
+        literal->is_constructor = true;
+        literal->is_initialization_list = false;
         literal->list_values.push_back(parseExpression(parser));
         while(parser->currentToken()->type == Token::TOKEN_COMMA) {
             parser->readToken(Token::TOKEN_COMMA);
             literal->list_values.push_back(parseExpression(parser));
         }
-        parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
+    
+        if(parser->currentToken()->type == Token::TOKEN_CLOSE_PARENTESIS)
+            parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
+        else 
+            parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
+
     }else if(parser->currentToken()->type == Token::TOKEN_OPEN_CURLY_BRACKETS) {
         parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS);
 
         if(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
             literal->is_initialization_list = true;
+            literal->is_constructor = false;
             literal->list_values.push_back(parseExpression(parser));
             while(parser->currentToken()->type == Token::TOKEN_COMMA) {
                 parser->readToken(Token::TOKEN_COMMA);

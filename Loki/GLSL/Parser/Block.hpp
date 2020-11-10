@@ -1,25 +1,20 @@
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include "AST.hpp"
-#include "StorageQualifiers.hpp"
-#include "Variables.hpp"
-#include "LayoutQualifier.hpp"
-#include "PrecisionQualifiers.hpp"
-#include "InterpolationModifier.hpp"
-#include "BaseType.hpp"
+#include "Parser.hpp"
+
 #include <vector>
 
 namespace GLSL {
 
-struct ASTBlockDeclaration: AST {
-    explicit ASTBlockDeclaration();
-    AST* layout;
-    AST* storage_qualifier;
-    std::vector<InterpolationQualifier> interpolation_qualifiers;
-    char* name;
-    char* instance_name;
-
-    std::vector<ASTVariableDeclaration*> members;
+struct ASTBlock: AST {
+    explicit ASTBlock();
+    std::vector<AST*> block_statements;
 };
 
-ASTBlockDeclaration* parseBlock(Parser* parser);
+ASTBlock* parseBlock(Parser* parser);
 
 }
+
+#endif

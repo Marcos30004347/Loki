@@ -62,6 +62,8 @@ enum Profile {
     PROFILE_vs_5_1
 };
 
+const char* profileToString(Profile profile);
+
 Profile parseProfile(Parser* parser);
 
 }

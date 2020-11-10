@@ -1,5 +1,5 @@
-#ifndef LEXER_H
-#define LEXER_H
+#ifndef GLSL_LEXER_H
+#define GLSL_LEXER_H
 
 #include "Token.hpp"
 #include <vector>

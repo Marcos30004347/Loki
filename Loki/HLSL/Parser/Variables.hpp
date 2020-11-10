@@ -11,6 +11,7 @@
 #include "Semantics.hpp"
 #include "Register.hpp"
 #include "PackOffset.hpp"
+#include "InterpolationModifier.hpp"
 
 
 #include <vector>
@@ -28,6 +29,7 @@ enum StorageClass {
     STORAGECLASS_STATIC,
     STORAGECLASS_UNIFORM,
     STORAGECLASS_VOLATILE,
+    STORAGECLASS_INLINE,
 };
 
 // TYPE_MODIFIER -> 'const' | 'row_major' | 'column_major'
@@ -52,14 +54,16 @@ struct ASTVarDecl: AST {
     ASTVarDecl();
 
     StorageClass var_decl_storage_class;
+    InterpolationModifier var_decl_interpolation_modifier;
     TypeModifier var_decl_type_modifier;
 
     ASTType* var_decl_type;
     
     char* var_decl_name;
 
-    bool var_decl_is_array;
-    AST* var_decl_array_size;
+    bool is_build_in = false;
+
+    std::vector<AST*> var_decl_dim_lenghts;
 
     Semantic* var_decl_semantic;
     PackOffset* var_decl_pack_offset;
@@ -73,6 +77,7 @@ struct ASTVarDecl: AST {
 bool isVariableDeclaration(Parser* parser);
 // VARIABLE_DECLARATION ->  STORAGE_CLASS? TYPE_MODIFIER? TYPE IDENTIFIER('['INDEX']')? (':' SEMANTIC)? (':' PACK_OFFSET)? (':' REGISTER)?';' (ANNOTATIONS)? ('=' LITERAL)? ';'
 ASTVarDecl* parseVarDecl(Parser* parser);
+StorageClass parseStorageClass(Parser* parser);
 
 }
 

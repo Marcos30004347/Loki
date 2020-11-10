@@ -4,8 +4,7 @@
 #include <cstdlib>
 #include <cctype>
 
-namespace HLSL {
-
+namespace GLSL {
 
 Modifier parseModifier(Parser* parser) {
     Modifier modifier = Modifier::MODIFIER_NONE;
@@ -39,14 +38,6 @@ FunctionArgument* parseArgument(Parser* parser) {
     argument->argument_name = parser->currentToken()->value;
     parser->readToken(Token::TOKEN_IDENTIFIER);
 
-    while(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
-        parser->readToken(Token::TOKEN_TWO_POINTS);
-        InterpolationModifier modifier = parseInterpolationModifier(parser);
-        if(modifier == InterpolationModifier::INTERPMOD_NONE) {
-            argument->argument_semantic = parseSemantic(parser);
-        }
-        argument->argument_interpolation_modifier = modifier;
-    }
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::TOKEN_EQUAL);
@@ -60,29 +51,8 @@ ASTFunctionDeclaration::ASTFunctionDeclaration() : AST{NodeType::AST_FUNCTION_DE
 
 ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     ASTFunctionDeclaration* func_decl = new ASTFunctionDeclaration();
-    StorageClass storage_class = parseStorageClass(parser);
-
-    func_decl->func_decl_storage_class = storage_class;
-    if(parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
-        parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
-        FuncAttribute* att = new FuncAttribute();
-        att->name = parser->currentToken()->value;
-        parser->readToken(Token::TOKEN_IDENTIFIER);
-        parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
-        if(parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
-            att->paramenters.push_back(parseLiteral(parser));
-            while(parser->currentToken()->type == Token::TOKEN_COMMA) {
-                parser->readToken(Token::TOKEN_COMMA);
-                att->paramenters.push_back(parseLiteral(parser));
-            }
-        }
-        parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
-        parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
-        func_decl->func_decl_attributes.push_back(att);
-    }
 
     func_decl->built_in = false;
-    func_decl->precise = false;
     func_decl->func_decl_return_type = parseType(parser);
     func_decl->func_decl_name = parser->currentToken()->value;
 
@@ -101,7 +71,6 @@ ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
         parser->readToken(Token::TOKEN_TWO_POINTS);
-        func_decl->func_decl_semantic = parseSemantic(parser);
     }
 
     func_decl->func_decl_body = parseBlock(parser);

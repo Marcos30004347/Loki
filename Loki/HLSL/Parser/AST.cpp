@@ -47,14 +47,14 @@ const char* binary_op_names[] {
 };
 
 const char* unary_op_names[] = {
-    "-x",       // -x
-    "+x",       // +x
-    "!x",            // !x
-    "++x",   // ++x
-    "--x",   // --x
-    "x++",  // x++
-    "x--",  // x--
-    "~x" // ~x
+    "-",       // -x
+    "+",       // +x
+    "!",            // !x
+    "++",   // ++x
+    "--",   // --x
+    "++",  // x++
+    "--",  // x--
+    "~" // ~x
 };
 
 const char* assignment_op_names[] = {
@@ -70,6 +70,42 @@ const char* assignment_op_names[] = {
     ">>=", // >>=
     "%=", // %=
 };
+
+const char* storage_class_names[] = {
+    " ",
+    "extern",
+    "nointerpolation",
+    "precise",
+    "shared",
+    "groupshared",
+    "static",
+    "uniform",
+    "volatile",
+    "inline",
+};
+
+const char* interpolation_modifier_names[] = {
+    " ",
+    "linear",
+    "centroid",
+    "nointerpolation",
+    "sample",
+};
+const char* type_modifier_names[] = {
+    " ",
+    "const",
+    "row_major",
+    "column_major",
+};
+
+const char* function_modifier_names[] = {
+    " ",
+    "in",
+    "inout",
+    "out",
+    "uniform",
+};
+
 
 void AST::print(int tabs) {
     ASTProgram* program;
@@ -109,8 +145,13 @@ void AST::print(int tabs) {
         printf("%*cVARIABLE DECLARATION\n", tabs, ' ');
         printf("%*cNAME %s\n", tabs, ' ', var_decl->var_decl_name);
         printf("%*cTYPE %s\n", tabs, ' ', var_decl->var_decl_type->type_name);
-        if(var_decl->var_decl_is_array)
-        printf("%*cIS_ARRAY %i\n", tabs, ' ', var_decl->var_decl_is_array);
+        if(var_decl->var_decl_dim_lenghts.size())
+        printf("%*cIS_ARRAY %s\n", tabs, ' ', "true");
+        if(var_decl->var_decl_dim_lenghts.size()) {
+            printf("%*cARRAY SIZE:\n", tabs, ' ');
+            for(int i=0; i< var_decl->var_decl_dim_lenghts.size(); i++)
+                var_decl->var_decl_dim_lenghts[i]->print(tabs+TABS);
+        }
         if(var_decl->var_decl_register) {
             printf("%*cREGISTER TYPE %c\n", tabs, ' ', var_decl->var_decl_register->register_type);
             printf("%*cREGISTER NAME %i\n", tabs, ' ', var_decl->var_decl_register->register_number);
@@ -122,10 +163,6 @@ void AST::print(int tabs) {
         printf("%*cSTORAGE CLASS %i\n", tabs, ' ', var_decl->var_decl_storage_class);
         if(var_decl->var_decl_type_modifier)
         printf("%*cTYPE MODIFIER %i\n", tabs, ' ', var_decl->var_decl_type_modifier);
-        if(var_decl->var_decl_is_array) {
-            printf("%*cARRAY SIZE:\n", tabs, ' ');
-            var_decl->var_decl_array_size->print(tabs+TABS);
-        }
         if(var_decl->var_decl_pack_offset) {
             printf("%*cPACK OFFSET COMPONENT %i\n", tabs, ' ', var_decl->var_decl_pack_offset->pack_ofsset_component);
             printf("%*cPACK OFFSET SUBCOMPONENT %i\n", tabs, ' ', var_decl->var_decl_pack_offset->pack_offset_sumcomponent);
@@ -186,9 +223,9 @@ void AST::print(int tabs) {
         printf("%*cSTRUCT DECLARATION\n", tabs, ' ');
         printf("%*cNAME %s\n", tabs, ' ', struct_decl->struct_identifier);
         for(int i=0; i<struct_decl->struct_members.size(); i++) {
-            printf("%*cSTRUCT MEMBER%i\n", tabs, ' ', i);
-            printf("%*cINTERPOLATION%i  %i\n", tabs, ' ', i, struct_decl->struct_members[i]->member_interpolation_modifier);
-            struct_decl->struct_members[i]->struct_member_variable->print(tabs+TABS);
+            // printf("%*cSTRUCT MEMBER%i\n", tabs, ' ', i);
+            // printf("%*cINTERPOLATION%i  %i\n", tabs, ' ', i, struct_decl->struct_members[i]->member_interpolation_modifier);
+            struct_decl->struct_members[i]->print(tabs+TABS);
         }
         break;
     case AST_BUFFER_DECLARATION: 
@@ -252,8 +289,15 @@ void AST::print(int tabs) {
         break;
     case AST_LITERAL: 
         literal = static_cast<ASTLiteral*>(this);
-        if(literal->is_initialization_list) {
+        if(literal->is_constructor) {
             printf("%*cCONSTRUCTOR\n", tabs, ' ');
+            printf("%*cNAME = '%s'\n", tabs, ' ', literal->constructor_name);
+            for(int i=0; i<literal->list_values.size(); i++) {
+                literal->list_values[i]->print(tabs+TABS);
+            }
+        }
+        else if(literal->is_initialization_list) {
+            printf("%*cLIST\n", tabs, ' ');
             for(int i=0; i<literal->list_values.size(); i++) {
                 literal->list_values[i]->print(tabs+TABS);
             }
@@ -367,8 +411,480 @@ void AST::print(int tabs) {
         array_access->arra_index->print(tabs+TABS);
     break;
     }
-
-    
 }
+
+
+
+const char* hlsl_header = "/**\n"
+"* HLSL Shader Transpiled by Loki(https://github.com/Marcos30004347/Loki).\n"
+"*/\n";
+
+
+void writeASTProgram(AST* tree, int tabs = 0) {
+    printf("%s\n", hlsl_header);
+    ASTProgram* root = static_cast<ASTProgram*>(tree);
+    for(int i=0; i<root->program_declarations.size(); i++) {
+        switch (root->program_declarations[i]->ast_type) {
+        case AST_VARIABLE_DECLARATION:
+            root->program_declarations[i]->write(tabs);
+            printf(";\n");
+            break;
+        
+        default:
+            root->program_declarations[i]->write(tabs);
+            break;
+        }
+    }
+}
+
+void writeASTType(AST* tree, int tabs = 0) {
+    ASTType* root = static_cast<ASTType*>(tree);
+    printf("%s", root->type_name);
+}
+
+void printPackOffset(PackOffset* offset) {
+    if(offset) {
+        printf(": packoffset(c%i", offset->pack_offset_sumcomponent);
+        if(offset->pack_ofsset_component != '\0') 
+            printf(".%c", offset->pack_ofsset_component);
+        printf(") ");
+    }
+}
+void printRegister(Register* _reg) {
+    if(_reg) {
+        const char* reg = profileToString(_reg->register_profile);
+        char regType = _reg->register_type;
+
+        printf(": register(");
+        if(reg) printf("%s, ", reg);
+        printf("%c", regType);
+        if(_reg->register_has_subcomponent) {
+            printf("[%i]", _reg->register_subcomponent);
+        }
+    }
+}
+
+void printSemantic(Semantic* semantic) {
+    if(semantic) printf(": %s ", semantic->name);    
+}
+
+void writeASTVarDecl(AST* tree, int tabs = 0) {
+    ASTVarDecl* root = static_cast<ASTVarDecl*>(tree);
+
+    if(root->is_build_in) return;
+
+    if(root->var_decl_storage_class)
+        printf("%s ", storage_class_names[root->var_decl_storage_class]);
+    
+    if(root->var_decl_interpolation_modifier)
+        printf("%s ", interpolation_modifier_names[root->var_decl_interpolation_modifier]);
+    
+    if(root->var_decl_type_modifier)
+        printf("%s ", type_modifier_names[root->var_decl_type_modifier]);
+    
+    root->var_decl_type->write(tabs);
+    printf(" ");
+    printf("%s", root->var_decl_name);
+
+    printSemantic(root->var_decl_semantic);
+    printPackOffset(root->var_decl_pack_offset);
+    printRegister(root->var_decl_register);
+
+    if(root->annotations.size()) {
+        printf("<");
+        for(int i=0; i<root->annotations.size(); i++) {
+            printf("%s", root->annotations[i]->annotation_name);
+            printf("=");
+            root->annotations[i]->annotation_value->write(tabs);
+            if(i < root->annotations.size() - 1) printf(", ");
+        }
+        printf(">");
+    }
+
+    if(root->var_decl_default_value) {
+        printf(" = ");
+        root->var_decl_default_value->write(tabs);
+    }
+}
+
+void writeASTFunctionDeclaration(AST* tree, int tabs = 0) {
+    ASTFunctionDeclaration* root = static_cast<ASTFunctionDeclaration*>(tree);
+
+    if(root->func_decl_storage_class)
+    printf("%s", storage_class_names[root->func_decl_storage_class]);
+
+    if(root->func_decl_attributes.size()) {
+        printf("[");
+        for(int i=0; i<root->func_decl_attributes.size(); i++) {
+            printf("%s(",root->func_decl_attributes[i]->name);
+            for(int j=0; j<root->func_decl_attributes[i]->paramenters.size(); j++) {
+                root->func_decl_attributes[i]->paramenters[j]->write(tabs);
+                if(j < root->func_decl_attributes[i]->paramenters.size() - 1) printf(", ");
+
+            }
+            printf(")");
+        }
+        printf("]\n");
+    }
+
+    root->func_decl_return_type->write(tabs);
+    printf(" %s(", root->func_decl_name);
+    for(int j=0; j<root->func_decl_arguments.size(); j++) {
+    
+        if(root->func_decl_arguments[j]->argument_modifier)
+        printf("%s ", function_modifier_names[root->func_decl_arguments[j]->argument_modifier]);
+    
+        root->func_decl_arguments[j]->argument_type->write(tabs);
+        printf(" ");
+        printf("%s ", root->func_decl_arguments[j]->argument_name);
+    
+        if(root->func_decl_arguments[j]->argument_semantic)
+        printSemantic(root->func_decl_arguments[j]->argument_semantic);
+    
+        if(root->func_decl_arguments[j]->argument_interpolation_modifier)
+        printf("%s ", interpolation_modifier_names[root->func_decl_arguments[j]->argument_interpolation_modifier]);
+
+        if(root->func_decl_arguments[j]->argument_initializer)
+            root->func_decl_arguments[j]->argument_initializer->write(tabs);
+
+        if(j < root->func_decl_arguments.size() - 1) printf(", ");
+    }
+    printf(")");
+
+    root->func_decl_body->write(tabs);
+}
+void writeASTBlock(AST* tree, int tabs = 0) {
+    ASTBlock* root = static_cast<ASTBlock*>(tree);
+    printf("\n{\n");
+    for(int i=0; i<root->block_statements.size(); i++) {
+        switch(root->block_statements[i]->ast_type) {
+            case NodeType::AST_ASSIGNMENT:
+            case NodeType::AST_EXPRESSION_BINARY:
+            case NodeType::AST_EXPRESSION_UNARY:
+            case NodeType::AST_VARIABLE_DECLARATION:
+            root->block_statements[i]->write();
+            printf(";\n");
+            break;
+            default:
+            root->block_statements[i]->write();
+            break;
+        }
+    }
+    printf("}\n");
+}
+
+void writeASTFunctionCall(AST* tree, int tabs = 0) {
+    ASTFunctionCall* root = static_cast<ASTFunctionCall*>(tree);
+    root->func_call_symbol->write(tabs);
+    printf("(");
+    for(int i=0;i<root->func_call_arguments.size();i++) {
+        root->func_call_arguments[i]->write(tabs);
+        if(i < root->func_call_arguments.size() - 1) printf(", ");
+    }
+    printf(")");
+
+}
+void writeASTStruct(AST* tree, int tabs = 0) {
+    ASTStruct* root = static_cast<ASTStruct*>(tree);
+    printf("struct ");
+    if(root->struct_identifier) {
+        printf("%s ", root->struct_identifier);
+    }
+    printf("\n{\n");
+
+    for(int i=0;i<root->struct_members.size();i++) {
+        root->struct_members[i]->write(tabs + TABS);
+    }
+
+    printf("}");
+
+    if(root->struct_declarator) {
+        printf("%s", root->struct_declarator);
+    }
+
+    printf(";\n");
+}
+
+void writeASTBuffer(AST* tree, int tabs = 0) {
+    ASTBuffer* root = static_cast<ASTBuffer*>(tree);
+    if(root->buffer_type = ASTBuffer::Type::CONSTANT) {
+        printf("cbuffer ");
+    } else {
+        printf("tbuffer ");
+    }
+
+    if(root->buffer_name) {
+        printf("%s ", root->buffer_name);
+    }
+    if(root->buffer_register) printRegister(root->buffer_register);
+
+    printf("\n{\n");
+
+    for(int i=0;i<root->buffer_fields.size();i++) {
+        root->buffer_fields[i]->write(tabs + TABS);
+    }
+
+    printf("\n}");
+
+    printf(";\n");
+}
+void writeASTAssignment(AST* tree, int tabs = 0) {
+    ASTAssignment* root = static_cast<ASTAssignment*>(tree);
+    root->assignment_left_operand->write(tabs);
+    printf(" %s ", assignment_op_names[root->assignment_op]);
+    root->assignment_right_operand->write(tabs);
+}
+
+void writeASTBinaryExpression(AST* tree, int tabs = 0) {
+    ASTBinaryExpression* root = static_cast<ASTBinaryExpression*>(tree);
+    printf("(");
+    root->bin_exp_left_operand->write(tabs);
+    printf("%s", binary_op_names[root->bin_exp_op]);
+    root->bin_exp_right_operand->write(tabs);
+    printf(")");
+}
+
+void writeASTUnaryExpression(AST* tree, int tabs = 0) {
+    ASTUnaryExpression* root = static_cast<ASTUnaryExpression*>(tree);
+
+    printf("(");
+    switch (root->un_exp_operator) {
+        case UnaryOp::UNARY_OP_POST_INCREMENT:
+        case UnaryOp::UNARY_OP_POST_DECREMENT:
+            root->un_exp_operand->write(tabs);
+            printf("%s", unary_op_names[root->un_exp_operator]);
+            break;
+        default:
+            printf("%s", unary_op_names[root->un_exp_operator]);
+            root->un_exp_operand->write(tabs);
+    }
+    printf(")");
+}
+
+void writeASTReturn(AST* tree, int tabs = 0) {
+    ASTReturn* root = static_cast<ASTReturn*>(tree);
+    printf("return ");
+    if(root->return_expression) root->return_expression->write(tabs);
+    printf(";\n");
+}
+void writeASTBreak(AST* tree, int tabs = 0) {
+    ASTBreak* root = static_cast<ASTBreak*>(tree);
+    printf("break;\n");
+}
+void writeASTDiscard(AST* tree, int tabs = 0) {
+    ASTDiscard* root = static_cast<ASTDiscard*>(tree);
+    printf("discard;\n");
+}
+void writeASTContinue(AST* tree, int tabs = 0) {
+    ASTContinue* root = static_cast<ASTContinue*>(tree);
+    printf("continue;\n");
+}
+void writeASTSymbol(AST* tree, int tabs = 0) {
+    ASTSymbol* root = static_cast<ASTSymbol*>(tree);
+    printf("%s", root->symbol_name);
+}
+void writeASTLiteral(AST* tree, int tabs = 0) {
+    ASTLiteral* root = static_cast<ASTLiteral*>(tree);
+    if(root->is_constructor) {
+        printf("%s(", root->constructor_name);
+        for(int i=0; i<root->list_values.size(); i++) {
+            root->list_values[i]->write(tabs);
+            if(i<root->list_values.size() - 1) printf(", ");
+        }
+        printf(")");
+    } else
+    if(root->is_initialization_list) {
+        printf("{");
+        for(int i=0; i<root->list_values.size(); i++) {
+            root->list_values[i]->write(tabs);
+            if(i<root->list_values.size() - 1) printf(", ");
+        }
+        printf("}");
+    } else {
+        switch (root->type) {
+        case ASTLiteral::Type::LITERAL_INT:
+            printf("%i", root->int_val);
+            break;
+        case ASTLiteral::Type::LITERAL_FLOAT:
+            printf("%f", root->float_val);
+            break;
+        case ASTLiteral::Type::LITERAL_STRING:
+            printf("%s\n", root->string_val);
+            break;
+        case ASTLiteral::Type::LITERAL_BOOL:
+            printf("%s", root->bool_val ? "true" : "false");
+            break;
+        }
+    }
+}
+void writeASTCase(AST* tree, int tabs = 0) {
+    ASTCase* root = static_cast<ASTCase*>(tree);
+    printf("case ");
+    root->case_expression->write(tabs);
+    printf(":\n");
+    for(int i=0;i<root->case_statements.size(); i++) {
+        root->case_statements[i]->write(tabs+TABS);
+    }
+}
+
+void writeASTSwitch(AST* tree, int tabs = 0) {
+    ASTSwitch* root = static_cast<ASTSwitch*>(tree);
+    printf("switch(");
+    root->switch_expression->write(tabs);
+    printf(")\n{\n");
+    for(int i=0; i<root->switch_case_statements.size(); i++)
+        root->switch_case_statements[i]->write(tabs+TABS);
+    root->swtich_default->write(tabs+TABS);
+    printf("\n}\n");
+
+}
+
+void writeASTFor(AST* tree, int tabs = 0) {
+    ASTFor* root = static_cast<ASTFor*>(tree);
+    printf("for(");
+    root->for_init_statement->write(false);
+    printf("; ");
+    root->for_cond_expression->write(false);
+    printf("; ");
+    root->for_loop_expression->write(false);
+    root->for_body_statement->write(tabs+TABS);
+}
+
+void writeASTWhile(AST* tree, int tabs = 0) {
+    ASTWhile* root = static_cast<ASTWhile*>(tree);
+    printf("while(");
+    root->while_expression->write(tabs);
+    printf(")");
+    root->while_statement->write(tabs+TABS);
+}
+
+void writeASTDoWhile(AST* tree, int tabs = 0) {
+    ASTDoWhile* root = static_cast<ASTDoWhile*>(tree);
+    printf("do");
+    root->do_while_statement->write(tabs+TABS);
+    printf("while(");
+    root->do_while_expression->write(tabs);
+    printf(");\n");
+
+}
+void writeASTDefault(AST* tree, int tabs = 0) {
+    ASTDefault* root = static_cast<ASTDefault*>(tree);
+    printf("default:\n");
+    for(int i=0;i<root->default_statements.size(); i++) {
+        root->default_statements[i]->write(tabs+TABS);
+    }
+}
+void writeASTIf(AST* tree, int tabs = 0) {
+    ASTIf* root = static_cast<ASTIf*>(tree);
+    printf("if(");
+    root->if_expression->write(tabs);
+    printf(")");
+    root->if_statement->write(tabs+TABS);
+    if(root->if_else) {
+        printf("else ");
+        root->if_else->write(tabs);
+    }
+}
+void writeASTMemberAccess(AST* tree, int tabs = 0) {
+    ASTMemberAccess* root = static_cast<ASTMemberAccess*>(tree);
+    root->member_left->write(tabs);
+    printf(".");
+    root->member_right->write(tabs);
+}
+void writeASTArrayAccess(AST* tree, int tabs = 0) {
+    ASTArrayAccess* root = static_cast<ASTArrayAccess*>(tree);
+    printf("[");
+    root->arra_index->write(tabs);
+    printf("]");
+}
+
+void AST::write(bool semicollon) {
+    switch(this->ast_type) {
+    case AST_PROGRAM:
+        writeASTProgram(this);
+        break;
+    case AST_VARIABLE_DECLARATION:
+        writeASTVarDecl(this);
+        break;
+    case AST_FUNCTION_DECLARATION: 
+        writeASTFunctionDeclaration(this);
+        break;
+    case AST_FUNCTION_CALL: 
+        writeASTFunctionCall(this);
+        break;
+    case AST_STRUCT_DECLARATION: 
+        writeASTStruct(this);
+        break;
+    case AST_BUFFER_DECLARATION: 
+        writeASTBuffer(this);
+        break;
+    case AST_ASSIGNMENT: 
+        writeASTAssignment(this);
+        break;
+    case AST_EXPRESSION_BINARY: 
+        writeASTBinaryExpression(this);
+        break;
+    case AST_EXPRESSION_UNARY: 
+        writeASTUnaryExpression(this);
+        break;
+    case AST_BLOCK: 
+        writeASTBlock(this);
+        break;
+    case AST_RETURN_STATEMENT: 
+        writeASTReturn(this);
+        break;
+    case AST_SYMBOL: 
+        writeASTSymbol(this);
+        break;
+    case AST_LITERAL: 
+        writeASTLiteral(this);
+        break;
+    case AST_DISCARD_STATEMENT:
+        writeASTDiscard(this);
+        break;
+    case AST_CONTINUE_STATEMENT:
+        writeASTContinue(this);
+        break;
+    case AST_BREAK_STATEMENT:
+        writeASTBreak(this);
+        break;
+    case AST_CASE_STATEMENT:
+        writeASTCase(this);
+        break;
+    case AST_SWITCH_STATEMENT:
+        writeASTSwitch(this);
+        break;
+    case AST_FOR_STATEMENT:
+        writeASTFor(this);
+        break;
+    case AST_WHILE_STATEMENT:
+        writeASTWhile(this);
+        break;
+    case AST_DO_WHILE_STATEMENT:
+        writeASTDoWhile(this);
+        break;
+    case AST_DEFAULT_STATEMENT:
+        writeASTDefault(this);
+        break;
+    case AST_IF_STATEMENT:
+        writeASTIf(this);
+        break;
+    case AST_MEMBER_ACCESS:
+        writeASTMemberAccess(this);
+        break;
+    case AST_ARRAY_ACCESS:
+        writeASTArrayAccess(this);
+        break;
+    case AST_TYPE_DECL:
+        writeASTType(this);
+    }
+}
+
+
+
+
+
+
+
 
 }

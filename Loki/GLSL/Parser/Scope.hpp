@@ -1,5 +1,5 @@
-#ifndef SCOPE_H
-#define SCOPE_H
+#ifndef GLSL_SCOPE_H
+#define GLSL_SCOPE_H
 
 #include "AST.hpp"
 #include <vector>

@@ -1,65 +1,13 @@
 #include "Types.hpp"
+#include "BuiltInTypes.hpp"
 
+#include <stdio.h>
 namespace GLSL {
 
-ASTType* void_type = nullptr;
-ASTType* bool_type = nullptr;
-ASTType* int_type = nullptr;
-ASTType* uint_type = nullptr;
-ASTType* float_type = nullptr;
-ASTType* double_type = nullptr;
-
-// Vectors
-ASTType* vec2_type = nullptr;
-ASTType* dvec2_type = nullptr;
-ASTType* bvec2_type = nullptr;
-ASTType* ivec2_type = nullptr;
-ASTType* uvec2_type = nullptr;
-
-ASTType* vec3_type = nullptr;
-ASTType* dvec3_type = nullptr;
-ASTType* bvec3_type = nullptr;
-ASTType* ivec3_type = nullptr;
-ASTType* uvec3_type = nullptr;
-
-ASTType* vec4_type = nullptr;
-ASTType* dvec4_type = nullptr;
-ASTType* bvec4_type = nullptr;
-ASTType* ivec4_type = nullptr;
-ASTType* uvec4_type = nullptr;
-
-ASTType* mat2_type = nullptr;
-ASTType* mat3_type = nullptr;
-ASTType* mat4_type = nullptr;
-
-ASTType* mat2x2_type = nullptr;
-ASTType* mat2x3_type = nullptr;
-ASTType* mat2x4_type = nullptr;
-
-ASTType* mat3x2_type = nullptr;
-ASTType* mat3x3_type = nullptr;
-ASTType* mat3x4_type = nullptr;
-
-ASTType* mat4x2_type = nullptr;
-ASTType* mat4x3_type = nullptr;
-ASTType* mat4x4_type = nullptr;
-
-ASTType* dmat2_type = nullptr;
-ASTType* dmat3_type = nullptr;
-ASTType* dmat4_type = nullptr;
-
-ASTType* dmat2x2_type = nullptr;
-ASTType* dmat2x3_type = nullptr;
-ASTType* dmat2x4_type = nullptr;
-
-ASTType* dmat3x2_type = nullptr;
-ASTType* dmat3x3_type = nullptr;
-ASTType* dmat3x4_type = nullptr;
-
-ASTType* dmat4x2_type = nullptr;
-ASTType* dmat4x3_type = nullptr;
-ASTType* dmat4x4_type = nullptr;
-
+void addSamplerTypes(Parser* parser) {
+    sampler_type = new ASTType("sampler");
+    parser->scope->addTypeDeclaration(sampler_type);
+}
 
 void addScalarsTypesToScope(Parser* parser) {
     void_type = new ASTType("void");
@@ -233,6 +181,12 @@ void addVec2TypesToScope(Parser* parser) {
     constructor1->arguments.push_back(uint_type);
     uvec2_type->constructors.push_back(constructor0);
     uvec2_type->constructors.push_back(constructor1);
+
+    parser->scope->addTypeDeclaration(vec2_type);
+    parser->scope->addTypeDeclaration(ivec2_type);
+    parser->scope->addTypeDeclaration(uvec2_type);
+    parser->scope->addTypeDeclaration(bvec2_type);
+    parser->scope->addTypeDeclaration(dvec2_type);
 }
 
 
@@ -345,6 +299,12 @@ void addVec3TypesToScope(Parser* parser) {
     constructor1->arguments.push_back(uint_type);
     uvec3_type->constructors.push_back(constructor0);
     uvec3_type->constructors.push_back(constructor1);
+
+    parser->scope->addTypeDeclaration(vec3_type);
+    parser->scope->addTypeDeclaration(ivec3_type);
+    parser->scope->addTypeDeclaration(uvec3_type);
+    parser->scope->addTypeDeclaration(bvec3_type);
+    parser->scope->addTypeDeclaration(dvec3_type);
 }
 
 
@@ -466,6 +426,12 @@ void addVec4TypesToScope(Parser* parser) {
     constructor1->arguments.push_back(uint_type);
     uvec4_type->constructors.push_back(constructor0);
     uvec4_type->constructors.push_back(constructor1);
+
+    parser->scope->addTypeDeclaration(vec4_type);
+    parser->scope->addTypeDeclaration(ivec4_type);
+    parser->scope->addTypeDeclaration(uvec4_type);
+    parser->scope->addTypeDeclaration(bvec4_type);
+    parser->scope->addTypeDeclaration(dvec4_type);
 }
 
 
@@ -518,57 +484,6 @@ void addMatrix2TypesToScope(Parser* parser) {
     parser->scope->addTypeDeclaration(dmat2_type);
     parser->scope->addTypeDeclaration(mat2_type);
 }
-
-
-void addMatrix2TypesToScope(Parser* parser) {
-
-    ASTConstructor* constructor0;
-    ASTConstructor* constructor1;
-
-    mat2_type = new ASTType("mat2");
-    mat2_type->members.push_back(float_type);
-    mat2_type->members.push_back(float_type);
-    mat2_type->members.push_back(float_type);
-    mat2_type->members.push_back(float_type);
-    mat2_type->castable_to_types.push_back(mat2_type);
-    mat2_type->castable_to_types.push_back(dmat2_type);
-    mat2_type->constructors.push_back(new ASTConstructor());
-    mat2_type->constructors[0]->arguments.push_back(int_type);
-    constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
-    constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    mat2_type->constructors.push_back(constructor0);
-    mat2_type->constructors.push_back(constructor1);
-
-
-    dmat2_type = new ASTType("dmat2");
-    dmat2_type->members.push_back(double_type);
-    dmat2_type->members.push_back(double_type);
-    dmat2_type->members.push_back(double_type);
-    dmat2_type->members.push_back(double_type);
-    dmat2_type->castable_to_types.push_back(dmat2_type);
-    dmat2_type->castable_to_types.push_back(mat2_type);
-    dmat2_type->constructors.push_back(new ASTConstructor());
-    dmat2_type->constructors[0]->arguments.push_back(int_type);
-    constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
-    constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    dmat2_type->constructors.push_back(constructor0);
-    dmat2_type->constructors.push_back(constructor1);
-
-    parser->scope->addTypeDeclaration(dmat2_type);
-    parser->scope->addTypeDeclaration(mat2_type);
-}
-
-
 
 void addMatrix3TypesToScope(Parser* parser) {
 
@@ -737,78 +652,6 @@ void addMatrix4TypesToScope(Parser* parser) {
     parser->scope->addTypeDeclaration(dmat4_type);
     parser->scope->addTypeDeclaration(mat4_type);
 }
-
-
-
-void addMatrix3TypesToScope(Parser* parser) {
-
-    ASTConstructor* constructor0;
-    ASTConstructor* constructor1;
-
-    mat3_type = new ASTType("mat3");
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->members.push_back(float_type);
-    mat3_type->castable_to_types.push_back(mat3_type);
-    mat3_type->castable_to_types.push_back(dmat3_type);
-    mat3_type->constructors.push_back(new ASTConstructor());
-    mat3_type->constructors[0]->arguments.push_back(int_type);
-    constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
-    constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    mat3_type->constructors.push_back(constructor0);
-    mat3_type->constructors.push_back(constructor1);
-
-
-    dmat3_type = new ASTType("dmat3");
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->members.push_back(double_type);
-    dmat3_type->castable_to_types.push_back(dmat3_type);
-    dmat3_type->castable_to_types.push_back(mat3_type);
-    dmat3_type->constructors.push_back(new ASTConstructor());
-    dmat3_type->constructors[0]->arguments.push_back(int_type);
-    constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
-    constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    dmat3_type->constructors.push_back(constructor0);
-    dmat3_type->constructors.push_back(constructor1);
-
-
-    parser->scope->addTypeDeclaration(dmat3_type);
-    parser->scope->addTypeDeclaration(mat3_type);
-}
-
 
 
 void addMatrix3x3TypesToScope(Parser* parser) {
@@ -1459,6 +1302,8 @@ void addBuiltInTypesToScope(Parser* parser) {
     addMatrix4x2TypesToScope(parser);
     addMatrix4x3TypesToScope(parser);
     addMatrix4x4TypesToScope(parser);
+
+    addSamplerTypes(parser);
 }
 
 }

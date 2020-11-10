@@ -4,7 +4,6 @@
 namespace HLSL {
 
 Lexer::Lexer(const char* source) {
-    printf("Lexing...\n");
     this->source = source;
     this->head = 0;
     this->line = 1;
@@ -510,6 +509,8 @@ bool Lexer::skipComments() {
                 }
                 this->advance();
             }
+            this->advance();
+            this->advance();
         }
     }
     return result;

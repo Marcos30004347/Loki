@@ -1,32 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
+add_subdirectory(HLSL)
+add_subdirectory(GLSL)
+
 project(loki)
 
 include_directories(.)
 
-add_library(
-    loki
-    Lib/String.cpp
-	HLSL/Lexer/Lexer.cpp
-	HLSL/Lexer/Token.cpp
-	HLSL/Parser/AST.cpp
-	HLSL/Parser/Types.cpp
-	HLSL/Parser/BuiltInTypes.cpp
-	HLSL/Parser/PackOffset.cpp
-	HLSL/Parser/Parser.cpp
-	HLSL/Parser/Profiles.cpp
-	HLSL/Parser/Register.cpp
-	HLSL/Parser/Semantics.cpp
-	HLSL/Parser/Variables.cpp
-	HLSL/Parser/InterpolationModifier.cpp
-	HLSL/Parser/Expression.cpp
-	HLSL/Parser/Functions.cpp
-	HLSL/Parser/Scope.cpp
-	HLSL/Parser/Block.cpp
-	HLSL/Parser/Buffer.cpp
-	HLSL/Parser/Struct.cpp
-	HLSL/Parser/Statement.cpp
-	HLSL/Parser/FlowControl.cpp
-	HLSL/Parser/FunctionCall.cpp
+link_libraries(glsl)
+link_libraries(hlsl)
+
+add_executable(
+	loki
+	main.cpp
 )
 

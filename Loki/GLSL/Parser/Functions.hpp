@@ -1,16 +1,14 @@
-// https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-function-syntax
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef GLSL_FUNCTIONS_H
+#define GLSL_FUNCTIONS_H
 
 #include "AST.hpp"
 #include "Types.hpp"
-#include "Semantics.hpp"
 #include "Variables.hpp"
 #include "Block.hpp"
 #include "InterpolationModifier.hpp"
 #include <vector>
 
-namespace HLSL {
+namespace GLSL {
 
 
 // MODIFIER? TYPE IDENTIFIER (':' SEMANTIC)? (':' INTERPOLATION_MODIFIER)? ('=' Initializer(s))?
@@ -28,8 +26,6 @@ struct FunctionArgument {
     Modifier argument_modifier;
     ASTType* argument_type;
     char* argument_name;
-    Semantic* argument_semantic;
-    InterpolationModifier argument_interpolation_modifier;
     AST* argument_initializer;
 };
 
@@ -41,15 +37,12 @@ struct FuncAttribute {
 struct ASTFunctionDeclaration: AST {
     explicit ASTFunctionDeclaration();
 
-    StorageClass func_decl_storage_class;
     std::vector<FuncAttribute*> func_decl_attributes;
     ASTType* func_decl_return_type;
     AST* return_type;
-    bool precise;
     bool built_in;
     char* func_decl_name;
     std::vector<FunctionArgument*> func_decl_arguments;
-    Semantic* func_decl_semantic;
     ASTBlock* func_decl_body;
 };
 

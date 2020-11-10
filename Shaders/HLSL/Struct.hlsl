@@ -11,3 +11,4 @@ struct struct2 {
 struct In {
   centroid float2 Texcoord;
 };
+

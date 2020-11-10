@@ -1,5 +1,13 @@
+// https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-expressions
+// https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-operators
+
+#ifndef EXPRESSIONS_H
+#define EXPRESSIONS_H
+
 #include "AST.hpp"
 #include "Parser.hpp"
+#include "Variables.hpp"
+#include "FunctionCall.hpp"
 
 namespace GLSL {
 
@@ -103,35 +111,21 @@ struct ASTTernary: AST {
     AST* ternary_right;
 };
 
-struct ASTFunctionCall: AST {
-    explicit ASTFunctionCall();
-    bool constexp;
-    bool func_call_is_build_in;
-    AST* func_call_symbol;
-    std::vector<AST*> func_call_arguments;
-};
-
-struct FunctionArgument {
-    ASTType* argument_type;
-    char* argument_name;
-    ASTLiteral* argument_initializer;
-};
-
-struct ASTFunctionDeclaration: AST {
-    explicit ASTFunctionDeclaration();
-
-    ASTType* func_decl_return_type;
-    AST* return_type;
-    bool precise;
-    char* func_decl_name;
-    std::vector<FunctionArgument*> func_decl_arguments;
-    AST* func_decl_body;
-};
-
-
-AST* parseCall(Parser* parser, bool constant = false);
-
-
 AST* parseExpression(Parser* parser, bool constant = false);
+AST* parseTernary(Parser* parser, bool constant = false);
+AST* parseEquality(Parser* parser, bool constant = false);
+AST* parseBooleans(Parser* parser, bool constant = false);
+AST* parseBitwise(Parser* parser, bool constant = false);
+AST* parseComparison(Parser* parser, bool constant = false);
+AST* parseBitwiseShift(Parser* parser, bool constant = false);
+AST* parseTerm(Parser* parser, bool constant = false);
+AST* parseFactor(Parser* parser, bool constant = false);
+AST* parseUnary(Parser* parser, bool constant = false);
+AST* parseArrayAccess(Parser* parser, bool constant = false);
+AST* parseMemberAccess(Parser* parser, bool constant = false);
+AST* parsePostfixSuffixUnary(Parser* parser, bool constant = false);
+AST* parsePrimary(Parser* parser, bool constant = false);
 
 }
+
+#endif

@@ -64,7 +64,18 @@ AST* Scope::getTypeDefinition(char* identifier) {
 
 AST* Scope::getFunctionDefinition(char* identifier) {
     for(int i = 0; i < this->functions.size(); i++) {
-        if(strcmp(identifier, static_cast<ASTFunctionDeclaration*>(this->functions[i])->func_decl_name) == 0) return this->functions[i];
+        if(strcmp(identifier, static_cast<ASTFunctionDeclaration*>(this->functions[i])->func_decl_name) == 0) {
+            ASTFunctionDeclaration* decl = static_cast<ASTFunctionDeclaration*>(this->functions[i]);
+            // if(decl->func_decl_arguments.size() != arguments.size()) continue;
+
+            // for(int j = 0; j < decl->func_decl_arguments.size(); j++) {
+            //     if(decl->func_decl_arguments[j] ->argument_type != arguments[j]) {
+            //         decl = nullptr;
+            //         break;
+            //     }
+            // }
+            if(decl) return decl;
+        }
     }
     
     if(this->parent) return this->getFunctionDefinition(identifier);

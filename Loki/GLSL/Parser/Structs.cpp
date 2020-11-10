@@ -1,6 +1,6 @@
 #include "Structs.hpp"
 #include "Lib/String.hpp"
-#include "Expression.hpp"
+#include "Expressions.hpp"
 
 namespace GLSL {
 
@@ -21,7 +21,7 @@ ASTStruct* parseStruct(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS); 
 
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
-        ASTVarDecl* decl = parseVariableDeclaration(parser);
+        ASTVarDecl* decl = parseVarDecl(parser);
         struct_decl->members.push_back(decl);
         struct_type->members.push_back(decl->var_decl_type);
     }

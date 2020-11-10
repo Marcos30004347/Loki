@@ -9,6 +9,8 @@ layout-qualifier-id :
     layout-qualifier-name = layout-qualifier-value
     shared
 **/
+#ifndef GLSL_LAYOUT_QUALIFIERS
+#define GLSL_LAYOUT_QUALIFIERS
 
 #include "AST.hpp"
 #include "Parser.hpp"
@@ -26,7 +28,6 @@ enum QualifierName {
     OFFSET,
     ALLIGN,
     LOCATION,
-    LOCATION,
     COMPONENT,
     INDEX,
     TRIANGLES,
@@ -41,7 +42,6 @@ enum QualifierName {
     POINTS,
     LINES,
     LINES_ADJACENCY,
-    TRIANGLES,
     TRIANGLES_ADJACENCY,
     INVOCATIONS,
     ORIGIN_UPPER_LEFT,
@@ -77,3 +77,5 @@ struct ASTLayout: AST {
 ASTLayout* parseLayoutQualifier(Parser* parser);
 
 }
+
+#endif

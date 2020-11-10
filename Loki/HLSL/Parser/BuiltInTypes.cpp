@@ -2,102 +2,6 @@
 #include "stdio.h"
 namespace HLSL {
 
-// Scalars
-ASTType* int_type = nullptr;
-ASTType* void_type = nullptr;
-ASTType* float_type = nullptr;
-ASTType* half_type = nullptr;
-ASTType* double_type = nullptr;
-ASTType* uint_type = nullptr;
-ASTType* bool_type = nullptr;
-ASTType* string_type = nullptr;
-
-// Vectors2
-ASTType* float2_type = nullptr;
-ASTType* int2_type = nullptr;
-ASTType* double2_type = nullptr;
-ASTType* half2_type = nullptr;
-ASTType* uint2_type = nullptr;
-
-// Vectors3
-ASTType* float3_type = nullptr;
-ASTType* int3_type = nullptr;
-ASTType* double3_type = nullptr;
-ASTType* half3_type = nullptr;
-ASTType* uint3_type = nullptr;
-
-// Vectors4
-ASTType* float4_type = nullptr;
-ASTType* int4_type = nullptr;
-ASTType* double4_type = nullptr;
-ASTType* half4_type = nullptr;
-ASTType* uint4_type = nullptr;
-
-// Matrices2x2
-ASTType* float2x2_type = nullptr;
-ASTType* int2x2_type = nullptr;
-ASTType* double2x2_type = nullptr;
-ASTType* half2x2_type = nullptr;
-ASTType* uint2x2_type = nullptr;
-
-// Matrices3x2
-ASTType* float3x2_type = nullptr;
-ASTType* int3x2_type = nullptr;
-ASTType* double3x2_type = nullptr;
-ASTType* half3x2_type = nullptr;
-ASTType* uint3x2_type = nullptr;
-
-
-// Matrices4x2
-ASTType* float4x2_type = nullptr;
-ASTType* int4x2_type = nullptr;
-ASTType* double4x2_type = nullptr;
-ASTType* half4x2_type = nullptr;
-ASTType* uint4x2_type = nullptr;
-
-
-// Matrices2x3
-ASTType* float2x3_type = nullptr;
-ASTType* int2x3_type = nullptr;
-ASTType* double2x3_type = nullptr;
-ASTType* half2x3_type = nullptr;
-ASTType* uint2x3_type = nullptr;
-
-// Matrices3x3
-ASTType* float3x3_type = nullptr;
-ASTType* int3x3_type = nullptr;
-ASTType* double3x3_type = nullptr;
-ASTType* half3x3_type = nullptr;
-ASTType* uint3x3_type = nullptr;
-
-// Matrices4x3
-ASTType* float4x3_type = nullptr;
-ASTType* int4x3_type = nullptr;
-ASTType* double4x3_type = nullptr;
-ASTType* half4x3_type = nullptr;
-ASTType* uint4x3_type = nullptr;
-
-
-// Matrices2x4
-ASTType* float2x4_type = nullptr;
-ASTType* int2x4_type = nullptr;
-ASTType* double2x4_type = nullptr;
-ASTType* half2x4_type = nullptr;
-ASTType* uint2x4_type = nullptr;
-
-// Matrices3x4
-ASTType* float3x4_type = nullptr;
-ASTType* int3x4_type = nullptr;
-ASTType* double3x4_type = nullptr;
-ASTType* half3x4_type = nullptr;
-ASTType* uint3x4_type = nullptr;
-
-// Matrices4x4
-ASTType* float4x4_type = nullptr;
-ASTType* int4x4_type = nullptr;
-ASTType* double4x4_type = nullptr;
-ASTType* half4x4_type = nullptr;
-ASTType* uint4x4_type = nullptr;
 
 void addBuiltInScalarsToScope(Parser* parser) {
     void_type = new ASTType("void");
@@ -625,9 +529,6 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     double2x2_type = double4_type;
     half2x2_type = half4_type;
 
-
-    ASTConstructor* constructor0;
-    ASTConstructor* constructor1;
 
     // Floats
     float2x2_type = new ASTType("float2x2");
@@ -2470,6 +2371,42 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
 }
 
 
+void addBuiltSamplersToScope(Parser* parser) {
+    sampler_type = new ASTType("sampler");
+    sampler1D_type = new ASTType("sampler1D");
+    sampler2D_type = new ASTType("sampler2D");
+    sampler3D_type = new ASTType("sampler3D");
+    samplerCUBE_type = new ASTType("samplerCUBE");
+    sampler_state_type = new ASTType("sampler_state");
+    SamplerState_type = new ASTType("SamplerState");
+
+    parser->scope->addTypeDeclaration(sampler_type);
+    parser->scope->addTypeDeclaration(sampler1D_type);
+    parser->scope->addTypeDeclaration(sampler2D_type);
+    parser->scope->addTypeDeclaration(sampler3D_type);
+    parser->scope->addTypeDeclaration(samplerCUBE_type);
+    parser->scope->addTypeDeclaration(sampler_type);
+    parser->scope->addTypeDeclaration(SamplerState_type);
+}
+
+void addBuiltTexturesToScope(Parser* parser) {
+    texture1D_type = new ASTType("texture1D");
+    texture1DArray_type = new ASTType("texture1DArray");
+    texture2D_type = new ASTType("texture2D");
+    texture2DArray_type = new ASTType("texture2DArray");
+    texture3D_type = new ASTType("texture3D");
+    texture3DArray_type = new ASTType("texture3DArray");
+    textureCube_type = new ASTType("textureCube");
+
+    parser->scope->addTypeDeclaration(texture1D_type);
+    parser->scope->addTypeDeclaration(texture1DArray_type);
+    parser->scope->addTypeDeclaration(texture2D_type);
+    parser->scope->addTypeDeclaration(texture2DArray_type);
+    parser->scope->addTypeDeclaration(texture3D_type);
+    parser->scope->addTypeDeclaration(texture3DArray_type);
+    parser->scope->addTypeDeclaration(textureCube_type);
+}
+
 
 
 void addBuiltInTypesToScope(Parser* parser) {
@@ -2489,6 +2426,9 @@ void addBuiltInTypesToScope(Parser* parser) {
     addBuiltIn2x4MatricessToScope(parser);
     addBuiltIn3x4MatricessToScope(parser);
     addBuiltIn4x4MatricessToScope(parser);
+
+    addBuiltSamplersToScope(parser);
+    addBuiltTexturesToScope(parser);
 }
 
 

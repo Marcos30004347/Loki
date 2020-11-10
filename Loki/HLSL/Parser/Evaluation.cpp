@@ -48,6 +48,7 @@ T evalBinary(T a, T b, BinaryOp op) {
     }
 }
 
+
 template<typename T>
 Evaluation<T> evaluateBinaryExpression(AST* expression, Parser* parser) {
     ASTBinaryExpression* bin_exp;
@@ -95,6 +96,7 @@ Evaluation<T> evaluateConstantSymbol(AST* expression, Parser* parser) {
 
     if(decl->var_decl_type_modifier != TypeModifier::TYPEMODIFIER_CONST) {
         printf("ERROR: non const variable '%s' in const expression!\n", decl->var_decl_name);
+        exit(-1);
     }
 
     return evaluateConstantExpression(decl->var_decl_default_value);
@@ -113,11 +115,25 @@ Evaluation<T> evaluateFunctionCall(AST* expression, Parser* parser) {
     return evaluateConstantExpression(decl->var_decl_default_value);
 }
 
+
+
+template<typename T>
+Evaluation<T> evaluateVariable(AST* expression, Parser* parser) {
+    ASTVarDecl* decl = static_cast<ASTVarDecl*>(expression);
+    if(decl->var_decl_type_modifier != TypeModifier::TYPEMODIFIER_CONST) {
+        printf("Error: Cant use non const variable in expression!\n");
+    }
+    return evaluateConstantExpression(decl->var_decl_default_value);
+
+}
+
 template<typename T>
 Evaluation<T> evaluateConstantExpression(AST* expression, Parser* parser) {
     ASTLiteral* literal;
 
     switch(expression->ast_type) {
+        case NodeType::AST_VARIABLE_DECLARATION:
+            return evaluateVariable(expression, parser);
         case NodeType::AST_FUNCTION_CALL:
             return evaluateFunctionCall(expression, parser);
         case NodeType::AST_EXPRESSION_BINARY:
@@ -126,9 +142,12 @@ Evaluation<T> evaluateConstantExpression(AST* expression, Parser* parser) {
             return evaluateUnaryExpression(expression, parser);
         case NodeType::AST_LITERAL:
             return evaluateConstantLiteral(expression, parser);
-        default: printf("Unrrecognized constant expression of typr '%i'!\n", expression->ast_type) exit(-1);
+        default:
+            printf("Unrrecognized constant expression of typr '%i'!\n", expression->ast_type);
+            exit(-1);
     }
-    printf("WARNING: EXPRESSIONS AINT BEING PARSED");
+
+    return Evaluation<T>(); // Never reached.
 }
 
 

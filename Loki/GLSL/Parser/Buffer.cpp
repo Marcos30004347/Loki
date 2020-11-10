@@ -11,7 +11,7 @@ ASTBuffer* parseBuffer(Parser* parser) {
     parser->readToken(Token::TOKEN_IDENTIFIER); 
     parser->readToken(Token::TOKEN_OPEN_CURLY_BRACKETS); 
     while(parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
-        buffer->members.push_back(parseVariableDeclaration(parser));
+        buffer->members.push_back(parseVarDecl(parser));
     }
 
     parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS); 

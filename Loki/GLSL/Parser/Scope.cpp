@@ -1,7 +1,7 @@
 #include "Scope.hpp"
 #include "Lib/String.hpp"
 
-#include "Struct.hpp"
+#include "Structs.hpp"
 #include "Buffer.hpp"
 #include "Variables.hpp"
 #include "Functions.hpp"

@@ -8,7 +8,7 @@
 #include "Functions.hpp"
 #include "Variables.hpp"
 #include "Buffer.hpp"
-#include "Struct.hpp"
+#include "Structs.hpp"
 #include "BuiltInTypes.hpp"
 
 namespace GLSL {
@@ -71,7 +71,25 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     program->program_main = copyStr(prorgamMain);
     program->program_declarations = std::vector<AST*>(0);
 
+    while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
+        
+        switch (this->currentToken()->type) {
+    
+        case Token::TOKEN_STRUCT:
+            program->program_declarations.push_back(parseStruct(this));
+            break;
+    
 
+        default:
+            if(isVariableDeclaration(this)) {
+                program->program_declarations.push_back(parseVarDecl(this));
+            } else {
+                program->program_declarations.push_back(parseFunctionDeclaration(this));
+            } 
+            break;
+        }
+        while(this->currentToken() && this->currentToken()->type == Token::TOKEN_SEMICOLON) this->readToken(Token::TOKEN_SEMICOLON);
+    }
     return program;
 }
 

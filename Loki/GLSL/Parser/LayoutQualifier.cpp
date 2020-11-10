@@ -1,5 +1,5 @@
 #include "LayoutQualifier.hpp"
-#include "Expression.hpp"
+#include "Expressions.hpp"
 
 namespace GLSL {
 
@@ -60,10 +60,12 @@ ASTLayout::ASTLayout(): AST {AST_LAYOUT_QUALIFIER } {}
 
 ASTLayout* parseLayoutQualifier(Parser* parser) {
     ASTLayout* lay = new ASTLayout();
-    if(!parser->currentToken()->type == Token::TOKEN_LAYOUT) return lay;
 
+    if(parser->currentToken()->type != Token::TOKEN_LAYOUT) return lay;
+    
     parser->readToken(Token::TOKEN_LAYOUT);
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
+
     if(parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
         LayoutQualifier* qualifier = new LayoutQualifier();
         qualifier->qualifier = parser->currentToken()->value;

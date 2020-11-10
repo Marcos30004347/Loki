@@ -228,7 +228,6 @@ public:
         TOKEN_LESS_OR_EQUAL,
         TOKEN_LESS,
         TOKEN_FLOAT_LITERAL,
-        TOKEN_FLOAT_LITERAL,
         TOKEN_INT_LITERAL,
         TOKEN_STRING_LITERAL,
         TOKEN_EOF,

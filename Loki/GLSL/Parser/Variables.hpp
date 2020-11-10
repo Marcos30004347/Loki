@@ -1,3 +1,6 @@
+#ifndef GLSL_VARIABLES
+#define GLSL_VARIABLES
+
 #include "AST.hpp"
 #include "StorageQualifiers.hpp"
 #include "LayoutQualifier.hpp"
@@ -19,10 +22,11 @@ struct ASTVarDecl: AST {
     ASTType* var_decl_type;
     char* name;
     AST* default_value;
-    bool is_array;
-    AST* array_size;
+    std::vector<AST*> var_decl_dim_lenghts;
 };
 
-ASTVarDecl* parseVariableDeclaration(Parser* parser);
+ASTVarDecl* parseVarDecl(Parser* parser);
+bool isVariableDeclaration(Parser* parser);
 
 }
+#endif

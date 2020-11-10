@@ -1,6 +1,7 @@
 #include "Variables.hpp"
 #include "Struct.hpp"
 #include "Expressions.hpp"
+#include "Evaluation.hpp"
 
 #include <stdio.h>
 #include <cstdlib>
@@ -36,6 +37,9 @@ StorageClass parseStorageClass(Parser* parser) {
         case Token::Type::TOKEN_VOLATILE:
             parser->readToken(Token::TOKEN_VOLATILE);
             return StorageClass::STORAGECLASS_VOLATILE;
+        case Token::Type::TOKEN_INLINE:
+            parser->readToken(Token::TOKEN_INLINE);
+            return StorageClass::STORAGECLASS_INLINE;
     }
 
     return StorageClass::STORAGECLASS_NONE;
@@ -90,6 +94,7 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     // Variable Storage Class
     var_decl->var_decl_storage_class = parseStorageClass(parser);
+    var_decl->var_decl_interpolation_modifier = parseInterpolationModifier(parser);
 
     // Variable Type Modifier
     var_decl->var_decl_type_modifier = parseTypeModifier(parser);
@@ -100,16 +105,13 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     // Variable name
     var_decl->var_decl_name = parser->currentToken()->value;
     parser->readToken(Token::Type::TOKEN_IDENTIFIER);
+
     // Variable array
-    if(parser->currentToken()->type == Token::Type::TOKEN_OPEN_SQUARE_BRACKETS) {
+    while(parser->currentToken()->type == Token::Type::TOKEN_OPEN_SQUARE_BRACKETS) {
         parser->readToken(Token::Type::TOKEN_OPEN_SQUARE_BRACKETS);
-        var_decl->var_decl_is_array = true;
-        var_decl->var_decl_array_size = parseExpression(parser, true);
+        var_decl->var_decl_dim_lenghts.push_back(parseExpression(parser, true));
         parser->readToken(Token::Type::TOKEN_CLOSE_SQUARE_BRACKETS);
 
-    } else {
-        var_decl->var_decl_is_array = false;
-        var_decl->var_decl_array_size = nullptr;
     }
 
     // Variable PackOffset/Register/Semantic
@@ -153,14 +155,6 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
         parser->readToken(Token::Type::TOKEN_EQUAL);
 
         var_decl->var_decl_default_value = parseExpression(parser);
-        if(!var_decl->var_decl_type->acceptTree(var_decl->var_decl_default_value, parser)) {
-            printf(
-                "Invalid initialzier for variable '%s' at line '%i'!\n",
-                var_decl->var_decl_name,
-                parser->currentToken()->line
-            );
-        }
-
     }
 
     // Variable Semicolon

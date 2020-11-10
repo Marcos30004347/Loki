@@ -18,7 +18,7 @@ ASTTernary::ASTTernary(): AST{ NodeType::AST_TERNARY } {}
 
 // EXPRESSION → IDENTIFIER ('=' | '|=' | '&=' | '+=' | '-=' ) ASSIGNMENT | EQUALITY | EXPRESSION ? EXPRESSION : EXPRESSION
 AST* parseExpression(Parser* parser, bool constant) {
-    AST* root = parseEquality(parser, constant);
+    AST* root = parseTernary(parser, constant);
     if(
         parser->currentToken() &&
         (parser->currentToken()->type == Token::TOKEN_EQUAL
@@ -55,7 +55,14 @@ AST* parseExpression(Parser* parser, bool constant) {
         root = assignment;
     }
 
+    return root;
+}
+
+
+AST* parseTernary(Parser* parser, bool constant) {
     // Ternary
+    AST* root = parseBooleans(parser, constant);
+
     if(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_INTERROGATION) {
         parser->readToken(Token::TOKEN_INTERROGATION);
         ASTTernary* ternary = new ASTTernary();
@@ -66,29 +73,6 @@ AST* parseExpression(Parser* parser, bool constant) {
         root = ternary;
     }
 
-    return root;
-}
-
-// EQUALITY → COMPARISON (('!=' | '==') EQUALITY)*
-AST* parseEquality(Parser* parser, bool constant) {
-    AST* root = parseBooleans(parser, constant);
-    if(
-        parser->currentToken() &&
-        (parser->currentToken()->type == Token::TOKEN_NOT_EQUAL
-        || parser->currentToken()->type == Token::TOKEN_EQUAL_EQUAL)
-    ) {
-        AST* bn = new ASTBinaryExpression();
-        static_cast<ASTBinaryExpression*>(bn)->bin_exp_left_operand = root;
-        switch(parser->currentToken()->type) {
-            case Token::TOKEN_NOT_EQUAL: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_COMPARISON_NOT_EQUAL; break;
-            case Token::TOKEN_EQUAL_EQUAL: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_COMPARISON_EQUAL; break;
-            default: printf("Error parsing equality operation! \n"); exit(-1); break;
-        }
-        parser->readToken(parser->currentToken()->type);
-
-        static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseEquality(parser);
-        root = bn;
-    }
     return root;
 }
 
@@ -118,7 +102,7 @@ AST* parseBooleans(Parser* parser, bool constant) {
 
 // BITWISE → BOOL (( '&' | '|' | '^'  ) BITWISE)*
 AST* parseBitwise(Parser* parser, bool constant) {
-    AST* root = parseComparison(parser, constant);
+    AST* root = parseEquality(parser, constant);
 
     if(
         parser->currentToken() &&
@@ -140,6 +124,30 @@ AST* parseBitwise(Parser* parser, bool constant) {
     }
     return root;
 }
+
+// EQUALITY → COMPARISON (('!=' | '==') EQUALITY)*
+AST* parseEquality(Parser* parser, bool constant) {
+    AST* root = parseComparison(parser, constant);
+    if(
+        parser->currentToken() &&
+        (parser->currentToken()->type == Token::TOKEN_NOT_EQUAL
+        || parser->currentToken()->type == Token::TOKEN_EQUAL_EQUAL)
+    ) {
+        AST* bn = new ASTBinaryExpression();
+        static_cast<ASTBinaryExpression*>(bn)->bin_exp_left_operand = root;
+        switch(parser->currentToken()->type) {
+            case Token::TOKEN_NOT_EQUAL: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_COMPARISON_NOT_EQUAL; break;
+            case Token::TOKEN_EQUAL_EQUAL: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_COMPARISON_EQUAL; break;
+            default: printf("Error parsing equality operation! \n"); exit(-1); break;
+        }
+        parser->readToken(parser->currentToken()->type);
+
+        static_cast<ASTBinaryExpression*>(bn)->bin_exp_right_operand = parseEquality(parser);
+        root = bn;
+    }
+    return root;
+}
+
 
 // COMPARISON → SHIFT (( '>' | '>=' | '<' | '<='  ) COMPARISON)*
 AST* parseComparison(Parser* parser, bool constant) {
@@ -296,9 +304,48 @@ AST* parseUnary(Parser* parser, bool constant) {
         return root;
     }
 
-    root = parseMemberAccess(parser, constant);
+    return parseMemberAccess(parser, constant);
+}
 
-    int a;
+
+AST* parseMemberAccess(Parser* parser, bool constant) {
+    AST* root = parseArrayAccess(parser, constant);
+    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_POINT) {
+        parser->readToken(Token::TOKEN_POINT);
+        ASTMemberAccess* access = new ASTMemberAccess();
+        access->member_left = root;
+        access->member_right = parseMemberAccess(parser, constant);
+
+        root = access;
+    }
+
+    return root;
+}
+
+AST* parseArrayAccess(Parser* parser, bool constant) {
+    AST* root = parseCall(parser, constant);
+    
+    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
+        ASTArrayAccess* access = new ASTArrayAccess();
+        parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
+        access->member_left = root;
+        access->arra_index = parseExpression(parser, constant);
+        access->member_right = parseMemberAccess(parser, constant);
+        parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
+        root = access;
+    }
+
+    return root;
+}
+
+
+
+
+
+
+// UNARY → ('!' | '-' | '+' | '++' | '--' | '~' )UNARY | UNARY('++' | '--') | CALL
+AST* parsePostfixSuffixUnary(Parser* parser, bool constant) {
+    AST* root = parsePrimary(parser, constant);
 
     AST* un = nullptr;
     
@@ -329,38 +376,6 @@ AST* parseUnary(Parser* parser, bool constant) {
 }
 
 
-AST* parseMemberAccess(Parser* parser, bool constant) {
-    AST* root = parseArrayAccess(parser, constant);
-    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_POINT) {
-        parser->readToken(Token::TOKEN_POINT);
-        ASTMemberAccess* access = new ASTMemberAccess();
-        access->member_left = root;
-        access->member_right = parseMemberAccess(parser, constant);
-
-        root = access;
-    }
-
-    return root;
-}
-AST* parseArrayAccess(Parser* parser, bool constant) {
-    AST* root = parseCall(parser, constant);
-    
-    while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
-        ASTArrayAccess* access = new ASTArrayAccess();
-        parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
-        access->member_left = root;
-        access->arra_index = parseExpression(parser, constant);
-        access->member_right = parseMemberAccess(parser, constant);
-        parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
-        root = access;
-    }
-
-    return root;
-}
-
-constexpr int func() {
-    return 4;
-}
 
 // PRIMARY → LITERAL | SYMBOL | '('EXPRESSION')'
 AST* parsePrimary(Parser* parser, bool constant) {
@@ -379,8 +394,6 @@ AST* parsePrimary(Parser* parser, bool constant) {
         symbol->symbol_name = identifier;
         return symbol;
     }
-    printf("%i\n", parser->currentToken()->type);
-    printf("%s\n", parser->currentToken()->value);
 
     return parseLiteral(parser);
 }

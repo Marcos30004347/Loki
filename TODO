@@ -1,3 +1,3 @@
-fix struct post initialization for both glsl and hlsl!
-    - add method to search for struct initialized on the scope
 add multi dim arrays to both hlsl and glsl
+add builtin funtions to hlsl and glsl
+add builtin variables to hlsl and glsl

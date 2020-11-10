@@ -9,7 +9,7 @@ struct ASTBuffer: AST {
     explicit ASTBuffer();
     char* name;
     char* extern_name;
-    std::vector<ASTVariableDeclaration*> members;
+    std::vector<ASTVarDecl*> members;
 };
 
 

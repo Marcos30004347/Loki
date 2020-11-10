@@ -1,3 +1,6 @@
+#ifndef GLSL_PRECISION_QUALIFIERS
+#define GLSL_PRECISION_QUALIFIERS
+
 #include "AST.hpp"
 #include "Parser.hpp"
 
@@ -13,3 +16,5 @@ enum PrecisionQualifier {
 PrecisionQualifier parsePrecisionQualifier(Parser* parser);
 
 }
+
+#endif

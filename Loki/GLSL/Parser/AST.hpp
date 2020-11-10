@@ -1,5 +1,5 @@
-#ifndef AST_H
-#define AST_H
+#ifndef GLSL_AST_H
+#define GLSL_AST_H
 
 namespace GLSL {
 
@@ -19,6 +19,7 @@ enum NodeType {
 
     AST_EXPRESSION_BINARY,
     AST_EXPRESSION_UNARY,
+    AST_BLOCK,
 
     AST_FUNCTION_CALL,
     AST_SYMBOL, // defined variables, ...

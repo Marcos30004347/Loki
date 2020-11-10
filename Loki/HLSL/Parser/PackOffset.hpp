@@ -9,7 +9,7 @@ namespace HLSL {
 
 struct PackOffset {
     int pack_offset_sumcomponent;
-    int pack_ofsset_component;
+    char pack_ofsset_component;
 };
 
 // PACK_OFFSET -> 'packoffset' '(' 'c'INTEGER_LITERAL('.w'|'.x'|'.y'|'.z')? ')'
