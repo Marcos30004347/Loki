@@ -9,6 +9,7 @@
 #include "Variables.hpp"
 #include "Buffer.hpp"
 #include "Struct.hpp"
+#include "BuiltInTypes.hpp"
 
 namespace GLSL {
 
@@ -18,6 +19,7 @@ Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
     this->scope = new Scope();
     this->current_token_index = 0;
+    addBuiltInTypesToScope(this);
 }
 
 bool Parser::isNumeric() {

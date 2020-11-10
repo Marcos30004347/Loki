@@ -93,7 +93,7 @@ ASTStorageQualifiers* parseStorageQualifier(Parser* parser) {
         if (parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS) {
             parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
                 while(parser->currentToken()->type != Token::TOKEN_CLOSE_PARENTESIS) {
-                    sq->type_name_list.push_back(parseDeclarationBaseType(parser));
+                    sq->type_name_list.push_back(parseType(parser));
                 }
             parser->readToken(Token::TOKEN_CLOSE_PARENTESIS);
         }

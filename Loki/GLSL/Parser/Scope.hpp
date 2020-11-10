@@ -11,6 +11,7 @@ class Scope {
     std::vector<AST*> structs;
     std::vector<AST*> buffers;
     std::vector<AST*> functions;
+    std::vector<AST*> types;
 
 public:
     Scope* parent;
@@ -19,12 +20,14 @@ public:
     void addStructDefinition(AST*); 
     void addFunctionDefinition(AST*); 
     void addBufferDefinition(AST*); 
-    void addVariableDefinition(AST*); 
+    void addVariableDefinition(AST*);
+    void addTypeDeclaration(AST*); 
 
-    AST* getStructDefinition(const char* identifier); 
-    AST* getFunctionDefinition(const char* identifier); 
-    AST* getBufferDefinition(const char* identifier); 
-    AST* getVariableDefinition(const char* identifier); 
+    AST* getTypeDefinition(char* identifier); 
+    AST* getStructDefinition(char* identifier); 
+    AST* getFunctionDefinition(char* identifier); 
+    AST* getBufferDefinition(char* identifier); 
+    AST* getVariableDefinition(char* identifier); 
 };
 
 }

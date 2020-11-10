@@ -10,6 +10,8 @@
 #include "Buffer.hpp"
 #include "Struct.hpp"
 
+#include "BuiltInTypes.hpp"
+
 namespace HLSL {
 
 ASTProgram::ASTProgram(): AST{NodeType::AST_PROGRAM} {}
@@ -18,6 +20,8 @@ Parser::Parser(Lexer* lexer) {
     this->lexer = lexer;
     this->current_token_index = 0;
     this->scope = new Scope();
+
+    addBuiltInTypesToScope(this);
 }
 
 bool Parser::isNumeric() {
@@ -52,6 +56,7 @@ void Parser::readToken(Token::Type tokenType) {
 }
 
 Token* Parser::currentToken() {
+    if(this->current_token_index >= this->lexer->getTokensCount()) return nullptr;
     return this->lexer->getToken(this->current_token_index);
 }
 
@@ -70,7 +75,7 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     program->program_declarations = std::vector<AST*>(0);
 
     while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
-
+        
         switch (this->currentToken()->type) {
     
         case Token::TOKEN_STRUCT:

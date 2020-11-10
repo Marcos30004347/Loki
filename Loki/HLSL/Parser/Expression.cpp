@@ -33,7 +33,6 @@ AST* parseExpression(Parser* parser, bool constant) {
         || parser->currentToken()->type == Token::TOKEN_GREATER_GREATER_EQUAL
         || parser->currentToken()->type == Token::TOKEN_LESS_LESS_EQUAL)
     ) {
-        printf("asdasdasdasdas\n  %s\n", parser->currentToken()->value);
         AST* assignment = new ASTAssignment();
         static_cast<ASTAssignment*>(assignment)->assignment_left_operand = root;
         switch(parser->currentToken()->type) {
@@ -380,8 +379,13 @@ AST* parsePrimary(Parser* parser, bool constant) {
         symbol->symbol_name = identifier;
         return symbol;
     }
+    printf("%i\n", parser->currentToken()->type);
+    printf("%s\n", parser->currentToken()->value);
 
     return parseLiteral(parser);
 }
 
+
+
 }
+

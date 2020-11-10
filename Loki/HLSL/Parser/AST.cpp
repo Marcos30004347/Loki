@@ -108,7 +108,8 @@ void AST::print(int tabs) {
         var_decl = static_cast<ASTVarDecl*>(this);
         printf("%*cVARIABLE DECLARATION\n", tabs, ' ');
         printf("%*cNAME %s\n", tabs, ' ', var_decl->var_decl_name);
-        printf("%*cTYPE %s\n", tabs, ' ', var_decl->var_decl_type->name);
+        printf("%*cTYPE %s\n", tabs, ' ', var_decl->var_decl_type->type_name);
+        if(var_decl->var_decl_is_array)
         printf("%*cIS_ARRAY %i\n", tabs, ' ', var_decl->var_decl_is_array);
         if(var_decl->var_decl_register) {
             printf("%*cREGISTER TYPE %c\n", tabs, ' ', var_decl->var_decl_register->register_type);
@@ -117,10 +118,14 @@ void AST::print(int tabs) {
             printf("%*cREGISTER SUBCOMPONENT %i\n", tabs, ' ', var_decl->var_decl_register->register_subcomponent);
             printf("%*cREGISTER PROFILE %i\n", tabs, ' ', var_decl->var_decl_register->register_profile);
         }
+        if(var_decl->var_decl_storage_class)
         printf("%*cSTORAGE CLASS %i\n", tabs, ' ', var_decl->var_decl_storage_class);
+        if(var_decl->var_decl_type_modifier)
         printf("%*cTYPE MODIFIER %i\n", tabs, ' ', var_decl->var_decl_type_modifier);
-        if(var_decl->var_decl_is_array)
-            printf("%*cARRAY SIZE %i\n", tabs, ' ', var_decl->var_decl_array_size);
+        if(var_decl->var_decl_is_array) {
+            printf("%*cARRAY SIZE:\n", tabs, ' ');
+            var_decl->var_decl_array_size->print(tabs+TABS);
+        }
         if(var_decl->var_decl_pack_offset) {
             printf("%*cPACK OFFSET COMPONENT %i\n", tabs, ' ', var_decl->var_decl_pack_offset->pack_ofsset_component);
             printf("%*cPACK OFFSET SUBCOMPONENT %i\n", tabs, ' ', var_decl->var_decl_pack_offset->pack_offset_sumcomponent);
@@ -128,14 +133,16 @@ void AST::print(int tabs) {
         if(var_decl->var_decl_semantic) {
             printf("%*cSEMANTIC %s\n", tabs, ' ', var_decl->var_decl_semantic->name);
         }
-        printf("%*cINITIALIZER:\n", tabs, ' ');
-        if(var_decl->var_decl_default_value) var_decl->var_decl_default_value->print(tabs+TABS);
+        if(var_decl->var_decl_default_value) {
+            printf("%*cVALUE:\n", tabs, ' ');
+            var_decl->var_decl_default_value->print(tabs+TABS);
+        }
         break;
     case AST_FUNCTION_DECLARATION: 
         func_decl = static_cast<ASTFunctionDeclaration*>(this);
         printf("%*cFUNCTION DECLARATION\n", tabs, ' ');
         printf("%*cNAME '%s'\n", tabs, ' ', func_decl->func_decl_name);
-        printf("%*cTYPE '%s'\n", tabs, ' ', func_decl->func_decl_return_type->name);
+        printf("%*cTYPE '%s'\n", tabs, ' ', func_decl->func_decl_return_type->type_name);
         if(func_decl->func_decl_semantic)
             printf("%*cSEMANTIC %s\n", tabs, ' ', func_decl->func_decl_semantic->name);
 
@@ -149,7 +156,7 @@ void AST::print(int tabs) {
         }
         
         for(int i=0; i<func_decl->func_decl_arguments.size(); i++) {
-            printf("%*cARGUMENT%i TYPE = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_type->name);
+            printf("%*cARGUMENT%i TYPE = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_type->type_name);
             printf("%*cARGUMENT%i NAME = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_name);
             if(func_decl->func_decl_arguments[i]->argument_semantic)
                 printf("%*cARGUMENT%i SEMANTIC = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_semantic->name);
@@ -204,7 +211,9 @@ void AST::print(int tabs) {
         printf("%*cASSIGNMENT\n", tabs, ' ');
         assignment = static_cast<ASTAssignment*>(this);
         printf("%*cOPERATION %s\n",  tabs, ' ', assignment_op_names[assignment->assignment_op]);
+        printf("%*cLEFT\n", tabs, ' ');
         assignment->assignment_left_operand->print(tabs+TABS);
+        printf("%*cRIGHT\n", tabs, ' ');
         assignment->assignment_right_operand->print(tabs+TABS);
         break;
     case AST_EXPRESSION_BINARY: 
@@ -243,15 +252,28 @@ void AST::print(int tabs) {
         break;
     case AST_LITERAL: 
         literal = static_cast<ASTLiteral*>(this);
-        printf("%*cLITERAL\n", tabs, ' ');
         if(literal->is_initialization_list) {
-            printf("%*cLIST\n", tabs, ' ');
-            for(int i=0; i<literal->initialization_list_values.size(); i++) {
-                literal->initialization_list_values[i]->print(tabs+TABS);
+            printf("%*cCONSTRUCTOR\n", tabs, ' ');
+            for(int i=0; i<literal->list_values.size(); i++) {
+                literal->list_values[i]->print(tabs+TABS);
             }
         } else {
-            printf("%*cTYPE %i\n", tabs, ' ', literal->value->literal_type);
-
+            switch (literal->type) {
+            case ASTLiteral::Type::LITERAL_INT:
+                printf("%*cINT = %i\n", tabs, ' ', literal->int_val);
+                break;
+            case ASTLiteral::Type::LITERAL_FLOAT:
+                printf("%*cFLOAT = %f\n", tabs, ' ', literal->float_val);
+                break;
+            case ASTLiteral::Type::LITERAL_STRING:
+                printf("%*cSTRING = %s\n", tabs, ' ', literal->string_val);
+                break;
+            case ASTLiteral::Type::LITERAL_BOOL:
+                printf("%*cBOOL = %s\n", tabs, ' ', literal->bool_val ? "true" : "false");
+                break;
+            default:
+                break;
+            }
         }
         break;
     case AST_DISCARD_STATEMENT:

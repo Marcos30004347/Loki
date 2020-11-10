@@ -7,11 +7,11 @@
 #include "AST.hpp"
 #include "Parser.hpp"
 
-#include "BaseType.hpp"
-#include "Literals.hpp"
+#include "Types.hpp"
 #include "Semantics.hpp"
 #include "Register.hpp"
 #include "PackOffset.hpp"
+
 
 #include <vector>
 
@@ -41,7 +41,7 @@ enum TypeModifier {
 // https://docs.microsoft.com/en-us/windows/win32/direct3d10/d3d10-effect-annotation-syntax
 // ANNOTATIONS -> '<'(TYPE IDENTIFIER '=' LITERAL';')*'>'
 struct Annotation {
-    BaseType* annotation_type;
+    ASTType* annotation_type;
     ASTLiteral* annotation_value;
     char* annotation_name;
 };
@@ -54,7 +54,8 @@ struct ASTVarDecl: AST {
     StorageClass var_decl_storage_class;
     TypeModifier var_decl_type_modifier;
 
-    BaseType* var_decl_type;
+    ASTType* var_decl_type;
+    
     char* var_decl_name;
 
     bool var_decl_is_array;

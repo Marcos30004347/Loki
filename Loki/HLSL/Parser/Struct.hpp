@@ -2,7 +2,6 @@
 
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "BaseType.hpp"
 #include "Variables.hpp"
 #include "InterpolationModifier.hpp"
 #include <vector>
@@ -16,10 +15,11 @@ struct StructMember {
 
 struct ASTStruct : AST {
     explicit ASTStruct();
+
     char* struct_identifier;
     char* struct_declarator;
+
     std::vector<StructMember*> struct_members;
-    void assertInitializationList(ASTLiteral* literal);
 };
 
 // STRUCT -> 'struct' IDENTIFIER '{' (INTERPOLATION_MODIFIER? TYPE IDENTIFIER';')* };

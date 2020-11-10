@@ -1,4 +1,5 @@
 #include <string.h>
+#include <string>
 #include <cstdlib>
 #include <cctype>
 

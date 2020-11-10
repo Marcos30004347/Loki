@@ -1,6 +1,7 @@
 #include "Variables.hpp"
 #include "Struct.hpp"
 #include "Expressions.hpp"
+
 #include <stdio.h>
 #include <cstdlib>
 #include <cctype>
@@ -64,11 +65,11 @@ bool isVariableDeclaration(Parser* parser) {
     }
 
     unsigned int index = parser->getTokenIndex();
+
     parseStorageClass(parser);
     parseTypeModifier(parser);
-    parseDeclarationBaseType(parser);
+    parseType(parser);
     parser->readToken(Token::Type::TOKEN_IDENTIFIER);
-
     bool result = true;
     if(
         parser->currentToken()->type == Token::TOKEN_OPEN_PARENTESIS
@@ -80,6 +81,7 @@ bool isVariableDeclaration(Parser* parser) {
 
 ASTVarDecl* parseVarDecl(Parser* parser) {
     ASTVarDecl* var_decl = new ASTVarDecl();
+
     var_decl->annotations = std::vector<Annotation*>(0);
     var_decl->var_decl_pack_offset = nullptr;
     var_decl->var_decl_register = nullptr;
@@ -93,16 +95,7 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
     var_decl->var_decl_type_modifier = parseTypeModifier(parser);
 
     // Variable type
-    var_decl->var_decl_type = parseDeclarationBaseType(parser);
-
-    // Check if type is defined in current scope
-    if(
-        var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED
-        && !parser->scope->getStructDefinition(var_decl->var_decl_type->name)
-    ) {
-        printf("Undefined type '%s' at line '%i'!\n", var_decl->var_decl_type->name, parser->currentToken()->line);
-        exit(-1);
-    }
+    var_decl->var_decl_type = parseType(parser);
 
     // Variable name
     var_decl->var_decl_name = parser->currentToken()->value;
@@ -112,7 +105,6 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
         parser->readToken(Token::Type::TOKEN_OPEN_SQUARE_BRACKETS);
         var_decl->var_decl_is_array = true;
         var_decl->var_decl_array_size = parseExpression(parser, true);
-        parser->readToken(Token::Type::TOKEN_INT_LITERAL);
         parser->readToken(Token::Type::TOKEN_CLOSE_SQUARE_BRACKETS);
 
     } else {
@@ -141,7 +133,7 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
         while(parser->currentToken()->type != Token::Type::TOKEN_LESS) {
             parser->readToken(Token::Type::TOKEN_GREATER);
             Annotation* annotation = new Annotation();
-            annotation->annotation_type = parseDeclarationBaseType(parser);
+            annotation->annotation_type = parseType(parser);
             annotation->annotation_name = parser->currentToken()->value;
             parser->readToken(Token::Type::TOKEN_IDENTIFIER);
         
@@ -159,29 +151,16 @@ ASTVarDecl* parseVarDecl(Parser* parser) {
 
     if(parser->currentToken()->type == Token::TOKEN_EQUAL) {
         parser->readToken(Token::Type::TOKEN_EQUAL);
-        printf("WARNING: Const expressions are not being evaluated yet!\n");
 
-        var_decl->var_decl_default_value = parseExpression(parser, true);
-        if(var_decl->var_decl_default_value->ast_type == AST_LITERAL) {
-            ASTLiteral* value = static_cast<ASTLiteral*>(var_decl->var_decl_default_value);
-
-            if(var_decl->var_decl_type->type == BaseType::BASE_TYPE_USER_DEFINED) {
-                static_cast<ASTStruct*>(parser->scope->getStructDefinition(var_decl->var_decl_type->name))->assertInitializationList(value);
-            } else
-            if(!value->is_initialization_list) {
-                if(!isLiteralCastableTo(value->value, var_decl->var_decl_type->type)) {
-                    printf(
-                        "Warning: variable array '%s' declared with invalid initializer!\n",
-                        var_decl->var_decl_name
-                    );
-                }
-            } else {
-                if(!isValidInitializationListForType(value, var_decl->var_decl_type->type, var_decl->var_decl_is_array, var_decl->var_decl_array_size)) {
-                    printf("Error: Invalid initialization list for variable '%s' in line '%i'\n", var_decl->var_decl_name, parser->currentToken()->line);
-                }
-            }
+        var_decl->var_decl_default_value = parseExpression(parser);
+        if(!var_decl->var_decl_type->acceptTree(var_decl->var_decl_default_value, parser)) {
+            printf(
+                "Invalid initialzier for variable '%s' at line '%i'!\n",
+                var_decl->var_decl_name,
+                parser->currentToken()->line
+            );
         }
-        
+
     }
 
     // Variable Semicolon

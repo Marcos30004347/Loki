@@ -2,7 +2,7 @@
 
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "BaseType.hpp"
+#include "Types.hpp"
 
 namespace GLSL {
 
@@ -34,7 +34,7 @@ enum StorageQualifiers {
 struct ASTStorageQualifiers : AST {
     explicit ASTStorageQualifiers();
     StorageQualifiers type;
-    std::vector<BaseType*> type_name_list;
+    std::vector<ASTType*> type_name_list;
 };
 
 ASTStorageQualifiers* parseStorageQualifier(Parser* parser);

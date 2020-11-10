@@ -34,7 +34,7 @@ Modifier parseModifier(Parser* parser) {
 FunctionArgument* parseArgument(Parser* parser) {
     FunctionArgument* argument = new FunctionArgument();
     argument->argument_modifier = parseModifier(parser);
-    argument->argument_type = parseDeclarationBaseType(parser);
+    argument->argument_type = parseType(parser);
     argument->argument_name = parser->currentToken()->value;
     parser->readToken(Token::TOKEN_IDENTIFIER);
 
@@ -84,7 +84,7 @@ ASTFunctionDeclaration* parseFunctionDeclaration(Parser* parser) {
     }
 
     func_decl->precise = false;
-    func_decl->func_decl_return_type = parseDeclarationBaseType(parser);
+    func_decl->func_decl_return_type = parseType(parser);
     func_decl->func_decl_name = parser->currentToken()->value;
 
     parser->readToken(Token::TOKEN_IDENTIFIER);

@@ -81,7 +81,8 @@ ASTFor* parseFor(Parser* parser) {
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
-        if(isDeclaration(parser)) for_ast->for_init_statement = parseVarDecl(parser);
+        if(parser->scope->getTypeDefinition(parser->currentToken()->value))
+            for_ast->for_init_statement = parseVarDecl(parser);        
         else {
             for_ast->for_init_statement = parseExpression(parser);
             parser->readToken(Token::TOKEN_SEMICOLON);
@@ -89,16 +90,17 @@ ASTFor* parseFor(Parser* parser) {
     }
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
-        if(isDeclaration(parser)) for_ast->for_cond_expression = parseVarDecl(parser);
+        if(parser->scope->getTypeDefinition(parser->currentToken()->value))
+            for_ast->for_cond_expression = parseVarDecl(parser);
         else {
             for_ast->for_cond_expression = parseExpression(parser);
             parser->readToken(Token::TOKEN_SEMICOLON);
         }
     }
 
-    printf("asdasdasadsds\n");
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) 
-        if(!isDeclaration(parser)) for_ast->for_loop_expression = parseExpression(parser);
+        if(!parser->scope->getTypeDefinition(parser->currentToken()->value))
+            for_ast->for_loop_expression = parseExpression(parser);
         else {
             printf("Error: Type name is no allowed in line %i\n", parser->currentToken()->line);
             exit(-1);

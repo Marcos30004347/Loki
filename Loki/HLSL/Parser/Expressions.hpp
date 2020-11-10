@@ -6,8 +6,6 @@
 
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "BaseType.hpp"
-#include "Literals.hpp"
 #include "Variables.hpp"
 #include "FunctionCall.hpp"
 
@@ -44,7 +42,7 @@ enum UnaryOp {
     UNARY_OP_PRE_INCREMENT,   // ++x
     UNARY_OP_PRE_DECREMENT,   // --x
     UNARY_OP_POST_INCREMENT,  // x++
-    UNARY_OP_POST_DECREMENT,  // x++
+    UNARY_OP_POST_DECREMENT,  // x--
     UNARY_OP_LOGICAL_NOT // ~x
 };
 

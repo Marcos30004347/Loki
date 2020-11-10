@@ -3,10 +3,10 @@
 
 namespace GLSL {
 
-ASTVariableDeclaration::ASTVariableDeclaration(): AST { AST_VARIABLE_DECLARATION } {}
+ASTVarDecl::ASTVarDecl(): AST { AST_VARIABLE_DECLARATION } {}
 
-ASTVariableDeclaration* parseVariableDeclaration(Parser* parser) {
-    ASTVariableDeclaration* var_decl = new ASTVariableDeclaration();
+ASTVarDecl* parseVariableDeclaration(Parser* parser) {
+    ASTVarDecl* var_decl = new ASTVarDecl();
     
     // Parse Layout Qualifiers
     var_decl->layout = parseLayoutQualifier(parser);
@@ -24,7 +24,7 @@ ASTVariableDeclaration* parseVariableDeclaration(Parser* parser) {
     var_decl->precision_qualifier = parsePrecisionQualifier(parser);
 
     // Parse Variable Type
-    var_decl->type = parseDeclarationBaseType(parser);
+    var_decl->var_decl_type = parseType(parser);
     
     // Parse Variable Name
     var_decl->name = parser->currentToken()->value;

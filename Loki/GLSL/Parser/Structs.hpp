@@ -1,6 +1,7 @@
 #include "AST.hpp"
 #include "Parser.hpp"
 #include "Variables.hpp"
+#include "Types.hpp"
 #include "StorageQualifiers.hpp"
 
 #include <vector>
@@ -13,7 +14,7 @@ struct ASTStruct: AST {
     char* name;
     char* declaration_name;
 
-    std::vector<ASTVariableDeclaration*> members;
+    std::vector<ASTVarDecl*> members;
 };
 
 

@@ -6,6 +6,7 @@
 #include "Loki/HLSL/Parser/Expressions.hpp"
 #include "Loki/HLSL/Parser/Buffer.hpp"
 #include "Loki/HLSL/Parser/Variables.hpp"
+#include "Loki/HLSL/Parser/Types.hpp"
 
 
 #include <fstream>
@@ -28,6 +29,8 @@ int main(int argc, char *argv[]) {
     printf("\n");
 
     HLSL::Parser* parser = new HLSL::Parser(lexer);
+
+
     HLSL::AST* root = parser->parseProgram(HLSL::ProgramType::PROGRAM_VERTEX_SHADER, "main");
     root->print();
 

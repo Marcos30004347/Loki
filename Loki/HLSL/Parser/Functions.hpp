@@ -3,9 +3,8 @@
 #define FUNCTIONS_H
 
 #include "AST.hpp"
-#include "BaseType.hpp"
+#include "Types.hpp"
 #include "Semantics.hpp"
-#include "Literals.hpp"
 #include "Block.hpp"
 #include "InterpolationModifier.hpp"
 #include <vector>
@@ -31,7 +30,7 @@ enum Modifier {
 // https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-function-parameters
 struct FunctionArgument {
     Modifier argument_modifier;
-    BaseType* argument_type;
+    ASTType* argument_type;
     char* argument_name;
     Semantic* argument_semantic;
     InterpolationModifier argument_interpolation_modifier;
@@ -48,7 +47,8 @@ struct ASTFunctionDeclaration: AST {
 
     FuncStorageClass func_decl_storage_class;
     std::vector<FuncAttribute*> func_decl_attributes;
-    BaseType* func_decl_return_type;
+    ASTType* func_decl_return_type;
+    AST* return_type;
     bool precise;
     char* func_decl_name;
     std::vector<FunctionArgument*> func_decl_arguments;
