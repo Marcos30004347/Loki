@@ -24,7 +24,7 @@ AST* parseStatement(Parser* parser) {
     while(parser->currentToken() && parser->currentToken()->type == Token::TOKEN_SEMICOLON) parser->readToken(Token::TOKEN_SEMICOLON);
     
     // Variable Declaration
-    if(parser->scope->getTypeDefinition(parser->currentToken()->value)) statement = parseVarDecl(parser);
+    if(parser->scope->getTypeDefinition(parser->currentToken()->value)) statement = parseDeclaration(parser);
     else switch (parser->currentToken()->type) {
         // FLow Controll
         case Token::TOKEN_OPEN_CURLY_BRACKETS:

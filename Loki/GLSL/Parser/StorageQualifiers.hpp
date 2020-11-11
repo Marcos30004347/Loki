@@ -3,8 +3,8 @@
 #define GLSL_STORAGE_QUALIFIERS
 
 #include "AST.hpp"
-#include "Parser.hpp"
 #include "Types.hpp"
+#include "Parser.hpp"
 
 namespace GLSL {
 

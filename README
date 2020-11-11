@@ -1,0 +1,1 @@
+Loki is a shader transpiler, the objective is to be able to transpile between glsl and hlsl for vertex, geometry, tesselation, mesh and fragment shaders and transpile between compute shaders of glsl, hlsl, OpenCL and CUDA.

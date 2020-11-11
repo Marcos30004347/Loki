@@ -3,8 +3,7 @@
 
 #include "Struct.hpp"
 #include "Buffer.hpp"
-#include "Variables.hpp"
-#include "Functions.hpp"
+#include "Declarations.hpp"
 
 #include <stdio.h>
 
@@ -28,20 +27,44 @@ void Scope::addTypeDeclaration(AST* buff) {
 }
 
 void Scope::addStructDefinition(AST* st) {
+    // ASTStruct* struct_decl = static_cast<ASTStruct*>(st);
+    // if(struct_decl->struct_identifier && this->getStructDefinition(struct_decl->struct_identifier)) {
+    //     printf("Error: Struct '%s' already defined!\n", struct_decl->struct_identifier);
+    //     exit(-1);
+    // }
+
     this->structs.push_back(st);
 }
 
 void Scope::addFunctionDefinition(AST* fn) {
+    // ASTFunctionDeclaration* decl = static_cast<ASTFunctionDeclaration*>(fn);
+
+    // if(decl->func_decl_name && this->getFunctionDefinition(decl->func_decl_name)) {
+    //     ASTFunctionDeclaration * find_decl =  static_cast<ASTFunctionDeclaration*>(this->getFunctionDefinition(decl->func_decl_name));
+    //     if(find_decl->func_decl_body) {
+    //         printf("Error: Function '%s' already defined!\n", decl->func_decl_name);
+    //         exit(-1);
+    //     }
+    //     else 
+    //         find_decl->func_decl_body = decl->func_decl_body;
+    // } else {
+    // }
     this->functions.push_back(fn);
 }
 
 void Scope::addVariableDefinition(AST* var) {
+    // ASTVarDecl* decl = static_cast<ASTVarDecl*>(var);
+    // if(decl->var_decl_name && this->getStructDefinition(struct_decl->struct_identifier)) {
+    //     printf("Error: Struct '%s' already defined!\n", struct_decl->struct_identifier);
+    //     exit(-1);
+    // }
+
     this->variables.push_back(var);
 }
 
 AST* Scope::getStructDefinition(char* identifier) {
     for(int i = 0; i < this->structs.size(); i++) {
-        if(strcmp(identifier, static_cast<ASTStruct*>(this->structs[i])->struct_identifier) == 0) return this->structs[i];
+        // if(strcmp(identifier, static_cast<ASTStruct*>(this->structs[i])->struct_identifier) == 0) return this->structs[i];
     }
 
     if(this->parent) return this->getStructDefinition(identifier);
@@ -52,9 +75,8 @@ AST* Scope::getStructDefinition(char* identifier) {
 
 AST* Scope::getTypeDefinition(char* identifier) {
     for(int i = 0; i < this->types.size(); i++) {
-        if(!static_cast<ASTType*>(this->types[i])->type_name) {
-        }
-        if(strcmp(identifier, static_cast<ASTType*>(this->types[i])->type_name) == 0) return this->types[i];
+        if(static_cast<ASTTypeDecl*>(this->types[i])->type_name == nullptr) continue;
+        if(strcmp(identifier, static_cast<ASTTypeDecl*>(this->types[i])->type_name) == 0) return this->types[i];
     }
 
     if(this->parent) return this->getTypeDefinition(identifier);

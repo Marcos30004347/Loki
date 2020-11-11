@@ -3,7 +3,7 @@
 #define BUFFER_H
 
 #include "AST.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "Register.hpp"
 #include "Parser.hpp"
 #include <vector>

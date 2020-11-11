@@ -67,7 +67,7 @@ const char* TypesNames[] = {
     "sampler3d"
 };
 
-AST* initAST(AST::ASTType type) {
+AST* initAST(AST::ASTTypeDecl type) {
     AST* ast = (AST*)malloc(sizeof(AST));
     ast->ast_type = type;
 
@@ -195,7 +195,7 @@ AST* initAST(AST::ASTType type) {
 
 void printAST(AST* root, int tabs) {
 
-    if(root->ast_type == AST::ASTType::FOR) {
+    if(root->ast_type == AST::ASTTypeDecl::FOR) {
         printf("%*cFOR:\n", tabs, ' ');
         printf("%*cSTATEMENT0:\n", tabs, ' ');
         printAST(root->for_statement1, tabs + 3);
@@ -207,13 +207,13 @@ void printAST(AST* root, int tabs) {
         printAST(root->for_body, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::RETURN) {
+    if(root->ast_type == AST::ASTTypeDecl::RETURN) {
         printf("%*cRETURN:\n", tabs, ' ');
         printf("%*cRETURN VALUE:\n", tabs, ' ');
         printAST( root->return_value, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::FUNCTION_DECLARATION) {
+    if(root->ast_type == AST::ASTTypeDecl::FUNCTION_DECLARATION) {
         printf("%*cFUNCTION DECLARATION:\n", tabs, ' ');
         printf("%*cFUNCTION RETURN TYPE:\n", tabs, ' ');
         printAST( root->func_dec_return_type_identifier, tabs+3);
@@ -232,7 +232,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->func_dec_body, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::FUNCTION_ARGUMENT) {
+    if(root->ast_type == AST::ASTTypeDecl::FUNCTION_ARGUMENT) {
         printf("%*cFUNCTION ARGUMENT:\n", tabs, ' ');
         printf("%*cTYPE:\n", tabs, ' ');
         printAST(root->func_argument_type_identifier, tabs + 3);
@@ -241,7 +241,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->func_argument_id, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::IF) {
+    if(root->ast_type == AST::ASTTypeDecl::IF) {
         printf("%*cIF:\n", tabs, ' ');
         printf("%*cCONDITION:\n", tabs, ' ');
         printAST(root->if_condition, tabs + 3);
@@ -251,7 +251,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->if_else_ast, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::WHILE) {
+    if(root->ast_type == AST::ASTTypeDecl::WHILE) {
         printf("%*cWHILE:\n", tabs, ' ');
         printf("%*cCONDITION:\n", tabs, ' ');
         printAST(root->while_condition, tabs + 3);
@@ -259,7 +259,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->while_statements, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::DO_WHILE) {
+    if(root->ast_type == AST::ASTTypeDecl::DO_WHILE) {
         printf("%*cDO WHILE:\n", tabs, ' ');
         printf("%*cSTATEMENTS:\n", tabs, ' ');
         printAST(root->do_while_statements, tabs + 3);
@@ -267,16 +267,16 @@ void printAST(AST* root, int tabs) {
         printAST(root->do_while_condition, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::UNDEFINED) {
+    if(root->ast_type == AST::ASTTypeDecl::UNDEFINED) {
         printf("%*cUNDEFINED!\n", tabs, ' ');
     }
 
-    if(root->ast_type == AST::ASTType::BLOCK) {
+    if(root->ast_type == AST::ASTTypeDecl::BLOCK) {
         printf("%*cBLOCK:\n", tabs, ' ');
         printAST(root->block_statements, tabs + 3);
     }
 
-    if(root->ast_type == AST::ASTType::STATEMETNS) {
+    if(root->ast_type == AST::ASTTypeDecl::STATEMETNS) {
         printf("%*cSTATEMENTS:\n", tabs, ' ');
         for(int i=0; i<root->statements_list_count; i++) {
             printf("%*cSTATEMENT %i:\n", tabs, ' ', i);
@@ -285,7 +285,7 @@ void printAST(AST* root, int tabs) {
     }
     
 
-    if(root->ast_type == AST::ASTType::DECLARATIONS) {
+    if(root->ast_type == AST::ASTTypeDecl::DECLARATIONS) {
         printf("%*cDECLARATIONS:\n", tabs, ' ');
         for(int i=0; i<root->declarations_list_count; i++) {
             printf("%*cDECLARATION %i:\n", tabs, ' ', i);
@@ -293,11 +293,11 @@ void printAST(AST* root, int tabs) {
         }
     }
 
-    if(root->ast_type == AST::ASTType::IDENTIFIER) {
+    if(root->ast_type == AST::ASTTypeDecl::IDENTIFIER) {
         printf("%*cIDENTIFIER = '%s'\n", tabs, ' ', root->identifier);
     }
 
-    if(root->ast_type == AST::ASTType::VARIABLE_DECLARATION) {
+    if(root->ast_type == AST::ASTTypeDecl::VARIABLE_DECLARATION) {
         printf("%*cVARIABLE DECLARATION\n", tabs, ' ');
         printf("%*cTYPE:", tabs, ' ');
         printAST(root->var_def_type_identifier, tabs + 3);
@@ -310,14 +310,14 @@ void printAST(AST* root, int tabs) {
     }
 
 
-    if(root->ast_type == AST::ASTType::VARIABLES_DECLARATIONS) {
+    if(root->ast_type == AST::ASTTypeDecl::VARIABLES_DECLARATIONS) {
         printf("%*cVARIABLES DECLARATIONS:\n", tabs, ' ');
         for(int i=0; i<root->vars_declarations_count; i++) {
             printAST(root->vars_declarations[i], tabs+ 3);
         }
     }
 
-    if(root->ast_type == AST::ASTType::BINARY_EXPRESSION) {
+    if(root->ast_type == AST::ASTTypeDecl::BINARY_EXPRESSION) {
         printf("%*cBYNARY OPERATION:\n", tabs, ' ');
         printf("%*cOPERATION = '%s'\n", tabs, ' ', BinaryOperationNames[root->binary_exp_operation]);
         printf("%*cLEFT:\n", tabs, ' ');
@@ -326,7 +326,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->binary_exp_right_operand, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::CHANNEL) {
+    if(root->ast_type == AST::ASTTypeDecl::CHANNEL) {
         printf("%*cCHANNEL:\n", tabs, ' ');
         printf("%*cCHANNEL TYPE = '%s'\n", tabs, ' ', ChannelTypeName[root->channel_type]);
         if(root->channel_type != ChannelType::CHANNEL_NONE) {
@@ -335,13 +335,13 @@ void printAST(AST* root, int tabs) {
         }
     }
 
-    if(root->ast_type == AST::ASTType::UNARY_EXPRESSION) {
+    if(root->ast_type == AST::ASTTypeDecl::UNARY_EXPRESSION) {
         printf("%*cUNARY OPERATION:\n",tabs, ' ');
         printf("%*ccOPERATION = '%i'\n",tabs, ' ', root->unary_binary_exp_operation);
         printAST(root->unary_binary_exp_right_operand, tabs+3);
     }
 
-    if(root->ast_type  == AST::ASTType::ASSIGNMENT) {
+    if(root->ast_type  == AST::ASTTypeDecl::ASSIGNMENT) {
         printf("%*cASSIGNMENT:\n",tabs, ' ');
         printf("%*cLEFT:\n",tabs, ' ');
         printAST(root->assignment_left, tabs+3);
@@ -349,11 +349,11 @@ void printAST(AST* root, int tabs) {
         printAST(root->assignment_right, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::INTEGER) {
+    if(root->ast_type == AST::ASTTypeDecl::INTEGER) {
         printf("%*cINTEGER '%i'\n", tabs, ' ', root->integer_value);
     }
 
-    if(root->ast_type == AST::ASTType::STRUCT) {
+    if(root->ast_type == AST::ASTTypeDecl::STRUCT) {
         printf("%*cSTRUCT:\n", tabs, ' ');
         printf("%*cSTRUCT IDENTIFIER:\n", tabs, ' ');
         printAST(root->struct_identifier, tabs+3);
@@ -361,7 +361,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->struct_declarations, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::SWITCH) {
+    if(root->ast_type == AST::ASTTypeDecl::SWITCH) {
         printf("%*cSWITCH:\n", tabs, ' ');
         printf("%*cDEFAULT:\n", tabs, ' ');
         printAST(root->switch_default_case, tabs+3);
@@ -371,11 +371,11 @@ void printAST(AST* root, int tabs) {
         }
     }
 
-    if(root->ast_type == AST::ASTType::BREAK) {
+    if(root->ast_type == AST::ASTTypeDecl::BREAK) {
         printf("%*cBREAK:\n", tabs, ' ');
     }
 
-    if(root->ast_type == AST::ASTType::CASE) {
+    if(root->ast_type == AST::ASTTypeDecl::CASE) {
         printf("%*cCASE:\n", tabs, ' ');
         printf("%*cEXPRESSION:\n", tabs, ' ');
         printAST(root->case_expression, tabs+3);
@@ -383,7 +383,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->case_statement, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::TYPE) {
+    if(root->ast_type == AST::ASTTypeDecl::TYPE) {
         printf("%*cTYPE: %s\n", tabs, ' ', TypesNames[root->type_type]);
         if(root->type_type == Type::TYPE_STRUCT) {
             printf("%*cSTRUCT IDENTIFIER:\n", tabs, ' ');
@@ -391,7 +391,7 @@ void printAST(AST* root, int tabs) {
         }
     }
 
-    if(root->ast_type == AST::ASTType::CONTEXT) {
+    if(root->ast_type == AST::ASTTypeDecl::CONTEXT) {
         printf("%*cCONTEXT:\n", tabs, ' ');
         printf("%*cIDENTIFIER:\n", tabs, ' ');
         printAST(root->context_identifier, tabs+3);
@@ -399,7 +399,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->context_declarations, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::UNIFORM) {
+    if(root->ast_type == AST::ASTTypeDecl::UNIFORM) {
         printf("%*cUNIFORM:\n", tabs, ' ');
         printf("%*cTYPE:\n", tabs, ' ');
         printAST(root->uniform_type, tabs+3);
@@ -407,7 +407,7 @@ void printAST(AST* root, int tabs) {
         printAST(root->uniform_identifier, tabs+3);
     }
 
-    if(root->ast_type == AST::ASTType::EXPORT) {
+    if(root->ast_type == AST::ASTTypeDecl::EXPORT) {
         printf("%*cEXPORT:\n", tabs, ' ');
         for(int i=0; i<root->export_pairs_count; i++) {
             printf("%*cKEY[%i]:\n", tabs, ' ', i);

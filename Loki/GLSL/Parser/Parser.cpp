@@ -5,8 +5,7 @@
 #include "Lib/String.hpp"
 
 // GLobal declarations
-#include "Functions.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "Buffer.hpp"
 #include "Structs.hpp"
 #include "BuiltInTypes.hpp"
@@ -74,18 +73,9 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
         
         switch (this->currentToken()->type) {
-    
-        case Token::TOKEN_STRUCT:
-            program->program_declarations.push_back(parseStruct(this));
-            break;
-    
 
         default:
-            if(isVariableDeclaration(this)) {
-                program->program_declarations.push_back(parseVarDecl(this));
-            } else {
-                program->program_declarations.push_back(parseFunctionDeclaration(this));
-            } 
+            program->program_declarations.push_back(parseDeclaration(this));
             break;
         }
         while(this->currentToken() && this->currentToken()->type == Token::TOKEN_SEMICOLON) this->readToken(Token::TOKEN_SEMICOLON);

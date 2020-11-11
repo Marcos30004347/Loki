@@ -59,7 +59,7 @@ Evaluation* initEvaluator() {
 void evaluate(Evaluation* eval, AST* tree) {
     for(int i=0; i<tree->declarations_list_count; i++) {
         switch(tree->ast_type) {
-            case AST::ASTType::CONTEXT:
+            case AST::ASTTypeDecl::CONTEXT:
                 eval->contexts_count += + 1;
                 eval->contexts = (Context**)realloc(
                     eval->contexts,
@@ -68,7 +68,7 @@ void evaluate(Evaluation* eval, AST* tree) {
                 eval->contexts[eval->contexts_count - 1] = initContext(tree->declarations_list[i]);
                 break;
         
-            case AST::ASTType::EXPORT:
+            case AST::ASTTypeDecl::EXPORT:
                 eval->exports_count += + 1;
                 eval->exports = (Export**)realloc(
                     eval->exports,

@@ -4,65 +4,65 @@
 
 namespace GLSL {
 
-static ASTType* void_type = nullptr;
-static ASTType* bool_type = nullptr;
-static ASTType* int_type = nullptr;
-static ASTType* uint_type = nullptr;
-static ASTType* float_type = nullptr;
-static ASTType* double_type = nullptr;
+static ASTTypeDecl* void_type = nullptr;
+static ASTTypeDecl* bool_type = nullptr;
+static ASTTypeDecl* int_type = nullptr;
+static ASTTypeDecl* uint_type = nullptr;
+static ASTTypeDecl* float_type = nullptr;
+static ASTTypeDecl* double_type = nullptr;
 
 // Vectors
-static ASTType* vec2_type = nullptr;
-static ASTType* dvec2_type = nullptr;
-static ASTType* bvec2_type = nullptr;
-static ASTType* ivec2_type = nullptr;
-static ASTType* uvec2_type = nullptr;
+static ASTTypeDecl* vec2_type = nullptr;
+static ASTTypeDecl* dvec2_type = nullptr;
+static ASTTypeDecl* bvec2_type = nullptr;
+static ASTTypeDecl* ivec2_type = nullptr;
+static ASTTypeDecl* uvec2_type = nullptr;
 
-static ASTType* vec3_type = nullptr;
-static ASTType* dvec3_type = nullptr;
-static ASTType* bvec3_type = nullptr;
-static ASTType* ivec3_type = nullptr;
-static ASTType* uvec3_type = nullptr;
+static ASTTypeDecl* vec3_type = nullptr;
+static ASTTypeDecl* dvec3_type = nullptr;
+static ASTTypeDecl* bvec3_type = nullptr;
+static ASTTypeDecl* ivec3_type = nullptr;
+static ASTTypeDecl* uvec3_type = nullptr;
 
-static ASTType* vec4_type = nullptr;
-static ASTType* dvec4_type = nullptr;
-static ASTType* bvec4_type = nullptr;
-static ASTType* ivec4_type = nullptr;
-static ASTType* uvec4_type = nullptr;
+static ASTTypeDecl* vec4_type = nullptr;
+static ASTTypeDecl* dvec4_type = nullptr;
+static ASTTypeDecl* bvec4_type = nullptr;
+static ASTTypeDecl* ivec4_type = nullptr;
+static ASTTypeDecl* uvec4_type = nullptr;
 
-static ASTType* mat2_type = nullptr;
-static ASTType* mat3_type = nullptr;
-static ASTType* mat4_type = nullptr;
+static ASTTypeDecl* mat2_type = nullptr;
+static ASTTypeDecl* mat3_type = nullptr;
+static ASTTypeDecl* mat4_type = nullptr;
 
-static ASTType* mat2x2_type = nullptr;
-static ASTType* mat2x3_type = nullptr;
-static ASTType* mat2x4_type = nullptr;
+static ASTTypeDecl* mat2x2_type = nullptr;
+static ASTTypeDecl* mat2x3_type = nullptr;
+static ASTTypeDecl* mat2x4_type = nullptr;
 
-static ASTType* mat3x2_type = nullptr;
-static ASTType* mat3x3_type = nullptr;
-static ASTType* mat3x4_type = nullptr;
+static ASTTypeDecl* mat3x2_type = nullptr;
+static ASTTypeDecl* mat3x3_type = nullptr;
+static ASTTypeDecl* mat3x4_type = nullptr;
 
-static ASTType* mat4x2_type = nullptr;
-static ASTType* mat4x3_type = nullptr;
-static ASTType* mat4x4_type = nullptr;
+static ASTTypeDecl* mat4x2_type = nullptr;
+static ASTTypeDecl* mat4x3_type = nullptr;
+static ASTTypeDecl* mat4x4_type = nullptr;
 
-static ASTType* dmat2_type = nullptr;
-static ASTType* dmat3_type = nullptr;
-static ASTType* dmat4_type = nullptr;
+static ASTTypeDecl* dmat2_type = nullptr;
+static ASTTypeDecl* dmat3_type = nullptr;
+static ASTTypeDecl* dmat4_type = nullptr;
 
-static ASTType* dmat2x2_type = nullptr;
-static ASTType* dmat2x3_type = nullptr;
-static ASTType* dmat2x4_type = nullptr;
+static ASTTypeDecl* dmat2x2_type = nullptr;
+static ASTTypeDecl* dmat2x3_type = nullptr;
+static ASTTypeDecl* dmat2x4_type = nullptr;
 
-static ASTType* dmat3x2_type = nullptr;
-static ASTType* dmat3x3_type = nullptr;
-static ASTType* dmat3x4_type = nullptr;
+static ASTTypeDecl* dmat3x2_type = nullptr;
+static ASTTypeDecl* dmat3x3_type = nullptr;
+static ASTTypeDecl* dmat3x4_type = nullptr;
 
-static ASTType* dmat4x2_type = nullptr;
-static ASTType* dmat4x3_type = nullptr;
-static ASTType* dmat4x4_type = nullptr;
+static ASTTypeDecl* dmat4x2_type = nullptr;
+static ASTTypeDecl* dmat4x3_type = nullptr;
+static ASTTypeDecl* dmat4x4_type = nullptr;
 
-static ASTType* sampler_type = nullptr;
+static ASTTypeDecl* sampler_type = nullptr;
 
 
 void addBuiltInTypesToScope(Parser* parser);

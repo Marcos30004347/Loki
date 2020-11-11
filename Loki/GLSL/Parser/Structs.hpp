@@ -1,6 +1,6 @@
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "Types.hpp"
 #include "StorageQualifiers.hpp"
 
@@ -8,16 +8,6 @@
 
 namespace GLSL {
 
-struct ASTStruct: AST {
-    explicit ASTStruct();
-    AST* qualifier;
-    char* name;
-    char* declaration_name;
-
-    std::vector<ASTVarDecl*> members;
-};
-
-
-ASTStruct* parseStruct(Parser* parser);
+ASTTypeDecl* parseStruct(Parser* parser);
 
 }

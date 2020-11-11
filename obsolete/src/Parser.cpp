@@ -20,7 +20,7 @@ Parser* initParser(Lexer* lexer) {
 
 // DECLARATIONS → (DECLARATION | CONTEXT | EXPORT)* EOF
 AST* parseStart(Parser* parser) {
-    AST* declarations = initAST(AST::ASTType::DECLARATIONS);
+    AST* declarations = initAST(AST::ASTTypeDecl::DECLARATIONS);
 
     while(parser->current_token->token_type != Token::TokenType::TOKEN_EOF) {
         switch (parser->current_token->token_type)
@@ -46,75 +46,75 @@ AST* parseType(Parser* parser) {
 
     switch(parser->current_token->token_type) {
         case Token::TokenType::VOID:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_VOID;
             break;
         case Token::TokenType::FLOAT:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_FLOAT;
             break;
         case Token::TokenType::INT:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_INT;
             break;
         case Token::TokenType::UINT:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_UINT;
             break;
         case Token::TokenType::BOOL:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_BOOL;
             break;
         case Token::TokenType::MAT2:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT2;
             break;
         case Token::TokenType::MAT2X2:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT2X2;
             break;
         case Token::TokenType::MAT2X3:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT2X3;
             break;
         case Token::TokenType::MAT2X4:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT2X4;
             break;
         case Token::TokenType::MAT3:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT3;
             break;
         case Token::TokenType::MAT3X2:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT3X2;
             break;
         case Token::TokenType::MAT3X3:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT3X3;
             break;
         case Token::TokenType::MAT3X4:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT3X4;
             break;
         case Token::TokenType::MAT4:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT4;
             break;
         case Token::TokenType::MAT4X2:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT4X2;
             break;
         case Token::TokenType::MAT4X3:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT4X3;
             break;
         case Token::TokenType::MAT4X4:
-            ast = initAST(AST::ASTType::TYPE);
+            ast = initAST(AST::ASTTypeDecl::TYPE);
             ast->type_type = Type::TYPE_MAT4X4;
             break;
         case Token::TokenType::IDENTIFIER:
-            ast = initAST(AST::ASTType::IDENTIFIER);
+            ast = initAST(AST::ASTTypeDecl::IDENTIFIER);
             ast->type_type = Type::TYPE_STRUCT;
             ast->type_struct_identifier = parsePrimary(parser);
             break;
@@ -178,11 +178,11 @@ AST* parseDeclaration(Parser* parser) {
 
 // STRUCT → 'struct' IDENTIFIER '{' VAR_DECL '}'';'
 AST* parseStruct(Parser* parser) {
-    AST* root = initAST(AST::ASTType::STRUCT);
+    AST* root = initAST(AST::ASTTypeDecl::STRUCT);
     parserReadToken(parser, Token::TokenType::STRUCT);
     AST* identifier = parsePrimary(parser);
 
-    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+    if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[1mERROR: Struct have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
         exit(-1);
     }
@@ -190,7 +190,7 @@ AST* parseStruct(Parser* parser) {
     root->struct_identifier = identifier;
 
     parserReadToken(parser, Token::TokenType::OPEN_CURLY_BRACES);
-    AST* declarations = initAST(AST::ASTType::DECLARATIONS);
+    AST* declarations = initAST(AST::ASTTypeDecl::DECLARATIONS);
 
     while(parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
         AST* decl = parseVariableDeclaration(parser);
@@ -206,13 +206,13 @@ AST* parseStruct(Parser* parser) {
 
 // RETURN → 'return' EXPRESSION?';'
 AST* parseReturn(Parser* parser) {
-    AST* return_sttmnt = initAST(AST::ASTType::RETURN);
+    AST* return_sttmnt = initAST(AST::ASTTypeDecl::RETURN);
     parserReadToken(parser, Token::TokenType::RETURN);
 
     if(parser->current_token->token_type != Token::TokenType::SEMICOLON) {
         return_sttmnt->return_value = parseExpression(parser);
     } else {
-        return_sttmnt->return_value = initAST(AST::ASTType::UNDEFINED);
+        return_sttmnt->return_value = initAST(AST::ASTTypeDecl::UNDEFINED);
     }
 
     parserReadToken(parser, Token::TokenType::SEMICOLON);
@@ -221,13 +221,13 @@ AST* parseReturn(Parser* parser) {
 
 //CHANNEL → ('<-' | '->') IDENTIFIER
 AST* parseChannel(Parser* parser) {
-    AST* root = initAST(AST::ASTType::CHANNEL);
+    AST* root = initAST(AST::ASTTypeDecl::CHANNEL);
 
     if(parser->current_token->token_type == Token::TokenType::FORWARD_ARROW) {
         root->channel_type = ChannelType::CHANNEL_OUT;
         parserReadToken(parser, Token::TokenType::FORWARD_ARROW);
         AST* identifier = parsePrimary(parser);
-        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->ast_type);
             exit(-1);
         }
@@ -236,7 +236,7 @@ AST* parseChannel(Parser* parser) {
         root->channel_type = ChannelType::CHANNEL_IN;
         parserReadToken(parser, Token::TokenType::BACKWARD_ARROW);
         AST* identifier = parsePrimary(parser);
-        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[1mERROR: Argument %s have channel name of type '%i'!\033[0m\n", identifier->identifier, identifier->ast_type);
             exit(-1);
         }
@@ -250,7 +250,7 @@ AST* parseChannel(Parser* parser) {
 
 // FUNC_DECL → TYPE IDENTIFIER'('( TYPE IDENTIFIER ( "," TYPE IDENTIFIER )*')' BLOCK
 AST* parseFunctionDeclaration(Parser* parser) {
-    AST* root = initAST(AST::ASTType::FUNCTION_DECLARATION);
+    AST* root = initAST(AST::ASTTypeDecl::FUNCTION_DECLARATION);
 
     root->func_dec_return_type_identifier = parseType(parser);
     root->func_dec_identifier = parsePrimary(parser);
@@ -259,11 +259,11 @@ AST* parseFunctionDeclaration(Parser* parser) {
 
     if(parser->current_token->token_type != Token::TokenType::CLOSE_PARENTESIS) {
         // IDENTIFIER IDEDNTIFIER
-        AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
+        AST* argument = initAST(AST::ASTTypeDecl::FUNCTION_ARGUMENT);
         argument->func_argument_type_identifier = parseType(parser);
         argument->func_argument_id = parsePrimary(parser);       
      
-        if(argument->func_argument_id->ast_type != AST::ASTType::IDENTIFIER) {
+        if(argument->func_argument_id->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", argument->func_argument_id->ast_type);
             exit(-1);
         }
@@ -274,12 +274,12 @@ AST* parseFunctionDeclaration(Parser* parser) {
         while(parser->current_token->token_type == Token::TokenType::COMMA) {
             parserReadToken(parser, Token::TokenType::COMMA);
         
-            AST* argument = initAST(AST::ASTType::FUNCTION_ARGUMENT);
+            AST* argument = initAST(AST::ASTTypeDecl::FUNCTION_ARGUMENT);
         
             argument->func_argument_type_identifier = parseType(parser);
             argument->func_argument_id = parsePrimary(parser);
             
-            if(argument->func_argument_id->ast_type != AST::ASTType::IDENTIFIER) {
+            if(argument->func_argument_id->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
                 printf("\033[1mERROR: Function have invalid name of type '%i'!\033[0m\n", argument->func_argument_id->ast_type);
                 exit(-1);
 
@@ -298,12 +298,12 @@ AST* parseFunctionDeclaration(Parser* parser) {
 
 // STATEMENT → VAR_DECL';' | EXPRESSION | IF | WHILE | DO_WHILE | FOR |  BLOCK | RETURN | BREAK | SWITCH
 AST* parseStatement(Parser* parser) {
-    AST* root = initAST(AST::ASTType::STATEMETNS);
+    AST* root = initAST(AST::ASTTypeDecl::STATEMETNS);
 
     if(parser->current_token->token_type == Token::TokenType::BREAK) {
         parserReadToken(parser, Token::TokenType::BREAK);
         parserReadToken(parser, Token::TokenType::SEMICOLON);
-        return initAST(AST::ASTType::BREAK);
+        return initAST(AST::ASTTypeDecl::BREAK);
     }
 
     if(parser->current_token->token_type == Token::TokenType::SWITCH) {
@@ -372,7 +372,7 @@ AST* parseStatement(Parser* parser) {
 
 // IF → 'if' '(' EXPRESSION ')' STATEMENT (else STATEMENT)? 
 AST* parseIf(Parser* parser) {
-    AST* if_sttnt = initAST(AST::ASTType::IF);
+    AST* if_sttnt = initAST(AST::ASTTypeDecl::IF);
 
     parserReadToken(parser, Token::TokenType::IF); // if keyword
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
@@ -390,7 +390,7 @@ AST* parseIf(Parser* parser) {
         AST* else_statements = parseStatement(parser);
         if_sttnt->if_else_ast = else_statements; 
     } else {
-        AST* else_statements = initAST(AST::ASTType::UNDEFINED);
+        AST* else_statements = initAST(AST::ASTTypeDecl::UNDEFINED);
         if_sttnt->if_else_ast = else_statements; 
     }
     
@@ -401,7 +401,7 @@ AST* parseIf(Parser* parser) {
 
 // WHILE  → 'while' '(' EXPRESSION ')' STATEMENT; 
 AST* parseWhile(Parser* parser) {
-    AST* while_sttnt = initAST(AST::ASTType::WHILE);
+    AST* while_sttnt = initAST(AST::ASTTypeDecl::WHILE);
 
     parserReadToken(parser, Token::TokenType::WHILE); // while keyword
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
@@ -421,7 +421,7 @@ AST* parseWhile(Parser* parser) {
 
 // DO_WHILE → 'do' '(' EXPRESSION ')' STATEMENT 'while'('EXPRESSION')'';' 
 AST* parseDoWhile(Parser* parser) {
-    AST* do_while_sttmnt = initAST(AST::ASTType::DO_WHILE);
+    AST* do_while_sttmnt = initAST(AST::ASTTypeDecl::DO_WHILE);
 
     parserReadToken(parser, Token::TokenType::DO); // do keyword
     AST* statements = parseStatement(parser);
@@ -443,7 +443,7 @@ AST* parseDoWhile(Parser* parser) {
 // FOR → 'for' '('(EXPRESSION | VAR_DECL)?';' EXPRESSION? ';' EXPRESSION? ')' STATEMENT 
 AST* parseFor(Parser* parser) {
     parserReadToken(parser, Token::TokenType::FOR);
-    AST* for_sttmnt = initAST(AST::ASTType::FOR);
+    AST* for_sttmnt = initAST(AST::ASTTypeDecl::FOR);
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
 
     AST* statement1 = nullptr;
@@ -488,7 +488,7 @@ AST* parseFor(Parser* parser) {
 
 // SWITCH  → 'switch' '(' EXPRESSION ')' '{' ('case' expression ':' STATEMENT? 'break'? )* ('default'':' STATEMENT? 'break'?)'}'; 
 AST* parseSwitch(Parser* parser) {
-    AST* root = initAST(AST::ASTType::SWITCH);
+    AST* root = initAST(AST::ASTTypeDecl::SWITCH);
 
     parserReadToken(parser, Token::TokenType::SWITCH);
     parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
@@ -498,21 +498,21 @@ AST* parseSwitch(Parser* parser) {
 
     while(parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
         if(parser->current_token->token_type == Token::TokenType::DEFAULT) {
-            AST* cs = initAST(AST::ASTType::CASE);
+            AST* cs = initAST(AST::ASTTypeDecl::CASE);
             parserReadToken(parser, Token::TokenType::DEFAULT);
-            cs->case_expression = initAST(AST::ASTType::UNDEFINED);
+            cs->case_expression = initAST(AST::ASTTypeDecl::UNDEFINED);
             parserReadToken(parser, Token::TokenType::TWO_POINTS);
-            AST* statements = initAST(AST::ASTType::STATEMETNS);
+            AST* statements = initAST(AST::ASTTypeDecl::STATEMETNS);
             while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
                 addStatement(statements, parseStatement(parser));
             }
             cs->case_statement = statements;
             root->switch_default_case = cs;
         } else {
-            AST* cs = initAST(AST::ASTType::CASE);
+            AST* cs = initAST(AST::ASTTypeDecl::CASE);
             parserReadToken(parser, Token::TokenType::CASE);
             cs->case_expression = parseExpression(parser);
-            AST* statements = initAST(AST::ASTType::STATEMETNS);
+            AST* statements = initAST(AST::ASTTypeDecl::STATEMETNS);
             parserReadToken(parser, Token::TokenType::TWO_POINTS);
 
             while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES && parser->current_token->token_type != Token::TokenType::CASE && parser->current_token->token_type != Token::TokenType::DEFAULT) {
@@ -526,7 +526,7 @@ AST* parseSwitch(Parser* parser) {
     parserReadToken(parser, Token::TokenType::CLOSE_CURLY_BRACES);
     if(!root->switch_default_case) {
         printf("\033[33mWARNING: Switch operator dont have a default case!\033[0m\n");
-        root->switch_default_case = initAST(AST::ASTType::UNDEFINED);
+        root->switch_default_case = initAST(AST::ASTTypeDecl::UNDEFINED);
     }
 
     //TODO check if cases have a break statement
@@ -536,10 +536,10 @@ AST* parseSwitch(Parser* parser) {
 
 // BLOCK → '{' DECLARATION* '}'
 AST* parseBlock(Parser* parser) {
-    AST* block = initAST(AST::ASTType::BLOCK);
+    AST* block = initAST(AST::ASTTypeDecl::BLOCK);
 
     parserReadToken(parser, Token::TokenType::OPEN_CURLY_BRACES);
-    AST* statements = initAST(AST::ASTType::STATEMETNS);
+    AST* statements = initAST(AST::ASTTypeDecl::STATEMETNS);
 
     while (parser->current_token->token_type != Token::TokenType::CLOSE_CURLY_BRACES) {
         addStatement(statements, parseStatement(parser));
@@ -552,17 +552,17 @@ AST* parseBlock(Parser* parser) {
 
 // VAR_DECL → TYPE IDENTIFIER CHANNEL? ('=' EXPRESSION)? (','IDENTIFIER CHANNEL? ('=' EXPRESSION)?)* ';'
 AST* parseVariableDeclaration(Parser* parser) {
-    AST* variables_definitions = initAST(AST::ASTType::VARIABLES_DECLARATIONS);
+    AST* variables_definitions = initAST(AST::ASTTypeDecl::VARIABLES_DECLARATIONS);
     AST* type = parseType(parser);
 
     AST* identifier = parsePrimary(parser);
-    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+    if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
         exit(-1);
 
     }
 
-    AST* var = initAST(AST::ASTType::VARIABLE_DECLARATION);
+    AST* var = initAST(AST::ASTTypeDecl::VARIABLE_DECLARATION);
     var->var_def_identifier = identifier;
     var->var_def_channel = parseChannel(parser);
     var->var_def_type_identifier = type;
@@ -571,7 +571,7 @@ AST* parseVariableDeclaration(Parser* parser) {
         parserReadToken(parser, Token::TokenType::EQUALS);
         var->var_def_value = parseExpression(parser);
     } else {
-        var->var_def_value = initAST(AST::ASTType::UNDEFINED);
+        var->var_def_value = initAST(AST::ASTTypeDecl::UNDEFINED);
     }
 
     addVariableDefinitions(variables_definitions, var);
@@ -581,13 +581,13 @@ AST* parseVariableDeclaration(Parser* parser) {
 
         AST* identifier = parsePrimary(parser);
 
-        if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+        if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[1mERROR: Variable have invalid name of type '%i'!\033[0m\n", identifier->ast_type);
             exit(-1);
 
         }
     
-        AST* var = initAST(AST::ASTType::VARIABLE_DECLARATION);
+        AST* var = initAST(AST::ASTTypeDecl::VARIABLE_DECLARATION);
         var->var_def_identifier = identifier;
         var->var_def_channel = parseChannel(parser);
         var->var_def_type_identifier = type;
@@ -596,7 +596,7 @@ AST* parseVariableDeclaration(Parser* parser) {
             parserReadToken(parser, Token::TokenType::EQUALS);
             var->var_def_value = parseExpression(parser);
         } else {
-            var->var_def_value = initAST(AST::ASTType::UNDEFINED);
+            var->var_def_value = initAST(AST::ASTTypeDecl::UNDEFINED);
         }
 
         addVariableDefinitions(variables_definitions, var);
@@ -634,13 +634,13 @@ AST* parseExpression(Parser* parser) {
         parserReadToken(parser, Token::TokenType::EQUALS);
         AST* left = root;
 
-        if(root->ast_type != AST::ASTType::IDENTIFIER) {
+        if(root->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[33mWARNING: First operand of assignment isn't a identifier!\033[0m\n");
         }
 
         AST* right = parseExpression(parser);
        
-        root = initAST(AST::ASTType::ASSIGNMENT);
+        root = initAST(AST::ASTTypeDecl::ASSIGNMENT);
     
         root->assignment_type = op;
         root->assignment_left = left;
@@ -669,7 +669,7 @@ AST* parseEquality(Parser* parser) {
 
         AST* left = root;
     
-        root = initAST(AST::ASTType::BINARY_EXPRESSION);
+        root = initAST(AST::ASTTypeDecl::BINARY_EXPRESSION);
     
         root->binary_exp_left_operand = left;
         root->binary_exp_operation = op;
@@ -712,7 +712,7 @@ AST* parseComparison(Parser* parser) {
 
         AST* left = root;
     
-        root = initAST(AST::ASTType::BINARY_EXPRESSION);
+        root = initAST(AST::ASTTypeDecl::BINARY_EXPRESSION);
     
         root->binary_exp_left_operand = left;
         root->binary_exp_operation = op;
@@ -745,7 +745,7 @@ AST* parseTerm(Parser* parser) {
         AST* right = parseFactor(parser);
         AST* left = root;
 
-        root = initAST(AST::ASTType::BINARY_EXPRESSION);
+        root = initAST(AST::ASTTypeDecl::BINARY_EXPRESSION);
 
         root->binary_exp_left_operand = left;
         root->binary_exp_operation = op;
@@ -759,11 +759,11 @@ AST* parseTerm(Parser* parser) {
 AST* parseCall(Parser* parser) {
     AST* root = parsePrimary(parser);
 
-    if(root->ast_type == AST::ASTType::IDENTIFIER) {
+    if(root->ast_type == AST::ASTTypeDecl::IDENTIFIER) {
         // Function call
         // TODO: Maybe this is a good spot to check if the function is
         // making a call to a defined function
-        AST* func_call = initAST(AST::ASTType::FUNCTION_CALL);
+        AST* func_call = initAST(AST::ASTTypeDecl::FUNCTION_CALL);
         func_call->func_call_identifier = root;
     
         parserReadToken(parser, Token::TokenType::OPEN_PARENTESIS);
@@ -812,7 +812,7 @@ AST* parseFactor(Parser* parser) {
 
         AST* left = root;
 
-        root = initAST(AST::ASTType::BINARY_EXPRESSION);
+        root = initAST(AST::ASTTypeDecl::BINARY_EXPRESSION);
 
         root->binary_exp_left_operand = left;
         root->binary_exp_operation = op;
@@ -856,7 +856,7 @@ AST* parseUnary(Parser* parser) {
                 break;
         }
         AST* right_operand = parseUnary(parser);
-        AST* root = initAST(AST::ASTType::UNARY_EXPRESSION);
+        AST* root = initAST(AST::ASTTypeDecl::UNARY_EXPRESSION);
         root->unary_binary_exp_operation = op;
         root->unary_binary_exp_right_operand = right_operand;
         return root;
@@ -885,7 +885,7 @@ AST* parseUnary(Parser* parser) {
                 exit(-1);
                 break;
     
-            AST* root = initAST(AST::ASTType::UNARY_EXPRESSION);
+            AST* root = initAST(AST::ASTTypeDecl::UNARY_EXPRESSION);
             root->unary_binary_exp_operation = op;
             root->unary_binary_exp_right_operand = tmp;
             return root;
@@ -922,26 +922,26 @@ AST* parsePrimary(Parser* parser) {
     }
 
     if( parser->current_token->token_type == Token::TokenType::IDENTIFIER) {
-        AST* root = initAST(AST::ASTType::IDENTIFIER);
+        AST* root = initAST(AST::ASTTypeDecl::IDENTIFIER);
         root->identifier = parser->current_token->value;
         parserReadToken(parser, Token::TokenType::IDENTIFIER);
         return root;
     }
 
     if(parser->current_token->token_type == Token::TokenType::TRUE) {
-        AST* root = initAST(AST::ASTType::BOOL);
+        AST* root = initAST(AST::ASTTypeDecl::BOOL);
         root->bool_value = true;
         return root;
     }
 
     if(parser->current_token->token_type == Token::TokenType::FALSE) {
-        AST* root = initAST(AST::ASTType::BOOL);
+        AST* root = initAST(AST::ASTTypeDecl::BOOL);
         root->bool_value = false;
         return root;
     }
 
     if(parser->current_token->token_type == Token::TokenType::INTEGER) {
-        AST* root = initAST(AST::ASTType::INTEGER);
+        AST* root = initAST(AST::ASTTypeDecl::INTEGER);
         root->integer_value = atoi(parser->current_token->value);
         parserReadToken(parser, Token::TokenType::INTEGER);
         return root;
@@ -949,7 +949,7 @@ AST* parsePrimary(Parser* parser) {
 
 
     if(parser->current_token->token_type == Token::TokenType::FLOATING) {
-        AST* root = initAST(AST::ASTType::FLOAT);
+        AST* root = initAST(AST::ASTTypeDecl::FLOAT);
         root->integer_value = atof(parser->current_token->value);
         parserReadToken(parser, Token::TokenType::FLOATING);
         return root;
@@ -970,11 +970,11 @@ AST* parsePrimary(Parser* parser) {
 
 // CONTEXT → 'context' IDENTIFIER '{' DECLARATION* '}'';'
 AST* parseContext(Parser* parser) {
-    AST* root = initAST(AST::ASTType::CONTEXT);
-    AST* declarations = initAST(AST::ASTType::DECLARATIONS);
+    AST* root = initAST(AST::ASTTypeDecl::CONTEXT);
+    AST* declarations = initAST(AST::ASTTypeDecl::DECLARATIONS);
     parserReadToken(parser,Token::TokenType::CONTEXT);
     AST* identifier = parsePrimary(parser);
-    if(identifier->ast_type != AST::ASTType::IDENTIFIER) {
+    if(identifier->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[33mERROR: Identifier of export isn't a identifier!\033[0m\n");
         exit(-1);
     }
@@ -997,18 +997,18 @@ AST* parseContext(Parser* parser) {
 
 // EXPORT → 'export' '{'IDENTIFIER: IDENTIFIER (',' IDENTIFIER: IDENTIFIER)+'}'';'
 AST* parseExport(Parser* parser) {
-    AST* root = initAST(AST::ASTType::EXPORT);
+    AST* root = initAST(AST::ASTTypeDecl::EXPORT);
     parserReadToken(parser,Token::TokenType::EXPORT);
     parserReadToken(parser,Token::TokenType::OPEN_CURLY_BRACES);
 
     AST* key = parsePrimary(parser);
     parserReadToken(parser, Token::TokenType::TWO_POINTS);
     AST* value = parsePrimary(parser);
-    if(key->ast_type != AST::ASTType::IDENTIFIER) {
+    if(key->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
         exit(-1);
     }
-    if(value->ast_type != AST::ASTType::IDENTIFIER) {
+    if(value->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[33mERROR: Value of export isn't a identifier!\033[0m\n");
         exit(-1);
     }
@@ -1034,11 +1034,11 @@ AST* parseExport(Parser* parser) {
         parserReadToken(parser, Token::TokenType::TWO_POINTS);
         AST* value = parsePrimary(parser);
 
-        if(key->ast_type != AST::ASTType::IDENTIFIER) {
+        if(key->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
             exit(-1);
         }
-        if(value->ast_type != AST::ASTType::IDENTIFIER) {
+        if(value->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
             printf("\033[33mERROR: Value of export isn't a identifier!\033[0m\n");
             exit(-1);
         }
@@ -1066,14 +1066,14 @@ AST* parseExport(Parser* parser) {
 
 // UNIFORM → 'uniform' TYPE IDENTIFIER ';'
 AST* parseUniform(Parser* parser) {
-    AST* root = initAST(AST::ASTType::UNIFORM);
+    AST* root = initAST(AST::ASTTypeDecl::UNIFORM);
     parserReadToken(parser, Token::TokenType::UNIFORM);
 
     AST* type = parseType(parser);
 
     AST* id = parsePrimary(parser);
 
-    if(id->ast_type != AST::ASTType::IDENTIFIER) {
+    if(id->ast_type != AST::ASTTypeDecl::IDENTIFIER) {
         printf("\033[33mERROR: Key of export isn't a identifier!\033[0m\n");
         exit(-1);
     }

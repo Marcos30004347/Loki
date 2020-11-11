@@ -16,14 +16,14 @@ Visitor* initVisitor() {
 }
 
 void visitDeclarations(Visitor* visitor, AST* node) {
-    if(node->ast_type == AST::ASTType::DECLARATIONS) {
+    if(node->ast_type == AST::ASTTypeDecl::DECLARATIONS) {
         for(int i=0; i<node->declarations_list_count; i++) {
             switch(node->declarations_list[i]->ast_type) {
-                case AST::ASTType::FUNCTION_DECLARATION:
+                case AST::ASTTypeDecl::FUNCTION_DECLARATION:
                         addFunctionToScope(visitor->current_scope, node->declarations_list[i]);
                         visitFunctionDeclaration(visitor, node->declarations_list[i]);
                     break;
-                case AST::ASTType::VARIABLES_DECLARATIONS:
+                case AST::ASTTypeDecl::VARIABLES_DECLARATIONS:
                     for(int i=0; i< node->vars_declarations_count; i++) {
                         addVariableToScope(visitor->current_scope, node->vars_declarations[i]);
                         visitVariableDeclaration(visitor, node->vars_declarations[i]);
@@ -35,7 +35,7 @@ void visitDeclarations(Visitor* visitor, AST* node) {
 }
 
 void visitFunctionDeclaration(Visitor* visitor, AST* node) {
-    assert(node->ast_type == AST::ASTType::FUNCTION_DECLARATION);
+    assert(node->ast_type == AST::ASTTypeDecl::FUNCTION_DECLARATION);
 
     char* function_return = getGLSLTypeString(node->func_dec_return_type_identifier->type_type);
     char* function_name = getIdentifierString(node->func_dec_identifier);

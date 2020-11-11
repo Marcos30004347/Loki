@@ -6,8 +6,7 @@
 #include "Structs.hpp"
 #include "Block.hpp"
 #include "Expressions.hpp"
-#include "Functions.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "Statement.hpp"
 #include "FlowControl.hpp"
 
@@ -112,7 +111,7 @@ void AST::print(int tabs) {
     ASTVarDecl* var_decl;
     ASTFunctionDeclaration* func_decl;
     ASTFunctionCall* func_call;
-    ASTStruct* struct_decl;
+    // ASTStruct* struct_decl;
     ASTBuffer* buffer_decl;
     ASTAssignment* assignment;
     ASTBinaryExpression* exp;
@@ -130,6 +129,8 @@ void AST::print(int tabs) {
     ASTIf* if_sttmnt;
     ASTMemberAccess* member_access;
     ASTArrayAccess* array_access;
+    ASTType* type;
+    ASTTypeDecl* type_decl;
 
     switch(this->ast_type) {
     case AST_PROGRAM:
@@ -145,7 +146,7 @@ void AST::print(int tabs) {
         var_decl = static_cast<ASTVarDecl*>(this);
         printf("%*cVARIABLE DECLARATION\n", tabs, ' ');
         printf("%*cNAME %s\n", tabs, ' ', var_decl->name);
-        printf("%*cTYPE %s\n", tabs, ' ', var_decl->var_decl_type->type_name);
+        var_decl->var_decl_type->print(tabs+TABS);
         if(var_decl->var_decl_dim_lenghts.size())
         printf("%*cIS_ARRAY %s\n", tabs, ' ', "true");
         if(var_decl->var_decl_dim_lenghts.size()) {
@@ -155,15 +156,26 @@ void AST::print(int tabs) {
         }
     
         break;
+    case AST_TYPE_DECL:
+        type_decl = static_cast<ASTTypeDecl*>(this);
+        printf("%*cTYPE '%s'\n", tabs, ' ', type_decl->type_name);
+        break;
+    case AST_TYPE:
+        type = static_cast<ASTType*>(this);
+        type->type->print(tabs+TABS);
+        printf("%*cTYPE DIMENSIONS%li\n", tabs, ' ',type->dimensions.size());
+        for(int i=0; i<type->dimensions.size(); i++) {
+            type->dimensions[i]->print(tabs+TABS);
+        }
+        break;
     case AST_FUNCTION_DECLARATION: 
         func_decl = static_cast<ASTFunctionDeclaration*>(this);
         printf("%*cFUNCTION DECLARATION\n", tabs, ' ');
         printf("%*cNAME '%s'\n", tabs, ' ', func_decl->func_decl_name);
-        printf("%*cTYPE '%s'\n", tabs, ' ', func_decl->func_decl_return_type->type_name);
-
+        func_decl->func_decl_return_type->print(tabs+TABS);
         
         for(int i=0; i<func_decl->func_decl_arguments.size(); i++) {
-            printf("%*cARGUMENT%i TYPE = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_type->type_name);
+            func_decl->func_decl_arguments[i]->argument_type->print(tabs+TABS);
             printf("%*cARGUMENT%i NAME = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_name);
 
             if(func_decl->func_decl_arguments[i]->argument_initializer)
@@ -185,16 +197,16 @@ void AST::print(int tabs) {
             func_call->func_call_arguments[i]->print(tabs+TABS);
         }
         break;
-    case AST_STRUCT_DECLARATION: 
-        struct_decl = static_cast<ASTStruct*>(this);
-        printf("%*cSTRUCT DECLARATION\n", tabs, ' ');
-        printf("%*cNAME %s\n", tabs, ' ', struct_decl->name);
-        for(int i=0; i<struct_decl->members.size(); i++) {
-            // printf("%*cSTRUCT MEMBER%i\n", tabs, ' ', i);
-            // printf("%*cINTERPOLATION%i  %i\n", tabs, ' ', i, struct_decl->struct_members[i]->member_interpolation_modifier);
-            struct_decl->members[i]->print(tabs+TABS);
-        }
-        break;
+    // case AST_STRUCT_DECLARATION: 
+    //     struct_decl = static_cast<ASTStruct*>(this);
+    //     printf("%*cSTRUCT DECLARATION\n", tabs, ' ');
+    //     printf("%*cNAME %s\n", tabs, ' ', struct_decl->name);
+    //     for(int i=0; i<struct_decl->members.size(); i++) {
+    //         // printf("%*cSTRUCT MEMBER%i\n", tabs, ' ', i);
+    //         // printf("%*cINTERPOLATION%i  %i\n", tabs, ' ', i, struct_decl->struct_members[i]->member_interpolation_modifier);
+    //         struct_decl->members[i]->print(tabs+TABS);
+    //     }
+    //     break;
     case AST_BUFFER_DECLARATION: 
         printf("%*cBUFFER DECLARATION\n", tabs, ' ');
         buffer_decl = static_cast<ASTBuffer*>(this);

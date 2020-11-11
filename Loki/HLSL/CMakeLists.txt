@@ -17,10 +17,9 @@ add_library(
 	Parser/Profiles.cpp
 	Parser/Register.cpp
 	Parser/Semantics.cpp
-	Parser/Variables.cpp
+	Parser/Declarations.cpp
 	Parser/InterpolationModifier.cpp
 	Parser/Expressions.cpp
-	Parser/Functions.cpp
 	Parser/Scope.cpp
 	Parser/Block.cpp
 	Parser/Buffer.cpp

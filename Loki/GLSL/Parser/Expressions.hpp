@@ -6,7 +6,7 @@
 
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "FunctionCall.hpp"
 
 namespace GLSL {

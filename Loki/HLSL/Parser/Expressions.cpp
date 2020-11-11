@@ -1,6 +1,5 @@
 #include "Expressions.hpp"
 #include "Struct.hpp"
-#include "Functions.hpp"
 
 #include <ctype.h>
 #include <stdlib.h>

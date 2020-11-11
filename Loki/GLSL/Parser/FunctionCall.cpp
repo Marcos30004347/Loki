@@ -1,7 +1,7 @@
 #include "Lib/String.hpp"
 #include "FunctionCall.hpp"
 #include "Expressions.hpp"
-#include "Functions.hpp"
+#include "Declarations.hpp"
 #include <stdio.h>
 
 namespace GLSL {

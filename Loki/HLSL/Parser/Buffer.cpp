@@ -39,7 +39,7 @@ ASTBuffer* parseBuffer(Parser* parser) {
     while (parser->currentToken()->type != Token::TOKEN_CLOSE_CURLY_BRACKETS) {
         if(parser->currentToken()->type == Token::TOKEN_STRUCT) 
         buff->buffer_fields.push_back(parseStruct(parser));
-        else buff->buffer_fields.push_back(parseVarDecl(parser));
+        else buff->buffer_fields.push_back(parseDeclaration(parser));
         
     }
     

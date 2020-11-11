@@ -3,8 +3,7 @@
 
 #include "Structs.hpp"
 #include "Buffer.hpp"
-#include "Variables.hpp"
-#include "Functions.hpp"
+#include "Declarations.hpp"
 #include "Types.hpp"
 
 #include <stdio.h>
@@ -53,9 +52,9 @@ AST* Scope::getStructDefinition(char* identifier) {
 
 AST* Scope::getTypeDefinition(char* identifier) {
     for(int i = 0; i < this->types.size(); i++) {
-        if(!static_cast<ASTType*>(this->types[i])->type_name) {
+        if(!static_cast<ASTTypeDecl*>(this->types[i])->type_name) {
         }
-        if(strcmp(identifier, static_cast<ASTType*>(this->types[i])->type_name) == 0) return this->types[i];
+        if(strcmp(identifier, static_cast<ASTTypeDecl*>(this->types[i])->type_name) == 0) return this->types[i];
     }
 
     if(this->parent) return this->getTypeDefinition(identifier);

@@ -1,6 +1,6 @@
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include <vector>
 
 namespace GLSL {
@@ -9,7 +9,7 @@ struct ASTBuffer: AST {
     explicit ASTBuffer();
     char* name;
     char* extern_name;
-    std::vector<ASTVarDecl*> members;
+    std::vector<AST*> members;
 };
 
 

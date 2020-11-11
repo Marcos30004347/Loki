@@ -24,10 +24,9 @@ add_library(
 	Parser/StorageQualifiers.cpp
 	Parser/Structs.cpp
 	Parser/Types.cpp
-	Parser/Variables.cpp
+	Parser/Declarations.cpp
 	Parser/Statement.cpp
 	Parser/FunctionCall.cpp
-	Parser/Functions.cpp
 	Parser/Expressions.cpp
 	Parser/FlowControl.cpp
 )

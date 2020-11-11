@@ -82,7 +82,7 @@ ASTFor* parseFor(Parser* parser) {
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
         if(parser->scope->getTypeDefinition(parser->currentToken()->value))
-            for_ast->for_init_statement = parseVarDecl(parser);        
+            for_ast->for_init_statement = parseDeclaration(parser);        
         else {
             for_ast->for_init_statement = parseExpression(parser);
             parser->readToken(Token::TOKEN_SEMICOLON);
@@ -91,7 +91,7 @@ ASTFor* parseFor(Parser* parser) {
 
     if(parser->currentToken()->type != Token::TOKEN_SEMICOLON) {
         if(parser->scope->getTypeDefinition(parser->currentToken()->value))
-            for_ast->for_cond_expression = parseVarDecl(parser);
+            for_ast->for_cond_expression = parseDeclaration(parser);
         else {
             for_ast->for_cond_expression = parseExpression(parser);
             parser->readToken(Token::TOKEN_SEMICOLON);

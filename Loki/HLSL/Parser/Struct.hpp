@@ -2,7 +2,7 @@
 
 #include "AST.hpp"
 #include "Parser.hpp"
-#include "Variables.hpp"
+#include "Declarations.hpp"
 #include "InterpolationModifier.hpp"
 #include <vector>
 namespace HLSL {
@@ -13,18 +13,19 @@ namespace HLSL {
 //     ASTVarDecl* struct_member_variable;
 // };
 
-struct ASTStruct : AST {
-    explicit ASTStruct();
+// struct ASTStruct : AST {
+//     explicit ASTStruct();
 
-    char* struct_identifier;
-    char* struct_declarator;
-    // AST* struct_declarator;
+//     char* struct_identifier;
+//     char* struct_declarator;
 
-    std::vector<ASTVarDecl*> struct_members;
-};
+//     ASTTypeDecl* struct_type;
+
+//     std::vector<AST*> struct_members;
+// };
 
 // STRUCT -> 'struct' IDENTIFIER '{' (INTERPOLATION_MODIFIER? TYPE IDENTIFIER';')* };
-ASTStruct* parseStruct(Parser* parser);
+ASTTypeDecl* parseStruct(Parser* parser);
 
 
 }

@@ -74,7 +74,7 @@ enum UnaryOperation {
 
 
 struct AST {
-    enum ASTType {
+    enum ASTTypeDecl {
         UNDEFINED,
         INTEGER,
         BINARY_EXPRESSION,
@@ -109,7 +109,7 @@ struct AST {
     };
 
     //AST data:
-    ASTType ast_type;
+    ASTTypeDecl ast_type;
 
     //INTEGER
     int integer_value;
@@ -236,7 +236,7 @@ struct AST {
     AST* buffer_identifier;
 };
 
-AST* initAST(AST::ASTType type);
+AST* initAST(AST::ASTTypeDecl type);
 
 void printAST(AST* root, int tabs = 0);
 

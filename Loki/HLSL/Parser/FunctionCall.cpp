@@ -1,7 +1,6 @@
 #include "Lib/String.hpp"
 #include "FunctionCall.hpp"
 #include "Expressions.hpp"
-#include "Functions.hpp"
 #include <stdio.h>
 namespace HLSL {
 
