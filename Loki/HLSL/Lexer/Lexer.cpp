@@ -14,7 +14,8 @@ Lexer::Lexer(const char* source) {
     this->source_size = eof;
     while(this->character != '\0' || this->head < eof) {
         while(this->skipWhiteSpaces() || this->skipComments()) {}
-
+    
+        if(this->character == '.' && this->head + 1 < eof && isdigit(this->source[this->head + 1])) this->collectNumberLiteral();
         if(isdigit(this->character)) this->collectNumberLiteral();
         if(isalnum(this->character) || this->character == '_') this->collectIdentifier();
         else if(this->character == '?') {

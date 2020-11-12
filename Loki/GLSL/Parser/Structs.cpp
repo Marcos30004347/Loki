@@ -11,7 +11,6 @@ ASTTypeDecl* parseStruct(Parser* parser) {
     type_decl->is_struct = true;
 
     // struct_decl->qualifier = parseStorageQualifier(parser);
-
     parser->readToken(Token::TOKEN_STRUCT);
     if(parser->currentToken()->value) {
         type_decl->type_name = parser->currentToken()->value;

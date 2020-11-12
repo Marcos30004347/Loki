@@ -16,8 +16,6 @@ enum NodeType {
     AST_TYPE,
     AST_TYPE_CONSTRUCTOR,
 
-    AST_BLOCK_DECLARATION,
-
     AST_EXPRESSION_BINARY,
     AST_EXPRESSION_UNARY,
     AST_BLOCK,
@@ -51,6 +49,7 @@ struct AST {
     NodeType ast_type;
     explicit AST(NodeType type): ast_type{type} {}
     void print(int tabs = 0);
+    void write(bool semicollon = false);
 };
 
 

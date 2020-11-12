@@ -32,7 +32,7 @@ enum BinaryOp {
     BINARY_OP_BITWISE_EXLUSIVE_OR, // '^'
     BINARY_OP_BITWISE_SHIFT_LEFT, // '<<'
     BINARY_OP_BITWISE_SHIFT_RIGHT, // '>>'
-
+    BINARY_LOGICAL_EXCLUSIVE_OR, // "^^"
 };
 
 enum UnaryOp {

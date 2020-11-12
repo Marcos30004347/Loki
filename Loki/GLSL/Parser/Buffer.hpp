@@ -5,14 +5,15 @@
 
 namespace GLSL {
 
-struct ASTBuffer: AST {
-    explicit ASTBuffer();
-    char* name;
-    char* extern_name;
-    std::vector<AST*> members;
-};
+// struct ASTBuffer: AST {
+//     explicit ASTBuffer();
+//     char* name;
+//     char* extern_name;
+//     ASTLayout* buffer_layout;
+//     std::vector<AST*> members;
+// };
 
 
-ASTBuffer* parseBuffer(Parser* parser);
+// ASTBuffer* parseBuffer(Parser* parser);
 
 }

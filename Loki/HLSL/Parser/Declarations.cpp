@@ -115,8 +115,11 @@ FunctionArgument* parseArgument(Parser* parser) {
     FunctionArgument* argument = new FunctionArgument();
     argument->argument_modifier = parseModifier(parser);
     argument->argument_type = parseType(parser);
-    argument->argument_name = parser->currentToken()->value;
-    parser->readToken(Token::TOKEN_IDENTIFIER);
+
+    if(parser->currentToken()->type == Token::TOKEN_IDENTIFIER) {
+        argument->argument_name = parser->currentToken()->value;
+        parser->readToken(Token::TOKEN_IDENTIFIER);
+    }
 
     while(parser->currentToken()->type == Token::TOKEN_TWO_POINTS) {
         parser->readToken(Token::TOKEN_TWO_POINTS);
@@ -238,8 +241,11 @@ AST* parseDeclaration(Parser* parser) {
                 exit(-1);
             }
             parser->readToken(Token::Type::TOKEN_OPEN_SQUARE_BRACKETS);
-            declaration->var_decl_type->dimensions.push_back(parseExpression(parser, true));
-            parser->readToken(Token::Type::TOKEN_CLOSE_SQUARE_BRACKETS);
+            if(parser->currentToken()->type != Token::TOKEN_CLOSE_SQUARE_BRACKETS)
+                declaration->var_decl_type->dimensions.push_back(parseExpression(parser));
+            else 
+                declaration->var_decl_type->dimensions.push_back(nullptr);
+                parser->readToken(Token::Type::TOKEN_CLOSE_SQUARE_BRACKETS);
         }
 
         // Variable PackOffset/Register/Semantic

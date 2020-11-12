@@ -71,11 +71,7 @@ bool ASTTypeDecl::acceptFunction(AST* func, Parser* parser) {
     if(strcmp(symbol->symbol_name, this->type_name) == 0) {
         return this->acceptConstructor(func, parser);
     }
-    // std::vector<ASTTypeDecl*> arguments_types;
-    // ASTFunctionCall* call = static_cast<ASTFunctionCall*>(func);
-    // for(int i=0; i<call->func_call_arguments.size(); i++) {
-        // arguments_types.push_back(static_cast<AST>call->func_call_arguments[i]);
-    // }
+
     AST* tmp = parser->scope->getFunctionDefinition(symbol->symbol_name);
     ASTFunctionDeclaration* call = static_cast<ASTFunctionDeclaration*>(tmp);
     return this->isCastableTo(static_cast<ASTTypeDecl*>(call->func_decl_return_type->type));
@@ -244,6 +240,7 @@ ASTLiteral* parseLiteral(Parser* parser, ASTTypeDecl* type) {
         parser->readToken(Token::TOKEN_CLOSE_CURLY_BRACKETS);
     } else {
         switch (parser->currentToken()->type) {
+            
             case Token::TOKEN_INT_LITERAL:
                 literal->type = ASTLiteral::Type::LITERAL_INT;
                 literal->int_val = atoi(parser->currentToken()->value);
@@ -270,7 +267,7 @@ ASTLiteral* parseLiteral(Parser* parser, ASTTypeDecl* type) {
                 parser->readToken(Token::TOKEN_STRING_LITERAL);
                 break;
             default:
-                printf("Error: Undefined initilizer at line '%i'!\n", parser->currentToken()->line);
+                printf("Error: Undefined initilizer of type '%i' at line '%i'!\n", parser->currentToken()->type,parser->currentToken()->line);
                 exit(-1);
         }
     }
@@ -285,9 +282,8 @@ ASTType* parseType(Parser* parser) {
     ASTType* type;
 
     if(parser->currentToken()->type == Token::TOKEN_STRUCT) {
-        // type_decl = parseStruct(parser);
+        type_decl = parseStruct(parser);
 
-        parser->scope->addStructDefinition(type_decl);
         parser->scope->addTypeDeclaration(type_decl);
     
         type = new ASTType(static_cast<ASTTypeDecl*>(type_decl));
@@ -312,7 +308,12 @@ ASTType* parseType(Parser* parser) {
 
         while(parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
             parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
-            type->dimensions.push_back(parseExpression(parser));
+            
+            if(parser->currentToken()->type != Token::TOKEN_CLOSE_SQUARE_BRACKETS)
+                type->dimensions.push_back(parseExpression(parser));
+            else 
+                type->dimensions.push_back(nullptr);
+    
             parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
         }
     

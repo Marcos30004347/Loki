@@ -1,5 +1,5 @@
-#ifndef HLSL_TYPES_H
-#define HLSL_TYPES_H
+#ifndef GLSL_TYPES_H
+#define GLSL_TYPES_H
 
 #include "AST.hpp"
 #include "Parser.hpp"
@@ -41,7 +41,7 @@ struct ASTLiteral: AST {
 
 struct ASTConstructor: AST {
     explicit ASTConstructor();
-    std::vector<ASTTypeDecl*> arguments;
+    std::vector<ASTType*> arguments;
     std::vector<AST*> constructor_statemetns;
 };
 

@@ -41,7 +41,7 @@ struct ASTLiteral: AST {
 
 struct ASTConstructor: AST {
     explicit ASTConstructor();
-    std::vector<ASTTypeDecl*> arguments;
+    std::vector<ASTType*> arguments;
     std::vector<AST*> constructor_statemetns;
 };
 

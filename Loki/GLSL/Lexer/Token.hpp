@@ -197,6 +197,7 @@ public:
         TOKEN_ASTERISK,
         TOKEN_HAT_EQUAL,
         TOKEN_HAT,
+        TOKEN_HAT_HAT,     
         TOKEN_DIVIDE_EQUAL,
         TOKEN_SLASH,
         TOKEN_NOT_EQUAL,

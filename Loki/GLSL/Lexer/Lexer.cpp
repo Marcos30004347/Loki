@@ -6,7 +6,6 @@
 namespace GLSL {
 
 Lexer::Lexer(const char* source) {
-    printf("Lexing...\n");
     this->source = source;
     this->head = 0;
     this->line = 1;
@@ -19,7 +18,7 @@ Lexer::Lexer(const char* source) {
 
     while(this->character != '\0' || this->head < eof) {
         while(this->skipWhiteSpaces() || this->skipComments()) {}
-
+        if(this->character == '.' && this->head + 1 < eof && isdigit(this->source[this->head + 1])) this->collectNumberLiteral();
         if(isdigit(this->character)) this->collectNumberLiteral();
         if(isalnum(this->character) || this->character == '_') this->collectIdentifier();
         else if(this->character == '?') {
@@ -82,6 +81,9 @@ Lexer::Lexer(const char* source) {
         if(this->character == '^') {
             if(this->head + 1 < eof && this->source[this->head + 1] == '=') {
                 this->tokens.push_back(new Token(Token::TOKEN_HAT_EQUAL, "^=", this->line));
+                this->advance();
+            }if(this->head + 1 < eof && this->source[this->head + 1] == '^') {
+                this->tokens.push_back(new Token(Token::TOKEN_HAT_HAT, "^^", this->line));
                 this->advance();
             } else {
                 this->tokens.push_back(new Token(Token::TOKEN_HAT, "^", this->line));

@@ -287,7 +287,6 @@ ASTType* parseType(Parser* parser) {
     if(parser->currentToken()->type == Token::TOKEN_STRUCT) {
         type_decl = parseStruct(parser);
 
-        parser->scope->addStructDefinition(type_decl);
         parser->scope->addTypeDeclaration(type_decl);
     
         type = new ASTType(static_cast<ASTTypeDecl*>(type_decl));
@@ -312,7 +311,10 @@ ASTType* parseType(Parser* parser) {
 
         while(parser->currentToken()->type == Token::TOKEN_OPEN_SQUARE_BRACKETS) {
             parser->readToken(Token::TOKEN_OPEN_SQUARE_BRACKETS);
-            type->dimensions.push_back(parseExpression(parser));
+            if(parser->currentToken()->type != Token::TOKEN_CLOSE_SQUARE_BRACKETS)
+                type->dimensions.push_back(parseExpression(parser));
+            else 
+                type->dimensions.push_back(nullptr);
             parser->readToken(Token::TOKEN_CLOSE_SQUARE_BRACKETS);
         }
     

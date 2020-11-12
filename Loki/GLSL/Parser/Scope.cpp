@@ -13,7 +13,6 @@ namespace GLSL {
 Scope::Scope() {
     this->parent = nullptr;
     this->variables =  std::vector<AST*>();
-    this->structs = std::vector<AST*>();
     this->buffers = std::vector<AST*>();
     this->functions = std::vector<AST*>();
     this->types = std::vector<AST*>();
@@ -27,10 +26,6 @@ void Scope::addTypeDeclaration(AST* buff) {
     this->types.push_back(buff);
 }
 
-void Scope::addStructDefinition(AST* st) {
-    this->structs.push_back(st);
-}
-
 void Scope::addFunctionDefinition(AST* fn) {
     this->functions.push_back(fn);
 }
@@ -39,25 +34,13 @@ void Scope::addVariableDefinition(AST* var) {
     this->variables.push_back(var);
 }
 
-AST* Scope::getStructDefinition(char* identifier) {
-    // for(int i = 0; i < this->structs.size(); i++) {
-    //     if(strcmp(identifier, static_cast<ASTStruct*>(this->structs[i])->struct_identifier) == 0) return this->structs[i];
-    // }
-
-    if(this->parent) return this->getStructDefinition(identifier);
-    
-    return nullptr;
-}
-
-
 AST* Scope::getTypeDefinition(char* identifier) {
     for(int i = 0; i < this->types.size(); i++) {
         if(!static_cast<ASTTypeDecl*>(this->types[i])->type_name) {
         }
         if(strcmp(identifier, static_cast<ASTTypeDecl*>(this->types[i])->type_name) == 0) return this->types[i];
     }
-
-    if(this->parent) return this->getTypeDefinition(identifier);
+    if(this->parent) return this->parent->getTypeDefinition(identifier);
     
     return nullptr;
 }
@@ -74,10 +57,10 @@ AST* Scope::getFunctionDefinition(char* identifier) {
 
 AST* Scope::getBufferDefinition(char* identifier) {
     for(int i = 0; i < this->buffers.size(); i++) {
-        // if(strcmp(identifier, static_cast<ASTBuffer*>(this->buffers[i])->buffer_name) == 0) return this->buffers[i];
+        if(strcmp(identifier, static_cast<ASTBuffer*>(this->buffers[i])->name) == 0) return this->buffers[i];
     }
     
-    if(this->parent) return this->getBufferDefinition(identifier);
+    if(this->parent) return this->parent->getBufferDefinition(identifier);
     
     return nullptr;
 }
@@ -94,7 +77,7 @@ AST* Scope::getVariableDefinition(char* identifier) {
         // }
     }
 
-    if(this->parent) return this->getVariableDefinition(identifier);
+    if(this->parent) return this->parent->getVariableDefinition(identifier);
     
     return nullptr;
 }

@@ -44,9 +44,10 @@ enum NodeType {
 
 struct AST {
     NodeType ast_type;
+
     explicit AST(NodeType type): ast_type{type} {}
+
     void print(int tabs = 0);
-    // Reconstruct the string as a hlsl valid shader in the stdout
     void write(bool semicollon = true);
 };
 

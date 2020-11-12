@@ -77,20 +77,22 @@ AST* parseTernary(Parser* parser, bool constant) {
 }
 
 
-// BOOL → TERM (( '&&' | '||') BOOL)*
+// BOOL → TERM (( '&&' | '^^' | '||') BOOL)*
 AST* parseBooleans(Parser* parser, bool constant) {
     AST* root = parseBitwise(parser, constant);
 
     if(
         parser->currentToken() &&
         (parser->currentToken()->type == Token::TOKEN_PIPE_PIPE
-        || parser->currentToken()->type == Token::TOKEN_APERSAND_AMPERSAND)
+        || parser->currentToken()->type == Token::TOKEN_APERSAND_AMPERSAND
+        || parser->currentToken()->type == Token::TOKEN_HAT_HAT)
     ) {
         AST* bn = new ASTBinaryExpression();
         static_cast<ASTBinaryExpression*>(bn)->bin_exp_left_operand = root;
         switch(parser->currentToken()->type) {
             case Token::TOKEN_PIPE_PIPE: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_OR; break;
             case Token::TOKEN_APERSAND_AMPERSAND: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_OP_AND; break;
+            case Token::TOKEN_HAT_HAT: static_cast<ASTBinaryExpression*>(bn)->bin_exp_op = BinaryOp::BINARY_LOGICAL_EXCLUSIVE_OR; break;
             default: printf("Error parsing Boolean operation! \n"); exit(-1); break;
         }
         parser->readToken(parser->currentToken()->type);

@@ -201,6 +201,7 @@ void AST::print(int tabs) {
         
         for(int i=0; i<func_decl->func_decl_arguments.size(); i++) {
             func_decl->func_decl_arguments[i]->argument_type->print(tabs+TABS);
+            if(func_decl->func_decl_arguments[i]->argument_name)
             printf("%*cARGUMENT%i NAME = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_name);
             if(func_decl->func_decl_arguments[i]->argument_semantic)
                 printf("%*cARGUMENT%i SEMANTIC = '%s'\n", tabs, ' ', i, func_decl->func_decl_arguments[i]->argument_semantic->name);
@@ -518,7 +519,8 @@ void writeASTVarDecl(AST* tree, int tabs = 0) {
     if(root->var_decl_type->isArray()) {
         for(int i=0;i<root->var_decl_type->dimensions.size(); i++) {
             printf("[");
-            root->var_decl_type->dimensions[i]->write(tabs);
+            if(root->var_decl_type->dimensions[i])
+                root->var_decl_type->dimensions[i]->write(tabs);
             printf("]");
         }
     }
@@ -571,9 +573,12 @@ void writeASTFunctionDeclaration(AST* tree, int tabs = 0) {
         printf("%s ", function_modifier_names[root->func_decl_arguments[j]->argument_modifier]);
     
         root->func_decl_arguments[j]->argument_type->write(tabs);
-        printf(" ");
-        printf("%s ", root->func_decl_arguments[j]->argument_name);
-    
+
+        if(root->func_decl_arguments[j]->argument_name) {
+            printf(" ");
+            printf("%s ", root->func_decl_arguments[j]->argument_name);
+        }
+
         if(root->func_decl_arguments[j]->argument_semantic)
         printSemantic(root->func_decl_arguments[j]->argument_semantic);
     
@@ -818,7 +823,15 @@ void writeASTIf(AST* tree, int tabs = 0) {
     printf("if(");
     root->if_expression->write(tabs);
     printf(")");
-    root->if_statement->write(tabs+TABS);
+    switch (root->if_statement->ast_type) {
+        case AST_BLOCK:
+            root->if_statement->write(tabs+TABS);
+            break;
+        default:
+            root->if_statement->write(tabs+TABS);
+            printf(";\n");
+            break;
+    }
     if(root->if_else) {
         printf("else ");
         root->if_else->write(tabs);

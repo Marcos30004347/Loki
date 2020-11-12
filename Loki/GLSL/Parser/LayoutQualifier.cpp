@@ -60,8 +60,7 @@ ASTLayout::ASTLayout(): AST {AST_LAYOUT_QUALIFIER } {}
 
 ASTLayout* parseLayoutQualifier(Parser* parser) {
     ASTLayout* lay = new ASTLayout();
-
-    if(parser->currentToken()->type != Token::TOKEN_LAYOUT) return lay;
+    if(parser->currentToken()->type != Token::TOKEN_LAYOUT) return nullptr;
     
     parser->readToken(Token::TOKEN_LAYOUT);
     parser->readToken(Token::TOKEN_OPEN_PARENTESIS);

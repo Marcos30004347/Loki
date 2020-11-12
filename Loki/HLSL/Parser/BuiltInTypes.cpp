@@ -10,7 +10,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     string_type = new ASTTypeDecl("string");
     string_type->accept_literals.push_back(ASTLiteral::Type::LITERAL_STRING);
     string_type->constructors.push_back(new ASTConstructor());
-    string_type->constructors[0]->arguments.push_back(string_type);
+    string_type->constructors[0]->arguments.push_back(new ASTType(string_type));
 
     // int
     int_type = new ASTTypeDecl("int");
@@ -24,7 +24,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     int_type->castable_to_types.push_back(bool_type);
     int_type->castable_to_types.push_back(int_type);
     int_type->constructors.push_back(new ASTConstructor());
-    int_type->constructors[0]->arguments.push_back(int_type);
+    int_type->constructors[0]->arguments.push_back(new ASTType(int_type));
 
     // float
     float_type = new ASTTypeDecl("float");
@@ -38,7 +38,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     float_type->castable_to_types.push_back(double_type);
     float_type->castable_to_types.push_back(bool_type);
     float_type->constructors.push_back(new ASTConstructor());
-    float_type->constructors[0]->arguments.push_back(float_type);
+    float_type->constructors[0]->arguments.push_back(new ASTType(float_type));
 
     // half type
     half_type = new ASTTypeDecl("half");
@@ -52,7 +52,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     half_type->castable_to_types.push_back(double_type);
     half_type->castable_to_types.push_back(bool_type);
     half_type->constructors.push_back(new ASTConstructor());
-    half_type->constructors[0]->arguments.push_back(half_type);
+    half_type->constructors[0]->arguments.push_back(new ASTType(half_type));
 
     // double
     double_type = new ASTTypeDecl("double");
@@ -66,7 +66,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     double_type->castable_to_types.push_back(double_type);
     double_type->castable_to_types.push_back(bool_type);
     double_type->constructors.push_back(new ASTConstructor());
-    double_type->constructors[0]->arguments.push_back(double_type);
+    double_type->constructors[0]->arguments.push_back(new ASTType(double_type));
 
     // uint
     uint_type = new ASTTypeDecl("uint");
@@ -80,7 +80,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     uint_type->castable_to_types.push_back(double_type);
     uint_type->castable_to_types.push_back(bool_type);
     uint_type->constructors.push_back(new ASTConstructor());
-    uint_type->constructors[0]->arguments.push_back(uint_type);
+    uint_type->constructors[0]->arguments.push_back(new ASTType(uint_type));
 
     // bool
     bool_type = new ASTTypeDecl("bool");
@@ -94,7 +94,7 @@ void addBuiltInScalarsToScope(Parser* parser) {
     bool_type->castable_to_types.push_back(double_type);
     bool_type->castable_to_types.push_back(bool_type);
     bool_type->constructors.push_back(new ASTConstructor());
-    bool_type->constructors[0]->arguments.push_back(uint_type);
+    bool_type->constructors[0]->arguments.push_back(new ASTType(uint_type));
 
 
     parser->scope->addTypeDeclaration(int_type);
@@ -124,11 +124,11 @@ void addBuiltIn2VectorsToScope(Parser* parser) {
     float2_type->castable_to_types.push_back(uint2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float2_type->constructors.push_back(constructor0);
     float2_type->constructors.push_back(constructor1);
@@ -147,11 +147,11 @@ void addBuiltIn2VectorsToScope(Parser* parser) {
     double2_type->castable_to_types.push_back(uint2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double2_type->constructors.push_back(constructor0);
     double2_type->constructors.push_back(constructor1);
@@ -170,11 +170,11 @@ void addBuiltIn2VectorsToScope(Parser* parser) {
     int2_type->castable_to_types.push_back(uint2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int2_type->constructors.push_back(constructor0);
     int2_type->constructors.push_back(constructor1);
@@ -194,11 +194,11 @@ void addBuiltIn2VectorsToScope(Parser* parser) {
     half2_type->castable_to_types.push_back(uint2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half2_type->constructors.push_back(constructor0);
     half2_type->constructors.push_back(constructor1);
@@ -217,11 +217,11 @@ void addBuiltIn2VectorsToScope(Parser* parser) {
     uint2_type->castable_to_types.push_back(uint2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint2_type->constructors.push_back(constructor0);
     uint2_type->constructors.push_back(constructor1);
@@ -253,12 +253,12 @@ void addBuiltIn3VectorsToScope(Parser* parser) {
     float3_type->castable_to_types.push_back(uint3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float3_type->constructors.push_back(constructor0);
     float3_type->constructors.push_back(constructor1);
@@ -278,12 +278,12 @@ void addBuiltIn3VectorsToScope(Parser* parser) {
     double3_type->castable_to_types.push_back(uint3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double3_type->constructors.push_back(constructor0);
     double3_type->constructors.push_back(constructor1);
@@ -303,12 +303,12 @@ void addBuiltIn3VectorsToScope(Parser* parser) {
     int3_type->castable_to_types.push_back(uint3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int3_type->constructors.push_back(constructor0);
     int3_type->constructors.push_back(constructor1);
@@ -328,12 +328,12 @@ void addBuiltIn3VectorsToScope(Parser* parser) {
     half3_type->castable_to_types.push_back(uint3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half3_type->constructors.push_back(constructor0);
     half3_type->constructors.push_back(constructor1);
@@ -353,12 +353,12 @@ void addBuiltIn3VectorsToScope(Parser* parser) {
     uint3_type->castable_to_types.push_back(uint3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint3_type->constructors.push_back(constructor0);
     uint3_type->constructors.push_back(constructor1);
@@ -392,13 +392,13 @@ void addBuiltIn4VectorsToScope(Parser* parser) {
     float4_type->castable_to_types.push_back(uint4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float4_type->constructors.push_back(constructor0);
     float4_type->constructors.push_back(constructor1);
@@ -419,13 +419,13 @@ void addBuiltIn4VectorsToScope(Parser* parser) {
     double4_type->castable_to_types.push_back(uint4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double4_type->constructors.push_back(constructor0);
     double4_type->constructors.push_back(constructor1);
@@ -446,13 +446,13 @@ void addBuiltIn4VectorsToScope(Parser* parser) {
     int4_type->castable_to_types.push_back(uint4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int4_type->constructors.push_back(constructor0);
     int4_type->constructors.push_back(constructor1);
@@ -473,13 +473,13 @@ void addBuiltIn4VectorsToScope(Parser* parser) {
     half4_type->castable_to_types.push_back(uint4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half4_type->constructors.push_back(constructor0);
     half4_type->constructors.push_back(constructor1);
@@ -500,13 +500,13 @@ void addBuiltIn4VectorsToScope(Parser* parser) {
     uint4_type->castable_to_types.push_back(uint4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint4_type->constructors.push_back(constructor0);
     uint4_type->constructors.push_back(constructor1);
@@ -545,13 +545,13 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     float2x2_type->castable_to_types.push_back(uint2x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float2x2_type->constructors.push_back(constructor0);
     float2x2_type->constructors.push_back(constructor1);
@@ -572,13 +572,13 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     double2x2_type->castable_to_types.push_back(uint2x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double2x2_type->constructors.push_back(constructor0);
     double2x2_type->constructors.push_back(constructor1);
@@ -599,13 +599,13 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     int2x2_type->castable_to_types.push_back(uint2x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int2x2_type->constructors.push_back(constructor0);
     int2x2_type->constructors.push_back(constructor1);
@@ -626,13 +626,13 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     half2x2_type->castable_to_types.push_back(uint2x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half2x2_type->constructors.push_back(constructor0);
     half2x2_type->constructors.push_back(constructor1);
@@ -653,13 +653,13 @@ void addBuiltIn2x2MatricessToScope(Parser* parser) {
     uint2x2_type->castable_to_types.push_back(uint2x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint2x2_type->constructors.push_back(constructor0);
     uint2x2_type->constructors.push_back(constructor1);
@@ -693,15 +693,15 @@ void addBuiltIn3x2MatricessToScope(Parser* parser) {
     float3x2_type->castable_to_types.push_back(uint3x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float3x2_type->constructors.push_back(constructor0);
     float3x2_type->constructors.push_back(constructor1);
@@ -726,15 +726,15 @@ void addBuiltIn3x2MatricessToScope(Parser* parser) {
     double3x2_type->castable_to_types.push_back(uint3x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double3x2_type->constructors.push_back(constructor0);
     double3x2_type->constructors.push_back(constructor1);
@@ -759,15 +759,15 @@ void addBuiltIn3x2MatricessToScope(Parser* parser) {
     int3x2_type->castable_to_types.push_back(uint3x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int3x2_type->constructors.push_back(constructor0);
     int3x2_type->constructors.push_back(constructor1);
@@ -792,15 +792,15 @@ void addBuiltIn3x2MatricessToScope(Parser* parser) {
     uint3x2_type->castable_to_types.push_back(int3x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint3x2_type->constructors.push_back(constructor0);
     uint3x2_type->constructors.push_back(constructor1);
@@ -823,15 +823,15 @@ void addBuiltIn3x2MatricessToScope(Parser* parser) {
     half3x2_type->castable_to_types.push_back(int3x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half3x2_type->constructors.push_back(constructor0);
     half3x2_type->constructors.push_back(constructor1);
@@ -868,15 +868,15 @@ void addBuiltIn2x3MatricessToScope(Parser* parser) {
     float2x3_type->castable_to_types.push_back(uint2x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float2x3_type->constructors.push_back(constructor0);
     float2x3_type->constructors.push_back(constructor1);
@@ -901,15 +901,15 @@ void addBuiltIn2x3MatricessToScope(Parser* parser) {
     double2x3_type->castable_to_types.push_back(uint2x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double2x3_type->constructors.push_back(constructor0);
     double2x3_type->constructors.push_back(constructor1);
@@ -934,15 +934,15 @@ void addBuiltIn2x3MatricessToScope(Parser* parser) {
     int2x3_type->castable_to_types.push_back(uint2x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int2x3_type->constructors.push_back(constructor0);
     int2x3_type->constructors.push_back(constructor1);
@@ -967,15 +967,15 @@ void addBuiltIn2x3MatricessToScope(Parser* parser) {
     uint2x3_type->castable_to_types.push_back(int2x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint2x3_type->constructors.push_back(constructor0);
     uint2x3_type->constructors.push_back(constructor1);
@@ -998,15 +998,15 @@ void addBuiltIn2x3MatricessToScope(Parser* parser) {
     half2x3_type->castable_to_types.push_back(int2x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half2x3_type->constructors.push_back(constructor0);
     half2x3_type->constructors.push_back(constructor1);
@@ -1043,17 +1043,17 @@ void addBuiltIn4x2MatricessToScope(Parser* parser) {
     float4x2_type->castable_to_types.push_back(uint4x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float4x2_type->constructors.push_back(constructor0);
     float4x2_type->constructors.push_back(constructor1);
@@ -1080,17 +1080,17 @@ void addBuiltIn4x2MatricessToScope(Parser* parser) {
     double4x2_type->castable_to_types.push_back(uint4x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double4x2_type->constructors.push_back(constructor0);
     double4x2_type->constructors.push_back(constructor1);
@@ -1117,17 +1117,17 @@ void addBuiltIn4x2MatricessToScope(Parser* parser) {
     int4x2_type->castable_to_types.push_back(uint4x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int4x2_type->constructors.push_back(constructor0);
     int4x2_type->constructors.push_back(constructor1);
@@ -1154,17 +1154,17 @@ void addBuiltIn4x2MatricessToScope(Parser* parser) {
     uint4x2_type->castable_to_types.push_back(uint4x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint4x2_type->constructors.push_back(constructor0);
     uint4x2_type->constructors.push_back(constructor1);
@@ -1191,17 +1191,17 @@ void addBuiltIn4x2MatricessToScope(Parser* parser) {
     half4x2_type->castable_to_types.push_back(uint4x2_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half4x2_type->constructors.push_back(constructor0);
     half4x2_type->constructors.push_back(constructor1);
@@ -1240,17 +1240,17 @@ void addBuiltIn2x4MatricessToScope(Parser* parser) {
     float2x4_type->castable_to_types.push_back(uint2x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float2x4_type->constructors.push_back(constructor0);
     float2x4_type->constructors.push_back(constructor1);
@@ -1277,17 +1277,17 @@ void addBuiltIn2x4MatricessToScope(Parser* parser) {
     double2x4_type->castable_to_types.push_back(uint2x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double2x4_type->constructors.push_back(constructor0);
     double2x4_type->constructors.push_back(constructor1);
@@ -1314,17 +1314,17 @@ void addBuiltIn2x4MatricessToScope(Parser* parser) {
     int2x4_type->castable_to_types.push_back(uint2x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int2x4_type->constructors.push_back(constructor0);
     int2x4_type->constructors.push_back(constructor1);
@@ -1351,17 +1351,17 @@ void addBuiltIn2x4MatricessToScope(Parser* parser) {
     uint2x4_type->castable_to_types.push_back(uint2x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint2x4_type->constructors.push_back(constructor0);
     uint2x4_type->constructors.push_back(constructor1);
@@ -1388,17 +1388,17 @@ void addBuiltIn2x4MatricessToScope(Parser* parser) {
     half2x4_type->castable_to_types.push_back(uint2x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half2x4_type->constructors.push_back(constructor0);
     half2x4_type->constructors.push_back(constructor1);
@@ -1437,18 +1437,18 @@ void addBuiltIn3x3MatricessToScope(Parser* parser) {
     float3x3_type->castable_to_types.push_back(uint3x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float3x3_type->constructors.push_back(constructor0);
     float3x3_type->constructors.push_back(constructor1);
@@ -1476,18 +1476,18 @@ void addBuiltIn3x3MatricessToScope(Parser* parser) {
     double3x3_type->castable_to_types.push_back(uint3x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double3x3_type->constructors.push_back(constructor0);
     double3x3_type->constructors.push_back(constructor1);
@@ -1515,18 +1515,18 @@ void addBuiltIn3x3MatricessToScope(Parser* parser) {
     int3x3_type->castable_to_types.push_back(uint3x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int3x3_type->constructors.push_back(constructor0);
     int3x3_type->constructors.push_back(constructor1);
@@ -1554,18 +1554,18 @@ void addBuiltIn3x3MatricessToScope(Parser* parser) {
     uint3x3_type->castable_to_types.push_back(uint3x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint3x3_type->constructors.push_back(constructor0);
     uint3x3_type->constructors.push_back(constructor1);
@@ -1593,18 +1593,18 @@ void addBuiltIn3x3MatricessToScope(Parser* parser) {
     half3x3_type->castable_to_types.push_back(uint3x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half3x3_type->constructors.push_back(constructor0);
     half3x3_type->constructors.push_back(constructor1);
@@ -1647,21 +1647,21 @@ void addBuiltIn4x3MatricessToScope(Parser* parser) {
     float4x3_type->castable_to_types.push_back(uint4x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float4x3_type->constructors.push_back(constructor0);
     float4x3_type->constructors.push_back(constructor1);
@@ -1692,21 +1692,21 @@ void addBuiltIn4x3MatricessToScope(Parser* parser) {
     double4x3_type->castable_to_types.push_back(uint4x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double4x3_type->constructors.push_back(constructor0);
     double4x3_type->constructors.push_back(constructor1);
@@ -1737,21 +1737,21 @@ void addBuiltIn4x3MatricessToScope(Parser* parser) {
     int4x3_type->castable_to_types.push_back(uint4x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int4x3_type->constructors.push_back(constructor0);
     int4x3_type->constructors.push_back(constructor1);
@@ -1782,21 +1782,21 @@ void addBuiltIn4x3MatricessToScope(Parser* parser) {
     uint4x3_type->castable_to_types.push_back(uint4x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint4x3_type->constructors.push_back(constructor0);
     uint4x3_type->constructors.push_back(constructor1);
@@ -1827,21 +1827,21 @@ void addBuiltIn4x3MatricessToScope(Parser* parser) {
     half4x3_type->castable_to_types.push_back(uint4x3_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half4x3_type->constructors.push_back(constructor0);
     half4x3_type->constructors.push_back(constructor1);
@@ -1884,21 +1884,21 @@ void addBuiltIn3x4MatricessToScope(Parser* parser) {
     float3x4_type->castable_to_types.push_back(uint3x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float3x4_type->constructors.push_back(constructor0);
     float3x4_type->constructors.push_back(constructor1);
@@ -1929,21 +1929,21 @@ void addBuiltIn3x4MatricessToScope(Parser* parser) {
     double3x4_type->castable_to_types.push_back(uint3x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double3x4_type->constructors.push_back(constructor0);
     double3x4_type->constructors.push_back(constructor1);
@@ -1974,21 +1974,21 @@ void addBuiltIn3x4MatricessToScope(Parser* parser) {
     int3x4_type->castable_to_types.push_back(uint3x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int3x4_type->constructors.push_back(constructor0);
     int3x4_type->constructors.push_back(constructor1);
@@ -2019,21 +2019,21 @@ void addBuiltIn3x4MatricessToScope(Parser* parser) {
     uint3x4_type->castable_to_types.push_back(uint3x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint3x4_type->constructors.push_back(constructor0);
     uint3x4_type->constructors.push_back(constructor1);
@@ -2064,21 +2064,21 @@ void addBuiltIn3x4MatricessToScope(Parser* parser) {
     half3x4_type->castable_to_types.push_back(uint3x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half3x4_type->constructors.push_back(constructor0);
     half3x4_type->constructors.push_back(constructor1);
@@ -2128,25 +2128,25 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
     float4x4_type->castable_to_types.push_back(uint4x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(float_type);
+    constructor0->arguments.push_back(new ASTType(float_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
-    constructor1->arguments.push_back(float_type);
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
+    constructor1->arguments.push_back(new ASTType(float_type));
 
     float4x4_type->constructors.push_back(constructor0);
     float4x4_type->constructors.push_back(constructor1);
@@ -2181,25 +2181,25 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
     double4x4_type->castable_to_types.push_back(uint4x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(double_type);
+    constructor0->arguments.push_back(new ASTType(double_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
-    constructor1->arguments.push_back(double_type);
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
+    constructor1->arguments.push_back(new ASTType(double_type));
 
     double4x4_type->constructors.push_back(constructor0);
     double4x4_type->constructors.push_back(constructor1);
@@ -2234,25 +2234,25 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
     int4x4_type->castable_to_types.push_back(uint4x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(int_type);
+    constructor0->arguments.push_back(new ASTType(int_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
-    constructor1->arguments.push_back(int_type);
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
+    constructor1->arguments.push_back(new ASTType(int_type));
 
     int4x4_type->constructors.push_back(constructor0);
     int4x4_type->constructors.push_back(constructor1);
@@ -2287,25 +2287,25 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
     uint4x4_type->castable_to_types.push_back(uint4x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(uint_type);
+    constructor0->arguments.push_back(new ASTType(uint_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
-    constructor1->arguments.push_back(uint_type);
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
+    constructor1->arguments.push_back(new ASTType(uint_type));
 
     uint4x4_type->constructors.push_back(constructor0);
     uint4x4_type->constructors.push_back(constructor1);
@@ -2340,25 +2340,25 @@ void addBuiltIn4x4MatricessToScope(Parser* parser) {
     half4x4_type->castable_to_types.push_back(uint4x4_type);
 
     constructor0 = new ASTConstructor();
-    constructor0->arguments.push_back(half_type);
+    constructor0->arguments.push_back(new ASTType(half_type));
 
     constructor1 = new ASTConstructor();
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
-    constructor1->arguments.push_back(half_type);
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
+    constructor1->arguments.push_back(new ASTType(half_type));
 
     half4x4_type->constructors.push_back(constructor0);
     half4x4_type->constructors.push_back(constructor1);

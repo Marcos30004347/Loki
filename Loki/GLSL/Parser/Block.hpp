@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef GLSL_BLOCK_H
+#define GLSL_BLOCK_H
 
 #include "AST.hpp"
 #include "Parser.hpp"

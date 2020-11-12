@@ -71,12 +71,10 @@ ASTProgram* Parser::parseProgram(ProgramType type, const char* prorgamMain) {
     program->program_declarations = std::vector<AST*>(0);
 
     while(this->currentToken() && this->current_token_index < this->lexer->getTokensCount()) {
-        
         switch (this->currentToken()->type) {
-
-        default:
-            program->program_declarations.push_back(parseDeclaration(this));
-            break;
+            default:
+                program->program_declarations.push_back(parseDeclaration(this));
+                break;
         }
         while(this->currentToken() && this->currentToken()->type == Token::TOKEN_SEMICOLON) this->readToken(Token::TOKEN_SEMICOLON);
     }
